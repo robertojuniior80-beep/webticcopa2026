@@ -1,0 +1,81 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn() && request.auth.token.email == 'robertojuniior80@gmail.com';
+    }
+
+    function validPollVoteData() {
+      return request.resource.data.keys().hasOnly(['competitionKey', 'playerId', 'winner']) &&
+        request.resource.data.competitionKey == 'worldcup' &&
+        request.resource.data.playerId is string &&
+        request.resource.data.playerId.size() > 0 &&
+        request.resource.data.playerId.size() <= 128 &&
+        request.resource.data.winner is string &&
+        request.resource.data.winner.size() > 0 &&
+        request.resource.data.winner.size() <= 80;
+    }
+
+    match /players/{userId} {
+      allow read: if signedIn();
+      allow create: if isAdmin() || (
+        signedIn() &&
+        request.auth.uid == userId &&
+        !exists(/databases/$(database)/documents/players/$(userId)) &&
+        request.resource.data.keys().hasOnly(['name', 'role']) &&
+        request.resource.data.name is string &&
+        request.resource.data.name.size() > 0 &&
+        request.resource.data.name.size() <= 60 &&
+        request.resource.data.role == 'participant'
+      );
+      allow update: if isAdmin() || (
+        signedIn() &&
+        request.auth.uid == userId &&
+        request.resource.data.keys().hasOnly(['name', 'role']) &&
+        request.resource.data.name is string &&
+        request.resource.data.name.size() > 0 &&
+        request.resource.data.name.size() <= 60 &&
+        request.resource.data.role == resource.data.role
+      );
+      allow delete: if isAdmin();
+    }
+
+    match /palpites/{userId} {
+      allow read: if signedIn();
+      allow create, update: if isAdmin() || (
+        signedIn() &&
+        request.auth.uid == userId &&
+        request.resource.data.size() <= 104
+      );
+      allow delete: if isAdmin();
+    }
+
+    match /results/{matchId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /pollVotes/{voteId} {
+      allow read: if signedIn();
+      allow create: if isAdmin() || (
+        signedIn() &&
+        validPollVoteData() &&
+        voteId == 'worldcup__' + request.auth.uid &&
+        request.resource.data.playerId == request.auth.uid
+      );
+      allow update: if isAdmin() || (
+        signedIn() &&
+        resource.data.playerId == request.auth.uid &&
+        validPollVoteData() &&
+        voteId == 'worldcup__' + request.auth.uid &&
+        request.resource.data.playerId == resource.data.playerId &&
+        request.resource.data.competitionKey == resource.data.competitionKey
+      );
+      allow delete: if isAdmin() || (signedIn() && resource.data.playerId == request.auth.uid);
+    }
+  }
+}
