@@ -18,13 +18,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Authenticate to Google Cloud
-        id: auth
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_COPA2026_C344C }}
-          token_format: access_token
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -33,7 +26,7 @@ jobs:
       - name: Sync final scores from API-Football
         env:
           FIREBASE_PROJECT_ID: copa2026-c344c
-          FIREBASE_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_COPA2026_C344C }}
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
           API_FOOTBALL_BASE_URL: https://v3.football.api-sports.io
           API_FOOTBALL_HOST: v3.football.api-sports.io
