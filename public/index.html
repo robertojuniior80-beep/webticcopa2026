@@ -1860,7 +1860,15 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   });
 
   window.addEventListener('load', () => {
-    setTimeout(() => { window._fsReady = true; }, 600);
+    setTimeout(() => {
+      window._fsReady = true;
+      if (typeof renderMatchesIfActive === 'function') renderMatchesIfActive();
+      if (typeof renderScoreboard === 'function') renderScoreboard();
+      if (typeof renderPlayers === 'function') renderPlayers();
+      if (typeof renderWinnerPoll === 'function') renderWinnerPoll();
+      if (typeof updateLiveLeadersBubble === 'function') updateLiveLeadersBubble();
+      if (typeof updateUpcomingMatchesBubble === 'function') updateUpcomingMatchesBubble();
+    }, 600);
   });
 </script>
 
