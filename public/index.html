@@ -1166,11 +1166,8 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   .header-profile{width:100%;justify-content:space-between}
   .header-profile-name{max-width:none;flex:1;min-width:0}
   .match-card{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:12px;padding:var(--space-4)}
-  .team{align-items:flex-start}
-  .team,.match-card .team.right{flex-direction:column;text-align:center;justify-content:flex-start}
-  .match-card .team.right{align-items:flex-end}
-  .match-card .team:not(.right){align-items:flex-start}
-  .team.right .team-stack,.match-card .team:not(.right) .team-stack{align-items:inherit}
+  .team,.match-card .team.right{flex-direction:column;text-align:center;justify-content:flex-start;align-items:center}
+  .team.right .team-stack,.match-card .team:not(.right) .team-stack{align-items:center}
   .team-name{font-size:13px;line-height:1.35}
   .team-sub{font-size:10px}
   .team-flag{width:30px;height:30px}
@@ -1188,7 +1185,7 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   .competition-chip small{font-size:10px}
   .tabs-wrap{padding-left:12px;padding-right:12px}
   .tabs{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
-  .tab{flex:none;text-align:center;padding:10px 8px;font-size:11px;border:1px solid var(--color-border);border-bottom-width:2px;border-radius:999px;background:var(--color-surface);min-height:44px;display:flex;align-items:center;justify-content:center}
+  .tab{flex:none;text-align:center;padding:10px 8px;font-size:11px;line-height:1.15;border:1px solid var(--color-border);border-bottom-width:2px;border-radius:999px;background:var(--color-surface);min-height:44px;display:flex;align-items:center;justify-content:center}
   .tab.active{border-bottom-color:var(--copa-blue)}
   .logo-sub{display:none}
   .hero{padding:var(--space-10) var(--space-4) var(--space-8)}
@@ -1255,7 +1252,7 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   .winner-poll-row-head{flex-direction:column;align-items:flex-start}
   .upcoming-bubble{padding:var(--space-4)}
   .upcoming-bubble-item{padding:12px 13px;border-radius:16px}
-  .upcoming-bubble-match{font-size:15px}
+  .upcoming-bubble-match{font-size:15px;line-height:1.3;word-break:break-word}
   .upcoming-bubble-time{min-height:28px;font-size:11px}
   .upcoming-bubble-h2h{padding:9px 10px}
   .upcoming-bubble-h2h-summary,.upcoming-bubble-h2h-last{font-size:10px}
@@ -1266,6 +1263,7 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   .hero-main-column,.hero-side-column,.hero-side-top{height:auto}
   .leaders-bubble,.upcoming-bubble{padding:var(--space-3)}
   .leaders-bubble-item{grid-template-columns:auto 1fr auto;gap:10px}
+  .leaders-bubble-name{white-space:normal !important;word-break:break-word}
   .rules-box{padding:var(--space-3)}
   .pix-box{padding:var(--space-3)}
   .rule-item{padding:10px 12px;border-radius:14px;flex-direction:column;align-items:stretch}
