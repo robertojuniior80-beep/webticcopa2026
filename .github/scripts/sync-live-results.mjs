@@ -1,9 +1,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import vm from 'node:vm';
 
 const FIREBASE_PROJECT_ID = process.env.FIREBASE_PROJECT_ID || 'copa2026-c344c';
 const FIREBASE_ACCESS_TOKEN = process.env.FIREBASE_ACCESS_TOKEN || '';
+const FIREBASE_SERVICE_ACCOUNT_JSON = process.env.FIREBASE_SERVICE_ACCOUNT_JSON || '';
 const API_FOOTBALL_KEY = process.env.API_FOOTBALL_KEY || '';
 const API_FOOTBALL_BASE_URL = process.env.API_FOOTBALL_BASE_URL || 'https://v3.football.api-sports.io';
 const API_FOOTBALL_HOST = process.env.API_FOOTBALL_HOST || 'v3.football.api-sports.io';
@@ -11,6 +13,7 @@ const DRY_RUN = process.argv.includes('--dry-run') || process.env.DRY_RUN === '1
 const BRAZIL_TZ = 'America/Sao_Paulo';
 const OVERNIGHT_LOOKBACK_HOURS = 6;
 const ROOT_DIR = process.cwd();
+let cachedFirestoreAccessToken = '';
 
 function log(message){
   console.log(`[live-sync] ${message}`);
@@ -21,8 +24,89 @@ function fail(message){
   process.exit(1);
 }
 
+function toBase64Url(value){
+  return Buffer.from(value)
+    .toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/g, '');
+}
+
 function readFile(relativePath){
   return fs.readFileSync(path.join(ROOT_DIR, relativePath), 'utf8');
+}
+
+function parseServiceAccountCredentials(){
+  if(!FIREBASE_SERVICE_ACCOUNT_JSON){
+    return null;
+  }
+
+  try{
+    const credentials = JSON.parse(FIREBASE_SERVICE_ACCOUNT_JSON);
+    if(!credentials.client_email || !credentials.private_key){
+      throw new Error('JSON sem client_email/private_key.');
+    }
+    return credentials;
+  }catch(error){
+    fail(`Secret FIREBASE_SERVICE_ACCOUNT_JSON invalido: ${error.message}`);
+  }
+}
+
+async function getFirestoreAccessToken(){
+  if(cachedFirestoreAccessToken){
+    return cachedFirestoreAccessToken;
+  }
+
+  if(FIREBASE_ACCESS_TOKEN){
+    cachedFirestoreAccessToken = FIREBASE_ACCESS_TOKEN;
+    return cachedFirestoreAccessToken;
+  }
+
+  const credentials = parseServiceAccountCredentials();
+  if(!credentials){
+    fail('Defina FIREBASE_ACCESS_TOKEN ou FIREBASE_SERVICE_ACCOUNT_JSON para acessar o Firestore.');
+  }
+
+  const issuedAt = Math.floor(Date.now() / 1000);
+  const header = { alg: 'RS256', typ: 'JWT' };
+  const claimSet = {
+    iss: credentials.client_email,
+    scope: 'https://www.googleapis.com/auth/datastore https://www.googleapis.com/auth/cloud-platform',
+    aud: credentials.token_uri || 'https://oauth2.googleapis.com/token',
+    iat: issuedAt,
+    exp: issuedAt + 3600
+  };
+
+  const unsignedToken = `${toBase64Url(JSON.stringify(header))}.${toBase64Url(JSON.stringify(claimSet))}`;
+  const signer = crypto.createSign('RSA-SHA256');
+  signer.update(unsignedToken);
+  signer.end();
+  const signature = signer.sign(credentials.private_key);
+  const assertion = `${unsignedToken}.${toBase64Url(signature)}`;
+
+  const response = await fetch(claimSet.aud, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: new URLSearchParams({
+      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+      assertion
+    })
+  });
+
+  if(!response.ok){
+    const body = await response.text();
+    throw new Error(`OAuth token falhou: ${response.status} ${body.slice(0, 300)}`);
+  }
+
+  const payload = await response.json();
+  if(!payload?.access_token){
+    throw new Error('OAuth token sem access_token na resposta.');
+  }
+
+  cachedFirestoreAccessToken = payload.access_token;
+  return cachedFirestoreAccessToken;
 }
 
 function loadTeamNormalizer(){
@@ -185,10 +269,11 @@ function indexFixturesByDate(fixtures, normalizeAlias){
 }
 
 async function fetchExistingFirestoreResult(matchId){
+  const accessToken = await getFirestoreAccessToken();
   const url = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents/results/${encodeURIComponent(matchId)}`;
   const response = await fetch(url, {
     headers: {
-      Authorization: `Bearer ${FIREBASE_ACCESS_TOKEN}`
+      Authorization: `Bearer ${accessToken}`
     }
   });
 
@@ -209,6 +294,7 @@ async function fetchExistingFirestoreResult(matchId){
 }
 
 async function writeFirestoreResult(matchId, home, away){
+  const accessToken = await getFirestoreAccessToken();
   const url = new URL(`https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents/results/${encodeURIComponent(matchId)}`);
   url.searchParams.append('updateMask.fieldPaths', 'home');
   url.searchParams.append('updateMask.fieldPaths', 'away');
@@ -216,7 +302,7 @@ async function writeFirestoreResult(matchId, home, away){
   const response = await fetch(url, {
     method: 'PATCH',
     headers: {
-      Authorization: `Bearer ${FIREBASE_ACCESS_TOKEN}`,
+      Authorization: `Bearer ${accessToken}`,
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
@@ -249,8 +335,8 @@ async function main(){
     fail('Secret/API_FOOTBALL_KEY ausente.');
   }
 
-  if(!FIREBASE_ACCESS_TOKEN){
-    fail('Token de acesso do Firestore ausente em FIREBASE_ACCESS_TOKEN.');
+  if(!FIREBASE_ACCESS_TOKEN && !FIREBASE_SERVICE_ACCOUNT_JSON){
+    fail('Defina FIREBASE_ACCESS_TOKEN ou FIREBASE_SERVICE_ACCOUNT_JSON para acessar o Firestore.');
   }
 
   if(!datesToQuery.length){
