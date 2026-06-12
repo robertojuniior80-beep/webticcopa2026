@@ -48,6 +48,13 @@ function log(message){
   console.log(`[live-sync] ${message}`);
 }
 
+function warn(message){
+  console.warn(`[live-sync] ${message}`);
+  if(process.env.GITHUB_ACTIONS === 'true'){
+    console.log(`::warning::${message}`);
+  }
+}
+
 function fail(message){
   console.error(`[live-sync] ${message}`);
   process.exit(1);
@@ -181,6 +188,15 @@ function parseBrazilDateLabel(matchDate){
   return `2026-${month}-${day}`;
 }
 
+function parseTrackedKickoff(matchDate){
+  const result = String(matchDate || '').match(/(\d{2})\/(\d{2})(?:\s*[·\u00B7]\s*(\d{1,2})h(?:(\d{2}))?)?/);
+  if(!result || result[3] === undefined){
+    return null;
+  }
+  const [, day, month, hour, minute] = result;
+  return new Date(`2026-${month}-${day}T${String(hour).padStart(2, '0')}:${String(minute || '00').padStart(2, '0')}:00-03:00`);
+}
+
 function getBrazilNowParts(){
   const formatter = new Intl.DateTimeFormat('en-CA', {
     timeZone: BRAZIL_TZ,
@@ -223,6 +239,7 @@ function buildTrackedMatches(normalizeAlias){
         id: match.id,
         phase: match.phase,
         isoDate,
+        kickoffAt: parseTrackedKickoff(match.date),
         home: normalizeTeamName(match.home, normalizeAlias),
         away: normalizeTeamName(match.away, normalizeAlias),
         pairKey: buildPairKey(
@@ -236,6 +253,25 @@ function buildTrackedMatches(normalizeAlias){
 
 function buildPairKey(home, away){
   return [home, away].sort((a, b) => a.localeCompare(b, 'pt-BR')).join('__');
+}
+
+function formatKickoffForLog(kickoffAt){
+  if(!(kickoffAt instanceof Date) || Number.isNaN(kickoffAt.getTime())){
+    return 'horario indisponivel';
+  }
+  return kickoffAt.toISOString().replace('.000Z', 'Z');
+}
+
+function collectUnmatchedFinishedMatches(trackedMatches, fixturesByDate, now = Date.now()){
+  const finishedThresholdMs = 2 * 60 * 60 * 1000;
+  return trackedMatches.filter(match => {
+    const dateBucket = fixturesByDate.get(match.isoDate);
+    if(!dateBucket) return false;
+    if(!match.kickoffAt || Number.isNaN(match.kickoffAt.getTime())) return false;
+    if(now < match.kickoffAt.getTime() + finishedThresholdMs) return false;
+    const fixture = dateBucket.get(`${match.isoDate}__${match.pairKey}`);
+    return !fixture;
+  });
 }
 
 function pickDatesToQuery(trackedMatches){
@@ -399,6 +435,15 @@ async function main(){
       away: fixture.awayScore,
       status: fixture.status
     });
+  }
+
+  const unmatchedFinishedMatches = collectUnmatchedFinishedMatches(trackedMatches, fixturesByDate);
+  for(const match of unmatchedFinishedMatches){
+    warn(
+      `Partida sem correspondencia final na API: ${match.id} ${match.home} x ${match.away} ` +
+      `(${match.isoDate}, kickoff ${formatKickoffForLog(match.kickoffAt)}). ` +
+      `Verifique se surgiu uma nova variacao de nome da selecao.`
+    );
   }
 
   if(!updates.length){
