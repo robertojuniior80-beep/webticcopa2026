@@ -26,6 +26,7 @@ jobs:
       - name: Sync final scores from API-Football
         env:
           FIREBASE_PROJECT_ID: copa2026-c344c
+          FIREBASE_REFRESH_TOKEN: ${{ secrets.FIREBASE_CLI_REFRESH_TOKEN }}
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_COPA2026_C344C }}
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
           API_FOOTBALL_BASE_URL: https://v3.football.api-sports.io
