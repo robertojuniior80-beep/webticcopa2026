@@ -6,6 +6,9 @@ import vm from 'node:vm';
 const FIREBASE_PROJECT_ID = process.env.FIREBASE_PROJECT_ID || 'copa2026-c344c';
 const FIREBASE_ACCESS_TOKEN = process.env.FIREBASE_ACCESS_TOKEN || '';
 const FIREBASE_SERVICE_ACCOUNT_JSON = process.env.FIREBASE_SERVICE_ACCOUNT_JSON || '';
+const FIREBASE_REFRESH_TOKEN = process.env.FIREBASE_REFRESH_TOKEN || '';
+const FIREBASE_CLIENT_ID = process.env.FIREBASE_CLIENT_ID || '563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com';
+const FIREBASE_CLIENT_SECRET = process.env.FIREBASE_CLIENT_SECRET || 'j9iVZfS8kkCEFUPaAeJV0sAi';
 const API_FOOTBALL_KEY = process.env.API_FOOTBALL_KEY || '';
 const API_FOOTBALL_BASE_URL = process.env.API_FOOTBALL_BASE_URL || 'https://v3.football.api-sports.io';
 const API_FOOTBALL_HOST = process.env.API_FOOTBALL_HOST || 'v3.football.api-sports.io';
@@ -14,6 +17,32 @@ const BRAZIL_TZ = 'America/Sao_Paulo';
 const OVERNIGHT_LOOKBACK_HOURS = 6;
 const ROOT_DIR = process.cwd();
 let cachedFirestoreAccessToken = '';
+
+async function exchangeRefreshTokenForAccessToken(){
+  const response = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: new URLSearchParams({
+      client_id: FIREBASE_CLIENT_ID,
+      client_secret: FIREBASE_CLIENT_SECRET,
+      refresh_token: FIREBASE_REFRESH_TOKEN,
+      grant_type: 'refresh_token'
+    })
+  });
+
+  if(!response.ok){
+    const body = await response.text();
+    throw new Error(`OAuth refresh_token falhou: ${response.status} ${body.slice(0, 300)}`);
+  }
+
+  const payload = await response.json();
+  if(!payload?.access_token){
+    throw new Error('OAuth refresh_token sem access_token na resposta.');
+  }
+  return payload.access_token;
+}
 
 function log(message){
   console.log(`[live-sync] ${message}`);
@@ -62,9 +91,14 @@ async function getFirestoreAccessToken(){
     return cachedFirestoreAccessToken;
   }
 
+  if(FIREBASE_REFRESH_TOKEN){
+    cachedFirestoreAccessToken = await exchangeRefreshTokenForAccessToken();
+    return cachedFirestoreAccessToken;
+  }
+
   const credentials = parseServiceAccountCredentials();
   if(!credentials){
-    fail('Defina FIREBASE_ACCESS_TOKEN ou FIREBASE_SERVICE_ACCOUNT_JSON para acessar o Firestore.');
+    fail('Defina FIREBASE_ACCESS_TOKEN, FIREBASE_REFRESH_TOKEN ou FIREBASE_SERVICE_ACCOUNT_JSON para acessar o Firestore.');
   }
 
   const issuedAt = Math.floor(Date.now() / 1000);
@@ -335,8 +369,8 @@ async function main(){
     fail('Secret/API_FOOTBALL_KEY ausente.');
   }
 
-  if(!FIREBASE_ACCESS_TOKEN && !FIREBASE_SERVICE_ACCOUNT_JSON){
-    fail('Defina FIREBASE_ACCESS_TOKEN ou FIREBASE_SERVICE_ACCOUNT_JSON para acessar o Firestore.');
+  if(!FIREBASE_ACCESS_TOKEN && !FIREBASE_REFRESH_TOKEN && !FIREBASE_SERVICE_ACCOUNT_JSON){
+    fail('Defina FIREBASE_ACCESS_TOKEN, FIREBASE_REFRESH_TOKEN ou FIREBASE_SERVICE_ACCOUNT_JSON para acessar o Firestore.');
   }
 
   if(!datesToQuery.length){
