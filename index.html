@@ -1928,7 +1928,7 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
       <p id="hero-description"></p>
       <div class="hero-actions">
         <button class="btn btn-gold" type="button" onclick="showTab('matches'); document.getElementById('content-matches').scrollIntoView({ behavior: 'smooth', block: 'start' });">Ver jogos e palpites</button>
-        <button class="btn btn-outline" type="button" onclick="showTab('scores'); document.getElementById('content-scores').scrollIntoView({ behavior: 'smooth', block: 'start' });">Acompanhar classificacao</button>
+        <button class="btn btn-outline" id="hero-secondary-action" type="button" onclick="handleHeroSecondaryAction()">Entrar para ver classificacao</button>
       </div>
       <div class="hero-microstats" aria-label="Destaques do bolao">
         <div class="hero-microstat hero-microstat-deadline" id="hero-deadline-pill">
@@ -4139,6 +4139,16 @@ async function applyAuthState(user) {
 
 window.applyAuthState = applyAuthState;
 
+function handleHeroSecondaryAction() {
+  if (!localPlayerId) {
+    openAuthModal('login');
+    showToast('Entre com sua conta para visualizar a classificacao.');
+    return;
+  }
+  showTab('scores');
+  document.getElementById('content-scores')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 function getAuthErrorMessage(error) {
   const code = error?.code || '';
   if (code === 'auth/email-already-in-use') return 'Esse email ja esta em uso. Cada conta aceita apenas um cadastro por email.';
@@ -4153,6 +4163,7 @@ function updateVisitorProfileUI() {
   const headerLogin = document.getElementById('header-login-form');
   const headerProfile = document.getElementById('header-profile-info');
   const headerName = document.getElementById('header-profile-name');
+  const heroSecondaryAction = document.getElementById('hero-secondary-action');
   const loginEmailInput = document.getElementById('auth-login-email');
   const loginPasswordInput = document.getElementById('auth-login-password');
   const registerNameInput = document.getElementById('auth-register-name');
@@ -4164,9 +4175,11 @@ function updateVisitorProfileUI() {
     if (headerLogin) headerLogin.style.display = 'none';
     if (headerProfile) headerProfile.style.display = 'flex';
     if (headerName) headerName.textContent = localPlayerName;
+    if (heroSecondaryAction) heroSecondaryAction.textContent = 'Acompanhar classificacao';
   } else {
     if (headerLogin) headerLogin.style.display = 'flex';
     if (headerProfile) headerProfile.style.display = 'none';
+    if (heroSecondaryAction) heroSecondaryAction.textContent = 'Entrar para ver classificacao';
     if (loginEmailInput) loginEmailInput.value = '';
     if (loginPasswordInput) loginPasswordInput.value = '';
     if (registerNameInput) registerNameInput.value = '';
