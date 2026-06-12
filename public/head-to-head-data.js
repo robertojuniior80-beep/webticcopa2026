@@ -8,7 +8,10 @@
   function normalizeTeamName(name){
     return foldText(name)
       .replace(/^[^\p{L}\p{N}]+\s+/u,'')
+      .replace(/\s*&\s*/g,' and ')
       .replace(/[.'’]/g,'')
+      .replace(/\bof\b/gi,' ')
+      .replace(/\bdemocratic republic of\b/gi,'DR')
       .replace(/\s*-\s*/g,' ')
       .replace(/\s+/g,' ')
       .trim();
@@ -23,18 +26,25 @@
     'Austria': 'Austria',
     'Belgica': 'Belgium',
     'Bosnia & Herzegovina': 'Bosnia and Herzegovina',
+    'Bosnia And Herzegovina': 'Bosnia and Herzegovina',
     'Bosnia Herz': 'Bosnia and Herzegovina',
     'Bosnia Herzegovina': 'Bosnia and Herzegovina',
     'Brasil': 'Brazil',
     'Canada': 'Canada',
     'Catar': 'Qatar',
     'Cabo Verde': 'Cape Verde',
+    'Cape Verde Islands': 'Cape Verde',
     'China': 'China',
     'Colombia': 'Colombia',
+    'Congo DR': 'DR Congo',
     'Coreia do Sul': 'South Korea',
+    'Cote DIvoire': 'Ivory Coast',
+    'Cote dIvoire': 'Ivory Coast',
     'Croacia': 'Croatia',
     'Curacao': 'Curacao',
     'Costa do Marfim': 'Ivory Coast',
+    'Democratic Republic Congo': 'DR Congo',
+    'Dr Congo': 'DR Congo',
     'Egito': 'Egypt',
     'Equador': 'Ecuador',
     'Escocia': 'Scotland',
@@ -49,9 +59,11 @@
     'Indonesia': 'Indonesia',
     'Inglaterra': 'England',
     'Ira': 'Iran',
+    'IR Iran': 'Iran',
     'Iraque': 'Iraq',
     'Jordania': 'Jordan',
     'Japao': 'Japan',
+    'Korea Rep': 'South Korea',
     'Korea Republic': 'South Korea',
     'Marrocos': 'Morocco',
     'Mexico': 'Mexico',
@@ -66,6 +78,7 @@
     'Suica': 'Switzerland',
     'Tunisia': 'Tunisia',
     'Turquia': 'Turkey',
+    'United States America': 'United States',
     'Uzbequistao': 'Uzbekistan',
     'Uruguai': 'Uruguay',
     'USA': 'United States',
