@@ -22,6 +22,7 @@
     'Australia': 'Australia',
     'Austria': 'Austria',
     'Belgica': 'Belgium',
+    'Bosnia & Herzegovina': 'Bosnia and Herzegovina',
     'Bosnia Herz': 'Bosnia and Herzegovina',
     'Bosnia Herzegovina': 'Bosnia and Herzegovina',
     'Brasil': 'Brazil',
