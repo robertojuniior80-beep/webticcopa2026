@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>INFRA Bets | Ação de Conta</title>
+  <style>
+    :root{
+      --bg:#07111f;
+      --bg-soft:#0f172a;
+      --card:#101b31;
+      --card-2:#16233d;
+      --text:#f8fafc;
+      --muted:#9fb0c9;
+      --gold:#f5c800;
+      --mint:#47d7b8;
+      --danger:#ff6b6b;
+      --line:rgba(255,255,255,.08);
+      --shadow:0 30px 60px rgba(0,0,0,.35);
+      --radius:24px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top, rgba(71,215,184,.18), transparent 28%),
+        radial-gradient(circle at right, rgba(245,200,0,.14), transparent 24%),
+        linear-gradient(180deg, #08101d 0%, #07111f 100%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+    .shell{
+      width:min(100%, 960px);
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+      border:1px solid var(--line);
+      border-radius:32px;
+      overflow:hidden;
+      background:rgba(8,16,29,.88);
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(14px);
+    }
+    .hero{
+      padding:40px;
+      background:
+        linear-gradient(160deg, rgba(245,200,0,.12), transparent 50%),
+        linear-gradient(180deg, rgba(71,215,184,.08), transparent 100%);
+      border-right:1px solid var(--line);
+    }
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.05);
+      color:var(--gold);
+      font-size:12px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+    h1{
+      margin:18px 0 12px;
+      font-size:clamp(32px,4vw,48px);
+      line-height:1;
+    }
+    h1 span{color:var(--gold)}
+    .hero p{
+      margin:0;
+      max-width:32ch;
+      color:var(--muted);
+      line-height:1.65;
+    }
+    .hero-list{
+      margin:28px 0 0;
+      padding:0;
+      list-style:none;
+      display:grid;
+      gap:12px;
+    }
+    .hero-list li{
+      padding:14px 16px;
+      border-radius:18px;
+      background:rgba(255,255,255,.04);
+      color:var(--muted);
+      border:1px solid rgba(255,255,255,.05);
+    }
+    .panel{
+      padding:40px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:18px;
+    }
+    .card{
+      background:linear-gradient(180deg, var(--card) 0%, var(--card-2) 100%);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:24px;
+    }
+    .status{
+      margin:0 0 6px;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.6;
+    }
+    .account{
+      margin:0 0 18px;
+      font-size:14px;
+      color:var(--gold);
+    }
+    .field{display:grid;gap:8px;margin-bottom:14px}
+    label{font-size:13px;color:var(--muted)}
+    input{
+      width:100%;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(6,10,19,.5);
+      color:var(--text);
+      border-radius:16px;
+      padding:14px 16px;
+      font-size:15px;
+      outline:none;
+    }
+    input:focus{
+      border-color:var(--gold);
+      box-shadow:0 0 0 3px rgba(245,200,0,.16);
+    }
+    .hint{
+      margin:0;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.5;
+    }
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-top:18px;
+    }
+    .btn{
+      appearance:none;
+      border:none;
+      border-radius:16px;
+      padding:14px 18px;
+      font-size:14px;
+      font-weight:700;
+      cursor:pointer;
+      text-decoration:none;
+      transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .btn-primary{
+      background:linear-gradient(135deg, var(--gold), var(--mint));
+      color:#05202b;
+      box-shadow:0 12px 28px rgba(245,200,0,.2);
+    }
+    .btn-secondary{
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .feedback{
+      min-height:22px;
+      font-size:13px;
+      color:var(--muted);
+    }
+    .feedback.error{color:var(--danger)}
+    .feedback.success{color:var(--mint)}
+    .hidden{display:none !important}
+    @media (max-width: 820px){
+      .shell{grid-template-columns:1fr}
+      .hero{border-right:none;border-bottom:1px solid var(--line)}
+      .hero,.panel{padding:28px}
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">INFRA Bets 2026</div>
+      <h1>Recupere sua <span>conta</span></h1>
+      <p>Uma experiência de redefinição de senha alinhada ao bolão, com retorno simples para o site assim que a sua conta estiver pronta para uso novamente.</p>
+      <ul class="hero-list">
+        <li>Links de redefinição e verificação tratados em uma página com a identidade do seu bolão.</li>
+        <li>Mensagens claras para código expirado, senha fraca ou ação já concluída.</li>
+        <li>Botão direto para voltar ao site e entrar com a nova senha.</li>
+      </ul>
+    </section>
+    <section class="panel">
+      <div class="card">
+        <p id="status-copy" class="status">Validando sua solicitação…</p>
+        <p id="account-copy" class="account hidden"></p>
+        <form id="reset-form" class="hidden">
+          <div class="field">
+            <label for="new-password">Nova senha</label>
+            <input id="new-password" type="password" placeholder="Min. 6 caracteres" autocomplete="new-password" maxlength="60">
+          </div>
+          <div class="field">
+            <label for="confirm-password">Confirmar nova senha</label>
+            <input id="confirm-password" type="password" placeholder="Repita a senha" autocomplete="new-password" maxlength="60">
+          </div>
+          <p class="hint">Use uma senha fácil de lembrar para você, mas difícil para outras pessoas adivinharem.</p>
+          <div class="actions">
+            <button class="btn btn-primary" type="submit">Salvar nova senha</button>
+            <a class="btn btn-secondary" id="back-link" href="/">Voltar ao site</a>
+          </div>
+        </form>
+        <div id="info-actions" class="actions hidden">
+          <a class="btn btn-primary" id="primary-link" href="/">Ir para o bolão</a>
+          <a class="btn btn-secondary" id="secondary-link" href="/">Voltar</a>
+        </div>
+        <div id="feedback" class="feedback"></div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+      getAuth,
+      applyActionCode,
+      checkActionCode,
+      confirmPasswordReset,
+      verifyPasswordResetCode
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA924HEo6oIDv5BfdFh9cP4lLQBbzShbuE",
+      authDomain: "copa2026-c344c.firebaseapp.com",
+      projectId: "copa2026-c344c",
+      storageBucket: "copa2026-c344c.firebasestorage.app",
+      messagingSenderId: "523847068555",
+      appId: "1:523847068555:web:38f34377bdd6155124dd8e"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    auth.languageCode = 'pt-BR';
+
+    const params = new URLSearchParams(window.location.search);
+    const mode = params.get('mode') || '';
+    const actionCode = params.get('oobCode') || '';
+    const continueUrl = params.get('continueUrl') || `${window.location.origin}/?auth=login`;
+
+    const statusCopy = document.getElementById('status-copy');
+    const accountCopy = document.getElementById('account-copy');
+    const resetForm = document.getElementById('reset-form');
+    const feedback = document.getElementById('feedback');
+    const infoActions = document.getElementById('info-actions');
+    const primaryLink = document.getElementById('primary-link');
+    const secondaryLink = document.getElementById('secondary-link');
+    const backLink = document.getElementById('back-link');
+    const newPasswordInput = document.getElementById('new-password');
+    const confirmPasswordInput = document.getElementById('confirm-password');
+
+    primaryLink.href = continueUrl;
+    secondaryLink.href = continueUrl;
+    backLink.href = continueUrl;
+
+    function setFeedback(message, type=''){
+      feedback.textContent = message || '';
+      feedback.className = `feedback${type ? ` ${type}` : ''}`;
+    }
+
+    function showInfoActions(primaryLabel='Ir para o bolão', secondaryLabel='Voltar'){
+      primaryLink.textContent = primaryLabel;
+      secondaryLink.textContent = secondaryLabel;
+      infoActions.classList.remove('hidden');
+    }
+
+    function getFriendlyError(error){
+      const code = error?.code || '';
+      if (code === 'auth/expired-action-code' || code === 'auth/invalid-action-code') return 'Esse link expirou ou já foi usado. Peça uma nova redefinição de senha no site.';
+      if (code === 'auth/weak-password') return 'Escolha uma senha com pelo menos 6 caracteres.';
+      if (code === 'auth/user-disabled') return 'Essa conta foi desativada.';
+      if (code === 'auth/network-request-failed') return 'Falha de conexão. Tente novamente em instantes.';
+      return 'Não foi possível concluir a ação agora. Tente novamente pelo site.';
+    }
+
+    async function handleResetPassword(){
+      if(!actionCode){
+        statusCopy.textContent = 'Link inválido.';
+        setFeedback('Não encontramos o código de redefinição nesse link.', 'error');
+        showInfoActions('Voltar ao login');
+        return;
+      }
+
+      try{
+        const email = await verifyPasswordResetCode(auth, actionCode);
+        statusCopy.textContent = 'Defina sua nova senha para voltar ao bolão.';
+        accountCopy.textContent = `Conta: ${email}`;
+        accountCopy.classList.remove('hidden');
+        resetForm.classList.remove('hidden');
+        setFeedback('');
+      }catch(error){
+        statusCopy.textContent = 'Não foi possível validar seu link.';
+        setFeedback(getFriendlyError(error), 'error');
+        showInfoActions('Pedir novo link');
+      }
+    }
+
+    async function handleVerifyEmail(){
+      try{
+        await applyActionCode(auth, actionCode);
+        statusCopy.textContent = 'Email confirmado com sucesso.';
+        setFeedback('Sua conta já está pronta para entrar e salvar palpites.', 'success');
+        showInfoActions('Entrar no bolão');
+      }catch(error){
+        statusCopy.textContent = 'Não foi possível confirmar o email.';
+        setFeedback(getFriendlyError(error), 'error');
+        showInfoActions('Voltar ao site');
+      }
+    }
+
+    async function handleRecoverEmail(){
+      try{
+        const info = await checkActionCode(auth, actionCode);
+        await applyActionCode(auth, actionCode);
+        statusCopy.textContent = 'Alteração de email revertida.';
+        setFeedback(`O endereço ${info?.data?.email || 'anterior'} foi restaurado com sucesso.`, 'success');
+        showInfoActions('Voltar ao bolão');
+      }catch(error){
+        statusCopy.textContent = 'Não foi possível restaurar o email.';
+        setFeedback(getFriendlyError(error), 'error');
+        showInfoActions('Voltar ao site');
+      }
+    }
+
+    resetForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const newPassword = newPasswordInput.value;
+      const confirmPassword = confirmPasswordInput.value;
+      if(newPassword.length < 6){
+        setFeedback('A nova senha precisa ter pelo menos 6 caracteres.', 'error');
+        return;
+      }
+      if(newPassword !== confirmPassword){
+        setFeedback('A confirmação da senha não confere.', 'error');
+        return;
+      }
+      try{
+        setFeedback('Salvando sua nova senha…');
+        await confirmPasswordReset(auth, actionCode, newPassword);
+        statusCopy.textContent = 'Senha atualizada com sucesso.';
+        setFeedback('Agora você já pode voltar ao site e entrar com a nova senha.', 'success');
+        resetForm.classList.add('hidden');
+        showInfoActions('Entrar com a nova senha', 'Voltar ao início');
+      }catch(error){
+        setFeedback(getFriendlyError(error), 'error');
+      }
+    });
+
+    switch(mode){
+      case 'resetPassword':
+        handleResetPassword();
+        break;
+      case 'verifyEmail':
+        handleVerifyEmail();
+        break;
+      case 'recoverEmail':
+        handleRecoverEmail();
+        break;
+      default:
+        statusCopy.textContent = 'Ação de conta não reconhecida.';
+        setFeedback('Esse link não corresponde a uma ação suportada.', 'error');
+        showInfoActions('Voltar ao bolão');
+    }
+  </script>
+</body>
+</html>

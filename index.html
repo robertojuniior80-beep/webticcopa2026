@@ -1839,8 +1839,9 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
     return signInWithEmailAndPassword(auth, normalizeAuthEmail(email), password);
   };
 
-  window.authResetParticipantPassword = async (email) => {
-    return sendPasswordResetEmail(auth, normalizeAuthEmail(email));
+  window.authResetParticipantPassword = async (email, actionCodeSettings) => {
+    auth.languageCode = 'pt-BR';
+    return sendPasswordResetEmail(auth, normalizeAuthEmail(email), actionCodeSettings);
   };
 
   window.authLogoutParticipant = async () => {
@@ -4070,8 +4071,12 @@ async function resetVisitorPassword() {
   const email = normalizeAuthEmail(emailInput?.value);
   if (!email) return showToast('Informe o email da conta para redefinir a senha.');
   try {
+    const actionCodeSettings = {
+      url: `${window.location.origin}/?auth=login`,
+      handleCodeInApp: false
+    };
     showToast('Enviando link de redefinicao...');
-    await window.authResetParticipantPassword(email);
+    await window.authResetParticipantPassword(email, actionCodeSettings);
     closeAuthModal();
     showToast('Enviamos um link de redefinicao para o seu email.');
   } catch (error) {
@@ -4113,6 +4118,18 @@ function submitAuthModal(){
   if(authModalMode==='register') return registerVisitorProfile();
   if(authModalMode==='reset') return resetVisitorPassword();
   return loginVisitorProfile();
+}
+
+function handleAuthLandingState() {
+  const params = new URLSearchParams(window.location.search);
+  const authState = params.get('auth');
+  if (authState !== 'login' || localPlayerId) return;
+  openAuthModal('login');
+  showToast('Senha redefinida. Entre com sua nova senha.');
+  params.delete('auth');
+  const query = params.toString();
+  const nextUrl = `${window.location.pathname}${query ? `?${query}` : ''}${window.location.hash || ''}`;
+  window.history.replaceState({}, '', nextUrl);
 }
 
 function clearIdleLogoutTimer(){
@@ -4335,6 +4352,7 @@ updateLiveLeadersBubble();
 updateUpcomingMatchesBubble();
 renderWinnerPoll();
 startCountdown();
+handleAuthLandingState();
 window.setInterval(() => {
   renderMatchesIfActive();
   updateLiveLeadersBubble();
