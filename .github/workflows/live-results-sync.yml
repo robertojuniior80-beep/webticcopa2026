@@ -3,7 +3,7 @@ name: Sync live results to Firestore
 on:
   workflow_dispatch:
   schedule:
-    - cron: '*/20 * * * *'
+    - cron: '*/15 * * * *'
 
 permissions:
   contents: read

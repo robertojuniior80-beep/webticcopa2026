@@ -14,7 +14,10 @@ const API_FOOTBALL_BASE_URL = process.env.API_FOOTBALL_BASE_URL || 'https://v3.f
 const API_FOOTBALL_HOST = process.env.API_FOOTBALL_HOST || 'v3.football.api-sports.io';
 const DRY_RUN = process.argv.includes('--dry-run') || process.env.DRY_RUN === '1';
 const BRAZIL_TZ = 'America/Sao_Paulo';
-const OVERNIGHT_LOOKBACK_HOURS = 6;
+const FINAL_SYNC_GRACE_MS = Number(process.env.FINAL_SYNC_GRACE_MS || 2 * 60 * 60 * 1000);
+const MAX_DATES_PER_RUN = Math.max(1, Number(process.env.MAX_DATES_PER_RUN || 2));
+const STALE_RETRY_INTERVAL_HOURS = Math.max(1, Number(process.env.STALE_RETRY_INTERVAL_HOURS || 6));
+const STALE_MATCH_AGE_MS = Number(process.env.STALE_MATCH_AGE_MS || 24 * 60 * 60 * 1000);
 const ROOT_DIR = process.cwd();
 let cachedFirestoreAccessToken = '';
 
@@ -178,7 +181,10 @@ function normalizeTeamName(rawName, normalizeAlias){
 }
 
 function isPlaceholderTeam(name){
-  return /^(1º|2º|3°|3º|Melhor|Venc\.|Perdedor)/i.test(String(name || '').trim());
+  const normalized = String(name || '')
+    .replace(/^[^\p{L}\p{N}]+/u, '')
+    .trim();
+  return /^(1º|2º|3°|3º|Melhor|Venc\.|Vencedor|Perdedor)/i.test(normalized);
 }
 
 function parseBrazilDateLabel(matchDate){
@@ -263,27 +269,44 @@ function formatKickoffForLog(kickoffAt){
 }
 
 function collectUnmatchedFinishedMatches(trackedMatches, fixturesByDate, now = Date.now()){
-  const finishedThresholdMs = 2 * 60 * 60 * 1000;
   return trackedMatches.filter(match => {
     const dateBucket = fixturesByDate.get(match.isoDate);
     if(!dateBucket) return false;
     if(!match.kickoffAt || Number.isNaN(match.kickoffAt.getTime())) return false;
-    if(now < match.kickoffAt.getTime() + finishedThresholdMs) return false;
+    if(now < match.kickoffAt.getTime() + FINAL_SYNC_GRACE_MS) return false;
     const fixture = dateBucket.get(`${match.isoDate}__${match.pairKey}`);
     return !fixture;
   });
 }
 
-function pickDatesToQuery(trackedMatches){
+function pickDatesToQuery(trackedMatches, existingResultsByMatchId){
   const now = getBrazilNowParts();
-  const candidateDates = new Set([now.isoDate]);
-  if(now.hour < OVERNIGHT_LOOKBACK_HOURS){
-    candidateDates.add(shiftIsoDate(now.isoDate, -1));
+  const nowMs = Date.now();
+  const candidateDates = [];
+  const shouldRetryStaleNow = now.minute < 15 && now.hour % STALE_RETRY_INTERVAL_HOURS === 0;
+
+  for(const match of trackedMatches){
+    const existing = existingResultsByMatchId.get(match.id);
+    const hasExistingResult = !!existing && existing.home !== '' && existing.away !== '';
+    if(hasExistingResult) continue;
+
+    if(!match.kickoffAt || Number.isNaN(match.kickoffAt.getTime())) continue;
+
+    const kickoffMs = match.kickoffAt.getTime();
+    const finalSyncReadyAt = kickoffMs + FINAL_SYNC_GRACE_MS;
+    if(nowMs < finalSyncReadyAt) continue;
+
+    const matchAgeMs = nowMs - kickoffMs;
+    const isStale = matchAgeMs > STALE_MATCH_AGE_MS;
+    if(isStale && !shouldRetryStaleNow) continue;
+
+    candidateDates.push(match.isoDate);
   }
 
-  return [...candidateDates].filter(isoDate =>
-    trackedMatches.some(match => match.isoDate === isoDate)
-  );
+  return [...new Set(candidateDates)]
+    .sort((a, b) => b.localeCompare(a))
+    .slice(0, MAX_DATES_PER_RUN)
+    .sort();
 }
 
 async function fetchApiFootballFixtures(isoDate){
@@ -338,29 +361,45 @@ function indexFixturesByDate(fixtures, normalizeAlias){
   return indexed;
 }
 
-async function fetchExistingFirestoreResult(matchId){
+async function fetchExistingFirestoreResultsMap(){
   const accessToken = await getFirestoreAccessToken();
-  const url = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents/results/${encodeURIComponent(matchId)}`;
-  const response = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`
+  const mapped = new Map();
+  let nextPageToken = '';
+
+  while(true){
+    const url = new URL(`https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents/results`);
+    url.searchParams.set('pageSize', '500');
+    if(nextPageToken){
+      url.searchParams.set('pageToken', nextPageToken);
     }
-  });
 
-  if(response.status === 404){
-    return null;
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+
+    if(!response.ok){
+      const body = await response.text();
+      throw new Error(`Firestore LIST falhou para results: ${response.status} ${body.slice(0, 300)}`);
+    }
+
+    const payload = await response.json();
+    for(const doc of payload?.documents || []){
+      const fullName = String(doc?.name || '');
+      const matchId = fullName.split('/').pop();
+      if(!matchId) continue;
+      mapped.set(matchId, {
+        home: doc?.fields?.home?.stringValue ?? '',
+        away: doc?.fields?.away?.stringValue ?? ''
+      });
+    }
+
+    nextPageToken = String(payload?.nextPageToken || '');
+    if(!nextPageToken) break;
   }
 
-  if(!response.ok){
-    const body = await response.text();
-    throw new Error(`Firestore GET falhou para ${matchId}: ${response.status} ${body.slice(0, 300)}`);
-  }
-
-  const doc = await response.json();
-  return {
-    home: doc?.fields?.home?.stringValue ?? '',
-    away: doc?.fields?.away?.stringValue ?? ''
-  };
+  return mapped;
 }
 
 async function writeFirestoreResult(matchId, home, away){
@@ -392,12 +431,10 @@ async function writeFirestoreResult(matchId, home, away){
 async function main(){
   const normalizeAlias = loadTeamNormalizer();
   const trackedMatches = buildTrackedMatches(normalizeAlias);
-  const datesToQuery = pickDatesToQuery(trackedMatches);
-
   log(`Partidas rastreadas: ${trackedMatches.length}`);
-  log(`Datas candidatas para consulta: ${datesToQuery.length ? datesToQuery.join(', ') : 'nenhuma'}`);
 
   if(DRY_RUN){
+    log('Dry-run ativo: parsing local validado sem chamadas externas.');
     return;
   }
 
@@ -408,6 +445,12 @@ async function main(){
   if(!FIREBASE_ACCESS_TOKEN && !FIREBASE_REFRESH_TOKEN && !FIREBASE_SERVICE_ACCOUNT_JSON){
     fail('Defina FIREBASE_ACCESS_TOKEN, FIREBASE_REFRESH_TOKEN ou FIREBASE_SERVICE_ACCOUNT_JSON para acessar o Firestore.');
   }
+
+  const existingResultsByMatchId = await fetchExistingFirestoreResultsMap();
+  const datesToQuery = pickDatesToQuery(trackedMatches, existingResultsByMatchId);
+
+  log(`Resultados já presentes no Firestore: ${existingResultsByMatchId.size}`);
+  log(`Datas candidatas para consulta: ${datesToQuery.length ? datesToQuery.join(', ') : 'nenhuma'}`);
 
   if(!datesToQuery.length){
     log('Nenhuma partida sem placar final em janela de sincronizacao. Encerrando sem chamadas externas.');
@@ -453,13 +496,14 @@ async function main(){
 
   let writes = 0;
   for(const update of updates){
-    const existing = await fetchExistingFirestoreResult(update.id);
+    const existing = existingResultsByMatchId.get(update.id) || null;
     if(existing && existing.home === update.home && existing.away === update.away){
       log(`Sem mudanca em results/${update.id} (${update.home} x ${update.away}).`);
       continue;
     }
 
     await writeFirestoreResult(update.id, update.home, update.away);
+    existingResultsByMatchId.set(update.id, { home: update.home, away: update.away });
     writes += 1;
     log(`Atualizado results/${update.id} -> ${update.home} x ${update.away} (${update.status}).`);
   }
