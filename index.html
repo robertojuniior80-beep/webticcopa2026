@@ -1682,6 +1682,7 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
     getAuth, onAuthStateChanged,
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
+    sendPasswordResetEmail,
     signOut
   } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
@@ -1836,6 +1837,10 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
 
   window.authLoginParticipant = async (email, password) => {
     return signInWithEmailAndPassword(auth, normalizeAuthEmail(email), password);
+  };
+
+  window.authResetParticipantPassword = async (email) => {
+    return sendPasswordResetEmail(auth, normalizeAuthEmail(email));
   };
 
   window.authLogoutParticipant = async () => {
@@ -2163,6 +2168,15 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
         <div class="input-group">
           <label for="auth-login-password">Senha</label>
           <input type="password" id="auth-login-password" class="input" placeholder="Sua senha" maxlength="60" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false">
+        </div>
+        <div style="display:flex;justify-content:flex-end">
+          <button type="button" class="btn btn-outline" style="padding:6px 10px;font-size:12px" onclick="openAuthModal('reset')">Esqueci minha senha</button>
+        </div>
+      </div>
+      <div id="auth-reset-fields" class="auth-modal-grid single" style="display:none">
+        <div class="input-group">
+          <label for="auth-reset-email">Email da conta</label>
+          <input type="email" id="auth-reset-email" class="input" placeholder="voce@email.com" maxlength="60" autocomplete="email" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="email">
         </div>
       </div>
       <div id="auth-register-fields" class="auth-modal-grid" style="display:none">
@@ -4051,6 +4065,20 @@ async function loginVisitorProfile() {
   }
 }
 
+async function resetVisitorPassword() {
+  const emailInput = document.getElementById('auth-reset-email');
+  const email = normalizeAuthEmail(emailInput?.value);
+  if (!email) return showToast('Informe o email da conta para redefinir a senha.');
+  try {
+    showToast('Enviando link de redefinicao...');
+    await window.authResetParticipantPassword(email);
+    closeAuthModal();
+    showToast('Enviamos um link de redefinicao para o seu email.');
+  } catch (error) {
+    showToast(getAuthErrorMessage(error));
+  }
+}
+
 function openAuthModal(mode='login'){
   authModalMode = mode;
   const modal=document.getElementById('auth-modal');
@@ -4058,14 +4086,23 @@ function openAuthModal(mode='login'){
   const submit=document.getElementById('auth-modal-submit');
   const note=document.getElementById('auth-modal-note');
   const loginFields=document.getElementById('auth-login-fields');
+  const resetFields=document.getElementById('auth-reset-fields');
   const registerFields=document.getElementById('auth-register-fields');
-  if(title) title.textContent = mode==='register' ? 'Criar conta' : 'Entrar';
-  if(submit) submit.textContent = mode==='register' ? 'Criar conta' : 'Entrar';
+  if(title) title.textContent = mode==='register' ? 'Criar conta' : (mode==='reset' ? 'Redefinir senha' : 'Entrar');
+  if(submit) submit.textContent = mode==='register' ? 'Criar conta' : (mode==='reset' ? 'Enviar link' : 'Entrar');
   if(note) note.textContent = mode==='register'
     ? 'Crie sua conta com email e senha para editar apenas os seus proprios palpites.'
-    : 'Entre com sua conta para salvar e editar apenas os seus palpites.';
+    : (mode==='reset'
+      ? 'Informe o email cadastrado para receber o link de redefinicao de senha.'
+      : 'Entre com sua conta para salvar e editar apenas os seus palpites.');
   if(loginFields) loginFields.style.display = mode==='login' ? 'grid' : 'none';
+  if(resetFields) resetFields.style.display = mode==='reset' ? 'grid' : 'none';
   if(registerFields) registerFields.style.display = mode==='register' ? 'grid' : 'none';
+  const loginEmailInput = document.getElementById('auth-login-email');
+  const resetEmailInput = document.getElementById('auth-reset-email');
+  if(mode==='reset' && resetEmailInput && loginEmailInput?.value && !resetEmailInput.value){
+    resetEmailInput.value = loginEmailInput.value;
+  }
   if(modal) modal.classList.add('show');
 }
 function closeAuthModal(){
@@ -4074,6 +4111,7 @@ function closeAuthModal(){
 }
 function submitAuthModal(){
   if(authModalMode==='register') return registerVisitorProfile();
+  if(authModalMode==='reset') return resetVisitorPassword();
   return loginVisitorProfile();
 }
 
@@ -4159,9 +4197,12 @@ function getAuthErrorMessage(error) {
   const code = error?.code || '';
   if (code === 'auth/email-already-in-use') return 'Esse email ja esta em uso. Cada conta aceita apenas um cadastro por email.';
   if (code === 'auth/invalid-email') return 'O email informado nao e valido.';
+  if (code === 'auth/missing-email') return 'Informe o email da conta.';
   if (code === 'auth/weak-password') return 'Escolha uma senha mais forte.';
   if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') return 'Email ou senha incorretos.';
   if (code === 'auth/too-many-requests') return 'Muitas tentativas. Aguarde um pouco e tente de novo.';
+  if (code === 'auth/network-request-failed') return 'Falha de conexao. Tente novamente em instantes.';
+  if (code === 'auth/missing-continue-uri' || code === 'auth/unauthorized-continue-uri') return 'Nao foi possivel enviar o link de redefinicao agora.';
   return 'Nao foi possivel concluir a autenticacao agora.';
 }
 
@@ -4172,6 +4213,7 @@ function updateVisitorProfileUI() {
   const heroSecondaryAction = document.getElementById('hero-secondary-action');
   const loginEmailInput = document.getElementById('auth-login-email');
   const loginPasswordInput = document.getElementById('auth-login-password');
+  const resetEmailInput = document.getElementById('auth-reset-email');
   const registerNameInput = document.getElementById('auth-register-name');
   const registerSurnameInput = document.getElementById('auth-register-surname');
   const registerEmailInput = document.getElementById('auth-register-email');
@@ -4188,6 +4230,7 @@ function updateVisitorProfileUI() {
     if (heroSecondaryAction) heroSecondaryAction.textContent = 'Entrar para ver classificacao';
     if (loginEmailInput) loginEmailInput.value = '';
     if (loginPasswordInput) loginPasswordInput.value = '';
+    if (resetEmailInput) resetEmailInput.value = '';
     if (registerNameInput) registerNameInput.value = '';
     if (registerSurnameInput) registerSurnameInput.value = '';
     if (registerEmailInput) registerEmailInput.value = '';
