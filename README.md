@@ -34,6 +34,8 @@ Projeto do bolao publicado no Firebase Hosting com autenticacao Firebase, dados 
 
 - o site oficial sai da pasta `public`
 - a `index.html` da raiz e mantida espelhada para edicao local
+- a pagina personalizada de acoes de conta fica em `public/auth-action.html`
+- no Firebase Console, ajuste `Authentication > Templates` para usar a action URL personalizada apontando para `/auth-action.html`
 - para validar a logica do sincronizador sem chamar a API:
 
 ```text
