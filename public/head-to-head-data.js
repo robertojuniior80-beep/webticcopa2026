@@ -77,6 +77,7 @@
     'Suecia': 'Sweden',
     'Suica': 'Switzerland',
     'Tunisia': 'Tunisia',
+    'Turkiye': 'Turkey',
     'Turquia': 'Turkey',
     'United States America': 'United States',
     'Uzbequistao': 'Uzbekistan',
