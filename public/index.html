@@ -1644,6 +1644,8 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
 .auth-modal-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-3)}
 .auth-modal-grid.single{grid-template-columns:1fr}
 .auth-modal-note{font-size:var(--text-xs);color:var(--color-text-muted);line-height:1.5;margin-top:var(--space-2)}
+.auth-inline-action{display:flex;justify-content:flex-end}
+.auth-inline-action .btn{min-height:40px}
 .textarea {
   width: 100%;
   height: 120px;
@@ -2170,7 +2172,7 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
           <label for="auth-login-password">Senha</label>
           <input type="password" id="auth-login-password" class="input" placeholder="Sua senha" maxlength="60" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false">
         </div>
-        <div style="display:flex;justify-content:flex-end">
+        <div class="auth-inline-action">
           <button type="button" class="btn btn-outline" style="padding:6px 10px;font-size:12px" onclick="openAuthModal('reset')">Esqueci minha senha</button>
         </div>
       </div>
