@@ -14,8 +14,11 @@ const API_FOOTBALL_BASE_URL = process.env.API_FOOTBALL_BASE_URL || 'https://v3.f
 const API_FOOTBALL_HOST = process.env.API_FOOTBALL_HOST || 'v3.football.api-sports.io';
 const DRY_RUN = process.argv.includes('--dry-run') || process.env.DRY_RUN === '1';
 const BRAZIL_TZ = 'America/Sao_Paulo';
-const FINAL_SYNC_GRACE_MS = Number(process.env.FINAL_SYNC_GRACE_MS || 2 * 60 * 60 * 1000);
+const FINAL_SYNC_GRACE_MS = Number(process.env.FINAL_SYNC_GRACE_MS || 3 * 60 * 60 * 1000);
 const MAX_DATES_PER_RUN = Math.max(1, Number(process.env.MAX_DATES_PER_RUN || 2));
+const HOT_RETRY_INTERVAL_MINUTES = Math.max(5, Number(process.env.HOT_RETRY_INTERVAL_MINUTES || 10));
+const HOT_RETRY_WINDOW_MS = Number(process.env.HOT_RETRY_WINDOW_MS || 2 * 60 * 60 * 1000);
+const COLD_RETRY_INTERVAL_MINUTES = Math.max(HOT_RETRY_INTERVAL_MINUTES, Number(process.env.COLD_RETRY_INTERVAL_MINUTES || 20));
 const STALE_RETRY_INTERVAL_HOURS = Math.max(1, Number(process.env.STALE_RETRY_INTERVAL_HOURS || 6));
 const STALE_MATCH_AGE_MS = Number(process.env.STALE_MATCH_AGE_MS || 24 * 60 * 60 * 1000);
 const ROOT_DIR = process.cwd();
@@ -284,6 +287,10 @@ function pickDatesToQuery(trackedMatches, existingResultsByMatchId){
   const nowMs = Date.now();
   const candidateDates = [];
   const shouldRetryStaleNow = now.minute < 15 && now.hour % STALE_RETRY_INTERVAL_HOURS === 0;
+  const isAlignedForRetry = (intervalMinutes) => {
+    if(intervalMinutes <= 0) return true;
+    return now.minute % intervalMinutes === 0;
+  };
 
   for(const match of trackedMatches){
     const existing = existingResultsByMatchId.get(match.id);
@@ -299,6 +306,12 @@ function pickDatesToQuery(trackedMatches, existingResultsByMatchId){
     const matchAgeMs = nowMs - kickoffMs;
     const isStale = matchAgeMs > STALE_MATCH_AGE_MS;
     if(isStale && !shouldRetryStaleNow) continue;
+    if(!isStale){
+      const retryIntervalMinutes = (nowMs - finalSyncReadyAt) <= HOT_RETRY_WINDOW_MS
+        ? HOT_RETRY_INTERVAL_MINUTES
+        : COLD_RETRY_INTERVAL_MINUTES;
+      if(!isAlignedForRetry(retryIntervalMinutes)) continue;
+    }
 
     candidateDates.push(match.isoDate);
   }
