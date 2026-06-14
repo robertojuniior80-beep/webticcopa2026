@@ -9,9 +9,11 @@
     return foldText(name)
       .replace(/^[^\p{L}\p{N}]+\s+/u,'')
       .replace(/\s*&\s*/g,' and ')
+      .replace(/[(),]/g,' ')
       .replace(/[.'’]/g,'')
       .replace(/\bof\b/gi,' ')
       .replace(/\bdemocratic republic of\b/gi,'DR')
+      .replace(/\bislamic republic of\b/gi,' ')
       .replace(/\s*-\s*/g,' ')
       .replace(/\s+/g,' ')
       .trim();
@@ -27,6 +29,8 @@
     'Belgica': 'Belgium',
     'Bosnia & Herzegovina': 'Bosnia and Herzegovina',
     'Bosnia And Herzegovina': 'Bosnia and Herzegovina',
+    'Bosnia Herz.': 'Bosnia and Herzegovina',
+    'Bosnia-Herzegovina': 'Bosnia and Herzegovina',
     'Bosnia Herz': 'Bosnia and Herzegovina',
     'Bosnia Herzegovina': 'Bosnia and Herzegovina',
     'Brasil': 'Brazil',
@@ -38,6 +42,7 @@
     'Colombia': 'Colombia',
     'Congo DR': 'DR Congo',
     'Coreia do Sul': 'South Korea',
+    'Coreia Republica': 'South Korea',
     'Cote DIvoire': 'Ivory Coast',
     'Cote dIvoire': 'Ivory Coast',
     'Croacia': 'Croatia',
@@ -60,10 +65,14 @@
     'Inglaterra': 'England',
     'Ira': 'Iran',
     'IR Iran': 'Iran',
+    'Iran Islamic Republic': 'Iran',
+    'Iran Islamic Republic Of': 'Iran',
     'Iraque': 'Iraq',
     'Jordania': 'Jordan',
     'Japao': 'Japan',
     'Korea Rep': 'South Korea',
+    'Korea South': 'South Korea',
+    'Korea Republic Of': 'South Korea',
     'Korea Republic': 'South Korea',
     'Marrocos': 'Morocco',
     'Mexico': 'Mexico',
@@ -78,11 +87,13 @@
     'Suica': 'Switzerland',
     'Tunisia': 'Tunisia',
     'Turkiye': 'Turkey',
+    'Turkey Turkiye': 'Turkey',
     'Turquia': 'Turkey',
     'United States America': 'United States',
     'Uzbequistao': 'Uzbekistan',
     'Uruguai': 'Uruguay',
     'USA': 'United States',
+    'USMNT': 'United States',
     'United States Of America': 'United States',
     'Czechia': 'Czech Republic'
   };
