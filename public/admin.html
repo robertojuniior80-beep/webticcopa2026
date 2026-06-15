@@ -676,7 +676,7 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   .input-group{width:100%}
   .tabs{width:100%}
   .tab{flex:1;text-align:center;padding:var(--space-2) var(--space-3);font-size:var(--text-xs)}
-  .score-table{min-width:560px}
+  .score-table{min-width:680px}
   .logo-sub{display:none}
   .hero{padding:var(--space-10) var(--space-4) var(--space-6)}
   .hero-logo{width:min(100%,420px);padding:var(--space-4);gap:var(--space-3)}
@@ -2030,7 +2030,7 @@ function calcScore(pid){
   return getPlayerRankingStats(pid).pts;
 }
 function getPlayerRankingStats(pid){
-  let exact=0,resOnly=0;
+  let exact=0,resOnly=0,wrong=0;
   const ids=getActiveMatchIds();
   for(const[mid,res]of Object.entries(results)){
     if(!ids.has(mid))continue;
@@ -2045,15 +2045,18 @@ function getPlayerRankingStats(pid){
     const rW=resHome>resAway?'H':resHome<resAway?'A':'D';
     const pW=palHome>palAway?'H':palHome<palAway?'A':'D';
     if(rW===pW)resOnly++;
+    else wrong++;
   }
   return {
     pts:(exact*3)+(resOnly*2),
     exact,
-    resOnly
+    resOnly,
+    wrong
   };
 }
 function compareRankingEntries(a,b){
   return (b.pts-a.pts)
+    || (a.wrong-b.wrong)
     || (b.exact-a.exact)
     || (b.resOnly-a.resOnly)
     || a.name.localeCompare(b.name,'pt-BR',{sensitivity:'base'});
@@ -2327,6 +2330,7 @@ function renderScoreboard(){
   let html=`<div class="score-table-wrap"><table class="score-table"><thead><tr>
     <th style="width:60px">#</th><th>Participante</th>
     <th class="score-num">Pontos</th>
+    <th class="score-num">Placares Errados</th>
     <th class="score-num">Placares Exatos</th>
     <th class="score-num">Resultados Corretos</th>
   </tr></thead><tbody>`;
@@ -2341,6 +2345,7 @@ function renderScoreboard(){
         <strong>${safeName}</strong>
       </div></td>
       <td class="score-num"><span class="score-pts">${p.pts}</span></td>
+      <td class="score-num">${p.wrong}</td>
       <td class="score-num">${p.exact}</td>
       <td class="score-num">${p.resOnly}</td>
     </tr>`;
