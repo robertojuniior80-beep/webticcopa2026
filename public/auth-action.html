@@ -9,6 +9,9 @@
   <meta name="theme-color" content="#07141d">
   <meta property="og:title" content="BolÃ£o do TI | AÃ§Ã£o de Conta">
   <meta name="twitter:title" content="BolÃ£o do TI | AÃ§Ã£o de Conta">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/app-icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/app-icon-192.png">
   <style>
     :root{
       --bg:#07111f;
@@ -415,6 +418,12 @@
         statusCopy.textContent = 'AÃ§Ã£o de conta nÃ£o reconhecida.';
         setFeedback('Esse link nÃ£o corresponde a uma aÃ§Ã£o suportada.', 'error');
         showInfoActions('Voltar ao bolÃ£o');
+    }
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      });
     }
   </script>
 </body>

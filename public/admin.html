@@ -9,6 +9,9 @@
 <meta name="theme-color" content="#07141d">
 <meta property="og:title" content="BolÃ£o do TI â€” AdministraÃ§Ã£o">
 <meta name="twitter:title" content="BolÃ£o do TI â€” AdministraÃ§Ã£o">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/app-icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/app-icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300..700&display=swap" rel="stylesheet">
@@ -2602,6 +2605,11 @@ window.setInterval(() => {
   updateAdminOverview();
 }, 30000);
 
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
 
 </script>
 </body>

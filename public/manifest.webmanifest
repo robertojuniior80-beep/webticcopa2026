@@ -1,0 +1,48 @@
+{
+  "id": "/",
+  "name": "Bolão do TI",
+  "short_name": "Bolão TI",
+  "description": "Bolão de palpites da Copa do Mundo para o time de TI.",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#07141d",
+  "theme_color": "#07141d",
+  "categories": ["sports", "entertainment"],
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "/app-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/app-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Ver Ranking",
+      "short_name": "Ranking",
+      "url": "/?source=pwa#ranking",
+      "icons": [
+        {
+          "src": "/app-icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}
