@@ -623,6 +623,8 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
 
 /* ===== SCOREBOARD ===== */
 .score-table{width:100%;border-collapse:collapse}
+.score-table-wrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.score-table .score-num,.score-table .score-date{text-align:right;white-space:nowrap}
 .score-table th{
   font-size:var(--text-xs);font-weight:700;text-transform:uppercase;
   letter-spacing:0.08em;color:var(--color-text-muted);
@@ -674,6 +676,7 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   .input-group{width:100%}
   .tabs{width:100%}
   .tab{flex:1;text-align:center;padding:var(--space-2) var(--space-3);font-size:var(--text-xs)}
+  .score-table{min-width:920px}
   .logo-sub{display:none}
   .hero{padding:var(--space-10) var(--space-4) var(--space-6)}
   .hero-logo{width:min(100%,420px);padding:var(--space-4);gap:var(--space-3)}
@@ -2398,17 +2401,35 @@ async function setPalpite(pid,mid,side,val){
 
 // ===== SCOREBOARD =====
 function recalcAll(){renderScoreboard();showToast('ClassificaÃ§Ã£o atualizada! ðŸ†');}
+function formatRankingSubmittedAt(timestamp){
+  if(!Number.isFinite(timestamp) || timestamp===Number.MAX_SAFE_INTEGER) return '-';
+  return new Intl.DateTimeFormat('pt-BR',{
+    day:'2-digit',
+    month:'2-digit',
+    hour:'2-digit',
+    minute:'2-digit',
+    hour12:false
+  }).format(new Date(timestamp));
+}
+function formatChampionTiebreak(value){
+  const champion=getActualChampionForCompetition();
+  if(!champion) return '-';
+  return value ? 'Sim' : 'NÃ£o';
+}
 function renderScoreboard(){
   const container=document.getElementById('scoreboard-container');
   if(players.length===0){container.innerHTML=`<div class="empty-state"><div class="empty-icon">ðŸ…</div><p style="font-weight:700;margin-bottom:var(--space-2);color:var(--color-text)">Adicione participantes primeiro</p></div>`;return;}
   const ranked=players
     .map(p=>({ ...p, ...getPlayerRankingStats(p.id) }))
     .sort(compareRankingEntries);
-  let html=`<table class="score-table"><thead><tr>
+  let html=`<div class="score-table-wrap"><table class="score-table"><thead><tr>
     <th style="width:60px">#</th><th>Participante</th>
-    <th style="text-align:right">Pontos</th>
-    <th style="text-align:right">â­ Exatos</th>
-    <th style="text-align:right">âœ“ Resultado</th>
+    <th class="score-num">Pontos</th>
+    <th class="score-num">Placares Exatos</th>
+    <th class="score-num">Resultados Corretos</th>
+    <th class="score-num">Erro de Gols</th>
+    <th class="score-num">Acertou CampeÃ£o</th>
+    <th class="score-date">Enviado em</th>
   </tr></thead><tbody>`;
   ranked.forEach((p,i)=>{
     const rank=i+1;
@@ -2420,12 +2441,15 @@ function renderScoreboard(){
         <div class="player-avatar" style="background:linear-gradient(135deg,${c1},${c2});width:32px;height:32px;font-size:var(--text-xs)">${initials(p.name)}</div>
         <strong>${safeName}</strong>
       </div></td>
-      <td style="text-align:right"><span class="score-pts">${p.pts}</span></td>
-      <td style="text-align:right;font-size:var(--text-sm)">${p.exact}</td>
-      <td style="text-align:right;font-size:var(--text-sm)">${p.resOnly}</td>
+      <td class="score-num"><span class="score-pts">${p.pts}</span></td>
+      <td class="score-num">${p.exact}</td>
+      <td class="score-num">${p.resOnly}</td>
+      <td class="score-num">${p.goalError}</td>
+      <td class="score-num">${formatChampionTiebreak(p.championHit)}</td>
+      <td class="score-date">${formatRankingSubmittedAt(p.firstGuessAt)}</td>
     </tr>`;
   });
-  html+='</tbody></table>';
+  html+='</tbody></table></div>';
   container.innerHTML=html;
 }
 
