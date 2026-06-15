@@ -422,7 +422,24 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch(() => {});
+        const currentCacheName = 'bolao-do-ti-v2-clean-20260615';
+        if ('caches' in window) {
+          caches.keys()
+            .then(keys => Promise.all(
+              keys
+                .filter(key => key.startsWith('bolao-do-ti-') && key !== currentCacheName)
+                .map(key => caches.delete(key))
+            ))
+            .catch(() => {});
+        }
+
+        navigator.serviceWorker.register('/sw.js?v=20260615-clean')
+          .then(registration => {
+            registration.update().catch(() => {});
+            const worker = registration.waiting || registration.active;
+            worker?.postMessage({ type: 'CLEAR_OLD_CACHES' });
+          })
+          .catch(() => {});
       });
     }
   </script>
