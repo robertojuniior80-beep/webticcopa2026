@@ -2023,7 +2023,7 @@ function getMatchDisplayState(match, kickoff, now=Date.now()){
   const res=results[match.id]||{home:'',away:'',isFinal:false};
   if(isResultFinal(res)) return 'finished';
   if(kickoff && kickoff.getTime() < now){
-    return (now - kickoff.getTime()) <= 4 * 60 * 60 * 1000 ? 'live' : 'awaiting';
+    return (now - kickoff.getTime()) <= 3 * 60 * 60 * 1000 ? 'live' : 'awaiting';
   }
   if(kickoff) return 'upcoming';
   return 'unscheduled';
