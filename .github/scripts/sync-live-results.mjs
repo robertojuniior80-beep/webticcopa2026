@@ -16,11 +16,6 @@ const DRY_RUN = process.argv.includes('--dry-run') || process.env.DRY_RUN === '1
 const BRAZIL_TZ = 'America/Sao_Paulo';
 const FINAL_SYNC_GRACE_MS = Number(process.env.FINAL_SYNC_GRACE_MS || 150 * 60 * 1000);
 const MAX_DATES_PER_RUN = Math.max(1, Number(process.env.MAX_DATES_PER_RUN || 2));
-const WORKFLOW_INTERVAL_MINUTES = Math.max(5, Number(process.env.WORKFLOW_INTERVAL_MINUTES || 10));
-const HOT_RETRY_INTERVAL_MINUTES = Math.max(5, Number(process.env.HOT_RETRY_INTERVAL_MINUTES || 10));
-const HOT_RETRY_WINDOW_MS = Number(process.env.HOT_RETRY_WINDOW_MS || 2 * 60 * 60 * 1000);
-const COLD_RETRY_INTERVAL_MINUTES = Math.max(HOT_RETRY_INTERVAL_MINUTES, Number(process.env.COLD_RETRY_INTERVAL_MINUTES || 20));
-const STALE_RETRY_INTERVAL_HOURS = Math.max(1, Number(process.env.STALE_RETRY_INTERVAL_HOURS || 6));
 const STALE_MATCH_AGE_MS = Number(process.env.STALE_MATCH_AGE_MS || 24 * 60 * 60 * 1000);
 const ROOT_DIR = process.cwd();
 let cachedFirestoreAccessToken = '';
@@ -285,7 +280,8 @@ function collectUnmatchedFinishedMatches(trackedMatches, fixturesByDate, now = D
 
 function pickDatesToQuery(trackedMatches, existingResultsByMatchId){
   const nowMs = Date.now();
-  const candidateDates = [];
+  const hotDates = new Map();
+  const staleDates = new Map();
 
   for(const match of trackedMatches){
     const existing = existingResultsByMatchId.get(match.id);
@@ -299,30 +295,27 @@ function pickDatesToQuery(trackedMatches, existingResultsByMatchId){
     if(nowMs < finalSyncReadyAt) continue;
 
     const matchAgeMs = nowMs - kickoffMs;
-    const isStale = matchAgeMs > STALE_MATCH_AGE_MS;
-    if(isStale){
-      const elapsedSinceStaleMs = Math.max(0, matchAgeMs - STALE_MATCH_AGE_MS);
-      const staleRetryMinutes = STALE_RETRY_INTERVAL_HOURS * 60;
-      const stride = Math.max(1, Math.round(staleRetryMinutes / WORKFLOW_INTERVAL_MINUTES));
-      const runBucket = Math.floor(elapsedSinceStaleMs / (WORKFLOW_INTERVAL_MINUTES * 60 * 1000));
-      if(runBucket % stride !== 0) continue;
-    } else {
-      const elapsedSinceReadyMs = Math.max(0, nowMs - finalSyncReadyAt);
-      const retryIntervalMinutes = elapsedSinceReadyMs <= HOT_RETRY_WINDOW_MS
-        ? HOT_RETRY_INTERVAL_MINUTES
-        : COLD_RETRY_INTERVAL_MINUTES;
-      const stride = Math.max(1, Math.round(retryIntervalMinutes / WORKFLOW_INTERVAL_MINUTES));
-      const runBucket = Math.floor(elapsedSinceReadyMs / (WORKFLOW_INTERVAL_MINUTES * 60 * 1000));
-      if(runBucket % stride !== 0) continue;
+    const bucket = matchAgeMs > STALE_MATCH_AGE_MS ? staleDates : hotDates;
+    const current = bucket.get(match.isoDate);
+    if(!current){
+      bucket.set(match.isoDate, {
+        isoDate: match.isoDate,
+        oldestKickoffMs: kickoffMs,
+        unresolvedMatches: 1
+      });
+      continue;
     }
 
-    candidateDates.push(match.isoDate);
+    current.oldestKickoffMs = Math.min(current.oldestKickoffMs, kickoffMs);
+    current.unresolvedMatches += 1;
   }
 
-  return [...new Set(candidateDates)]
-    .sort((a, b) => b.localeCompare(a))
-    .slice(0, MAX_DATES_PER_RUN)
-    .sort();
+  const rankDates = items => items
+    .sort((a, b) => a.oldestKickoffMs - b.oldestKickoffMs || b.unresolvedMatches - a.unresolvedMatches || a.isoDate.localeCompare(b.isoDate))
+    .map(item => item.isoDate);
+
+  return [...rankDates([...hotDates.values()]), ...rankDates([...staleDates.values()])]
+    .slice(0, MAX_DATES_PER_RUN);
 }
 
 async function fetchApiFootballFixtures(isoDate){
