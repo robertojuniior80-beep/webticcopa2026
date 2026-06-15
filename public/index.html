@@ -218,7 +218,7 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   background:
     linear-gradient(180deg, var(--hero-bg-1), var(--hero-bg-2)),
     var(--copa-black);
-  padding:var(--space-12) var(--space-4) calc(var(--space-12) + 28px);
+  padding:var(--space-10) var(--space-4) var(--space-8);
   text-align:left;
   border-bottom:1px solid var(--color-divider);
 }
@@ -234,7 +234,7 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
 .hero-shell{
   position:relative;
   z-index:1;
-  width:min(860px,100%);
+  width:min(960px,100%);
   margin:0 auto;
   display:block;
 }
@@ -826,56 +826,6 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
 .rule-text .rule-highlight{display:block;margin-top:6px;color:#7ee2c6;font-weight:700}
 .hero-side-top{display:flex;flex-direction:column;gap:var(--hero-card-gap);height:100%}
 .hero-main-column{display:flex;flex-direction:column;gap:var(--hero-card-gap);min-width:0;height:100%}
-.pix-box{
-  background:
-    linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.025)),
-    radial-gradient(circle at top right, rgba(245,200,0,.12), transparent 46%);
-  border:1px solid rgba(245,200,0,.28);
-  border-radius:var(--radius-xl);
-  padding:var(--hero-card-padding);
-  box-shadow:0 14px 32px rgba(0,0,0,.28),0 0 0 1px rgba(245,200,0,.05) inset;
-  backdrop-filter:blur(10px);
-  box-sizing:border-box;
-  display:flex;
-  flex-direction:column;
-  gap:var(--hero-card-gap);
-}
-.pix-box-meta{display:flex;flex-direction:column;gap:4px;margin-bottom:0}
-.pix-box-label{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--copa-gold)}
-.pix-box-value{font-size:var(--text-sm);font-weight:700;color:var(--color-text);line-height:1.4;word-break:break-word}
-.pix-box-help{font-size:var(--text-xs);color:var(--color-text-muted);line-height:1.5}
-.pix-qr-wrap{
-  display:grid;
-  place-items:center;
-  padding:12px;
-  border-radius:18px;
-  background:rgba(7,15,24,.34);
-  border:1px solid rgba(255,255,255,.05);
-  margin-bottom:0;
-}
-.pix-qr{
-  width:min(100%,180px);
-  aspect-ratio:1;
-  border-radius:16px;
-  background:#fff;
-  padding:10px;
-  object-fit:contain;
-}
-.pix-copy{
-  width:100%;
-  justify-content:center;
-  margin-top:0;
-}
-.pix-total{
-  margin-top:auto;
-  padding:10px 12px;
-  border-radius:14px;
-  background:rgba(245,200,0,.08);
-  border:1px solid rgba(245,200,0,.14);
-  font-size:var(--text-xs);
-  color:var(--color-text);
-  line-height:1.5;
-}
 
 /* ===== SECTION ===== */
 .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-6);gap:var(--space-4);flex-wrap:wrap}
@@ -1274,7 +1224,6 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   .leaders-bubble-item{grid-template-columns:auto 1fr auto;gap:10px}
   .leaders-bubble-name{white-space:normal !important;word-break:break-word}
   .rules-box{padding:var(--space-3)}
-  .pix-box{padding:var(--space-3)}
   .rule-item{padding:10px 12px;border-radius:14px;flex-direction:column;align-items:stretch}
   .rule-icon{min-width:0;width:fit-content}
   .rule-text .rule-highlight{word-break:break-word}
@@ -1341,10 +1290,10 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   .floating-banner-actions .btn{width:100%;justify-content:center}
 }
 .hero-panels{
-  width:min(1120px,calc(100% - 32px));
-  margin:var(--space-5) auto 0;
+  width:min(1040px,calc(100% - 32px));
+  margin:var(--space-4) auto 0;
   display:grid;
-  grid-template-columns:minmax(0,1.45fr) minmax(300px,.78fr);
+  grid-template-columns:minmax(0,1.35fr) minmax(300px,.85fr);
   align-items:stretch;
   gap:var(--space-4);
   position:relative;
@@ -1511,8 +1460,7 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   flex-direction:column;
   gap:var(--hero-card-gap);
 }
-.hero-side-top > .rules-box,
-.hero-side-top > .pix-box{flex:1 1 0}
+.hero-side-top > .rules-box{flex:1 1 0}
 .leaders-bubble-header{
   display:flex;
   align-items:flex-start;
@@ -2053,27 +2001,6 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
         </div>
       </div>
 
-      <aside class="pix-box" aria-label="Pagamento via Pix">
-        <div class="panel-heading">
-          <span class="panel-kicker">Entrada confirmada</span>
-          <h3>Pagamento Pix</h3>
-          <p class="panel-copy">Use o QR Code ou a chave copia e cola para validar sua participacao e entrar oficialmente na disputa.</p>
-        </div>
-        <div class="pix-box-meta">
-          <span class="pix-box-label">ParticipaÃ§Ã£o individual</span>
-          <span class="pix-box-value" id="pix-entry-fee">R$ 10,00</span>
-          <span class="pix-box-help">Pagamento simples, rapido e com acompanhamento da arrecadacao prevista.</span>
-        </div>
-        <div class="pix-qr-wrap">
-          <img id="pix-qr-image" class="pix-qr" alt="QR Code Pix para pagamento da participaÃ§Ã£o" loading="lazy">
-        </div>
-        <div class="pix-box-meta">
-          <span class="pix-box-label">Chave Pix</span>
-          <span class="pix-box-value" id="pix-key-value">robertojuniior80@gmail.com</span>
-        </div>
-        <button class="btn btn-outline pix-copy" type="button" onclick="copyPixPayload()">Copiar Pix copia e cola</button>
-        <div class="pix-total" id="pix-total-live">0 participantes confirmados â€¢ arrecadaÃ§Ã£o prevista R$ 0,00</div>
-      </aside>
     </div>
   </div>
 </section>
@@ -2408,10 +2335,6 @@ const LOCK_WINDOW_MINUTES = 60;
 const LIVE_STATUS_WINDOW_MS = 3 * 60 * 60 * 1000;
 const ENTRY_FEE = 10;
 const PRIZE_SPLIT = { first: 0.7, second: 0.2, third: 0.1 };
-const PIX_KEY = 'robertojuniior80@gmail.com';
-const PIX_MERCHANT_NAME = 'INFRA BETS';
-const PIX_MERCHANT_CITY = 'BRASILIA';
-const PIX_TXID = 'BOLAO2026';
 const COMPETITIONS = {
   worldcup: {
     key: 'worldcup',
@@ -2919,68 +2842,8 @@ function avatarGrad(name){let h=0;for(let c of name)h=(h*31+c.charCodeAt(0))&0xf
 function formatCurrency(value){
   return Number(value||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 }
-function emvField(id,value){
-  const str=String(value ?? '');
-  return `${id}${String(str.length).padStart(2,'0')}${str}`;
-}
-function normalizePixText(value,maxLength){
-  return (value||'')
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g,'')
-    .replace(/[^A-Za-z0-9 .,\-]/g,'')
-    .toUpperCase()
-    .slice(0,maxLength);
-}
 function normalizeAuthEmail(value){
   return String(value||'').trim().toLowerCase();
-}
-function crc16(payload){
-  let crc=0xFFFF;
-  for(let i=0;i<payload.length;i++){
-    crc ^= payload.charCodeAt(i) << 8;
-    for(let j=0;j<8;j++){
-      crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) : (crc << 1);
-      crc &= 0xFFFF;
-    }
-  }
-  return crc.toString(16).toUpperCase().padStart(4,'0');
-}
-function buildPixPayload(){
-  const merchantAccount = emvField('00','BR.GOV.BCB.PIX') + emvField('01',PIX_KEY);
-  const amount = ENTRY_FEE.toFixed(2);
-  const payload =
-    emvField('00','01') +
-    emvField('26',merchantAccount) +
-    emvField('52','0000') +
-    emvField('53','986') +
-    emvField('54',amount) +
-    emvField('58','BR') +
-    emvField('59',normalizePixText(PIX_MERCHANT_NAME,25)) +
-    emvField('60',normalizePixText(PIX_MERCHANT_CITY,15)) +
-    emvField('62',emvField('05',PIX_TXID)) +
-    '6304';
-  return `${payload}${crc16(payload)}`;
-}
-function updatePixPaymentBubble(){
-  const qr=document.getElementById('pix-qr-image');
-  const fee=document.getElementById('pix-entry-fee');
-  const total=document.getElementById('pix-total-live');
-  if(fee)fee.textContent=formatCurrency(ENTRY_FEE);
-  if(total)total.textContent=localPlayerId
-    ? `${players.length} participante${players.length!==1?'s':''} confirmados â€¢ arrecadaÃ§Ã£o prevista ${formatCurrency(players.length*ENTRY_FEE)}`
-    : 'Entre com sua conta para ver participantes confirmados e arrecadaÃ§Ã£o atual.';
-  if(qr){
-    const payload=buildPixPayload();
-    qr.src=`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(payload)}`;
-  }
-}
-async function copyPixPayload(){
-  try{
-    await navigator.clipboard.writeText(buildPixPayload());
-    showToast('Pix copia e cola copiado.');
-  }catch(error){
-    showToast('Nao foi possivel copiar o Pix agora.');
-  }
 }
 function updatePrizePoolRule(){
   const el=document.getElementById('rules-prize-live');
@@ -3565,7 +3428,6 @@ function updateUpcomingMatchesBubble(){
 function renderPlayers(){
   const grid=document.getElementById('players-grid');
   updatePrizePoolRule();
-  updatePixPaymentBubble();
   if(players.length===0){grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">ðŸ‘¥</div><p style="font-weight:700;margin-bottom:var(--space-2);color:var(--color-text)">Nenhum participante ainda</p><p style="font-size:var(--text-sm)">Adicione participantes para comeÃ§ar o bolÃ£o!</p></div>`;return;}
   const finishedGames=getCompetitionFinishedGamesCount();
   grid.innerHTML=players.map(p=>{
