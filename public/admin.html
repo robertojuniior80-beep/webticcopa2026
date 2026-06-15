@@ -2022,7 +2022,9 @@ function getMatchHeadToHead(match, competitionKey=activeCompetitionKey){
 function getMatchDisplayState(match, kickoff, now=Date.now()){
   const res=results[match.id]||{home:'',away:'',isFinal:false};
   if(isResultFinal(res)) return 'finished';
-  if(kickoff && kickoff.getTime() < now) return 'live';
+  if(kickoff && kickoff.getTime() < now){
+    return (now - kickoff.getTime()) <= 4 * 60 * 60 * 1000 ? 'live' : 'awaiting';
+  }
   if(kickoff) return 'upcoming';
   return 'unscheduled';
 }
@@ -2031,6 +2033,7 @@ function getMatchStatusMeta(match){
   const state=getMatchDisplayState(match, kickoff);
   if(state==='finished') return { className:'final', label:'âœ“ Final' };
   if(state==='live') return { className:'live', label:'Ao vivo' };
+  if(state==='awaiting') return { className:'pending', label:'Aguardando resultado' };
   return { className:'pending', label:'Pendente' };
 }
 function renderMatchCard(m){

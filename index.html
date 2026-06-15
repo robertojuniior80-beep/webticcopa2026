@@ -2384,6 +2384,7 @@ const ACTIVE_PHASES = [
 const DEFAULT_MATCH_YEAR = 2026;
 const DEFAULT_MATCH_HOUR = 12;
 const LOCK_WINDOW_MINUTES = 60;
+const LIVE_STATUS_WINDOW_MS = 4 * 60 * 60 * 1000;
 const ENTRY_FEE = 10;
 const PRIZE_SPLIT = { first: 0.7, second: 0.2, third: 0.1 };
 const PIX_KEY = 'robertojuniior80@gmail.com';
@@ -3556,7 +3557,9 @@ function hasFinishedResult(match){
 function getMatchDisplayState(match, kickoff, now=Date.now()){
   const res=results[match.id]||{home:'',away:'',isFinal:false};
   if(isResultFinal(res)) return 'finished';
-  if(kickoff && kickoff.getTime() < now) return 'live';
+  if(kickoff && kickoff.getTime() < now){
+    return (now - kickoff.getTime()) <= LIVE_STATUS_WINDOW_MS ? 'live' : 'awaiting';
+  }
   if(kickoff) return 'upcoming';
   return 'unscheduled';
 }
@@ -3565,6 +3568,7 @@ function getMatchStatusMeta(match){
   const state=getMatchDisplayState(match, kickoff);
   if(state==='finished') return { className:'final', label:'âœ“ Final' };
   if(state==='live') return { className:'live', label:'Ao vivo' };
+  if(state==='awaiting') return { className:'pending', label:'Aguardando resultado' };
   return { className:'pending', label:'Pendente' };
 }
 function renderMatches(){
