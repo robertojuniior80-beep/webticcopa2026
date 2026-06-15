@@ -1678,7 +1678,7 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import {
     getFirestore, doc, collection,
-    setDoc, updateDoc, deleteDoc, getDoc, onSnapshot
+    setDoc, deleteDoc, getDoc, onSnapshot
   } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
   import {
     getAuth, onAuthStateChanged,
@@ -1787,7 +1787,10 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
 
   // ---- OperaÃ§Ãµes Firestore expostas globalmente ----
   window.fsAddPlayer = async (id, name) => {
-    await setDoc(doc(db, "players", id), { name });
+    const ref = doc(db, "players", id);
+    const snap = await getDoc(ref);
+    const current = snap.exists() ? sanitizePlayerEntry(id, snap.data()) : null;
+    await setDoc(ref, { name, createdAt: current?.createdAt || Date.now() }, { merge: true });
     await setDoc(doc(db, "palpites", id), {});
   };
 
@@ -1798,13 +1801,9 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
 
   window.fsSetPalpite = async (pid, mid, side, val) => {
     const ref = doc(db, "palpites", pid);
-    try {
-      await updateDoc(ref, { [`${mid}.${side}`]: val });
-    } catch (error) {
-      if (error?.code !== 'not-found') throw error;
-      await setDoc(ref, { [mid]: { home: '', away: '' } }, { merge: true });
-      await updateDoc(ref, { [`${mid}.${side}`]: val });
-    }
+    const snap = await getDoc(ref);
+    const data = snap.exists() ? snap.data() : {};
+    await setDoc(ref, buildPalpitePayload(data, mid, side, val));
   };
 
   window.fsSetResult = async (mid, home, away) => {
@@ -1816,16 +1815,29 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   window.fsRegisterParticipant = async (id, name) => {
     const cleanName = typeof name === 'string' ? name.trim() : '';
     if (!cleanName) throw new Error('Nome invalido.');
-    await setDoc(doc(db, "players", id), { name: cleanName, role: 'participant' }, { merge: true });
+    const playerRef = doc(db, "players", id);
+    const playerSnap = await getDoc(playerRef);
+    const current = playerSnap.exists() ? sanitizePlayerEntry(id, playerSnap.data()) : null;
+    await setDoc(playerRef, { name: cleanName, role: 'participant', createdAt: current?.createdAt || Date.now() }, { merge: true });
     const ref = doc(db, "palpites", id);
     const snap = await getDoc(ref);
     if (!snap.exists()) await setDoc(ref, {});
   };
 
   window.fsSetPollVote = async (competitionKey, playerId, winner) => {
-    const payload = sanitizePollVoteEntry({ competitionKey, playerId, winner });
+    const ref = doc(db, "pollVotes", `${competitionKey}__${playerId}`);
+    const snap = await getDoc(ref);
+    const current = snap.exists() ? sanitizePollVoteEntry(snap.data()) : null;
+    const now = Date.now();
+    const payload = sanitizePollVoteEntry({
+      competitionKey,
+      playerId,
+      winner,
+      firstSubmittedAt: current?.firstSubmittedAt || now,
+      updatedAt: now
+    });
     if (!payload) throw new Error('Voto invalido.');
-    await setDoc(doc(db, "pollVotes", `${competitionKey}__${playerId}`), payload);
+    await setDoc(ref, payload);
   };
 
   window.fsGetPlayerProfile = async (id) => {
@@ -2401,6 +2413,7 @@ const COMPETITIONS = {
     description: '',
     startAt: new Date('2026-06-11T16:00:00-03:00'),
     countdownNote: 'Contagem ate a abertura oficial em 11/06/2026, as 16h de Brasilia.',
+    actualChampion: '',
     year: 2026,
     matches: WORLDCUP_MATCHES_BRASILIA,
     phases: ACTIVE_PHASES
@@ -2544,6 +2557,36 @@ function sanitizeGuessValue(value){
   if(text === '') return '';
   return /^\d{1,2}$/.test(text) ? text : null;
 }
+function normalizeTimestampMs(value){
+  if(typeof value === 'number' && Number.isFinite(value) && value > 0) return Math.trunc(value);
+  if(value && typeof value.toMillis === 'function'){
+    const ms = value.toMillis();
+    return Number.isFinite(ms) && ms > 0 ? Math.trunc(ms) : null;
+  }
+  return null;
+}
+function sanitizeGuessMeta(data){
+  if(!data || typeof data !== 'object') return null;
+  const firstSubmittedAt = normalizeTimestampMs(data.firstSubmittedAt);
+  const rawMatchTimestamps = data.matchTimestamps && typeof data.matchTimestamps === 'object' ? data.matchTimestamps : {};
+  const matchTimestamps = {};
+  for(const [matchId, entry] of Object.entries(rawMatchTimestamps)){
+    if(!/^[A-Za-z0-9_-]{2,40}$/.test(matchId)) continue;
+    if(!entry || typeof entry !== 'object') continue;
+    const first = normalizeTimestampMs(entry.firstSubmittedAt);
+    const updated = normalizeTimestampMs(entry.updatedAt);
+    if(first || updated){
+      matchTimestamps[matchId] = {};
+      if(first) matchTimestamps[matchId].firstSubmittedAt = first;
+      if(updated) matchTimestamps[matchId].updatedAt = updated;
+    }
+  }
+  if(!firstSubmittedAt && !Object.keys(matchTimestamps).length) return null;
+  const meta = {};
+  if(firstSubmittedAt) meta.firstSubmittedAt = firstSubmittedAt;
+  if(Object.keys(matchTimestamps).length) meta.matchTimestamps = matchTimestamps;
+  return meta;
+}
 
 function sanitizePalpiteDocument(data){
   const raw = data && typeof data === 'object' ? data : {};
@@ -2557,6 +2600,8 @@ function sanitizePalpiteDocument(data){
     if(home === '' && away === '') continue;
     sanitized[matchId] = { home, away };
   }
+  const meta = sanitizeGuessMeta(raw._meta);
+  if(meta) sanitized._meta = meta;
   return sanitized;
 }
 
@@ -2565,11 +2610,16 @@ function sanitizePollVoteEntry(data){
   if(!isValidCompetitionKey(data.competitionKey)) return null;
   if(typeof data.playerId !== 'string' || !data.playerId.trim()) return null;
   if(!isValidPollWinner(data.winner)) return null;
-  return {
+  const firstSubmittedAt = normalizeTimestampMs(data.firstSubmittedAt);
+  const updatedAt = normalizeTimestampMs(data.updatedAt);
+  const sanitized = {
     competitionKey: data.competitionKey,
     playerId: data.playerId,
     winner: data.winner.trim()
   };
+  if(firstSubmittedAt) sanitized.firstSubmittedAt = firstSubmittedAt;
+  if(updatedAt) sanitized.updatedAt = updatedAt;
+  return sanitized;
 }
 
 function sanitizeResultsEntry(data){
@@ -2584,8 +2634,9 @@ function sanitizePlayerEntry(id, data){
   if(!data || typeof data !== 'object') return null;
   const name = typeof data.name === 'string' ? data.name.trim() : '';
   const role = data.role === 'admin' ? 'admin' : 'participant';
+  const createdAt = normalizeTimestampMs(data.createdAt);
   if(!name) return null;
-  return { id, name, role };
+  return { id, name, role, createdAt };
 }
 
 function sanitizePlayerCollection(rawPlayers){
@@ -2635,12 +2686,37 @@ function buildPalpitePayload(existingData, mid, side, val){
     throw new Error('Palpite invalido.');
   }
   const data = sanitizePalpiteDocument(existingData);
+  const meta = data._meta || sanitizeGuessMeta(existingData?._meta) || {};
+  delete data._meta;
   const current = data[mid] || { home: '', away: '' };
+  const now = Date.now();
   current[cleanSide] = cleanValue;
   if(current.home === '' && current.away === ''){
     delete data[mid];
   } else {
     data[mid] = current;
+    const matchTimestamps = { ...(meta.matchTimestamps || {}) };
+    const existingMatchMeta = matchTimestamps[mid] || {};
+    matchTimestamps[mid] = {
+      firstSubmittedAt: existingMatchMeta.firstSubmittedAt || now,
+      updatedAt: now
+    };
+    meta.matchTimestamps = matchTimestamps;
+  }
+  const matchTimestamps = meta.matchTimestamps || {};
+  for(const key of Object.keys(matchTimestamps)){
+    if(!data[key]) delete matchTimestamps[key];
+  }
+  if(Object.keys(matchTimestamps).length){
+    meta.matchTimestamps = matchTimestamps;
+    const firstTimes = Object.values(matchTimestamps).map(entry=>entry.firstSubmittedAt || entry.updatedAt).filter(Boolean);
+    if(firstTimes.length) meta.firstSubmittedAt = Math.min(...firstTimes);
+  } else {
+    delete meta.matchTimestamps;
+    delete meta.firstSubmittedAt;
+  }
+  if(meta.firstSubmittedAt || meta.matchTimestamps){
+    data._meta = meta;
   }
   return data;
 }
@@ -2753,6 +2829,29 @@ function getCompetitionVotes(competitionKey=activeCompetitionKey){
 function getLocalCompetitionVote(competitionKey=activeCompetitionKey){
   if(!localPlayerId)return null;
   return getCompetitionVotes(competitionKey).find(v=>v.playerId===localPlayerId) || null;
+}
+function getPlayerCompetitionVote(playerId, competitionKey=activeCompetitionKey){
+  return getCompetitionVotes(competitionKey).find(v=>v.playerId===playerId) || null;
+}
+function getActualChampionForCompetition(competition=getActiveCompetition()){
+  return typeof competition?.actualChampion === 'string' ? competition.actualChampion.trim() : '';
+}
+function getLegacyPlayerTimestamp(id){
+  const match = /^p(\d{10,})$/.exec(id || '');
+  return match ? Number(match[1]) : null;
+}
+function getPlayerFirstGuessAt(pid){
+  const palpiteMeta = palpites[pid]?._meta;
+  const matchTimestamps = palpiteMeta?.matchTimestamps || {};
+  const ids = getActiveMatchIds();
+  const guessTimes = Object.entries(matchTimestamps)
+    .filter(([mid])=>ids.has(mid))
+    .map(([,entry])=>entry?.firstSubmittedAt || entry?.updatedAt)
+    .filter(ts=>Number.isFinite(ts) && ts > 0);
+  if(guessTimes.length) return Math.min(...guessTimes);
+  const player = players.find(entry=>entry.id===pid);
+  const fallback = player?.createdAt || getLegacyPlayerTimestamp(pid);
+  return Number.isFinite(fallback) && fallback > 0 ? fallback : Number.MAX_SAFE_INTEGER;
 }
 function updateCompetitionHero(){
   const competition=getActiveCompetition();
@@ -3349,6 +3448,8 @@ function calcScore(pid){
 function getPlayerRankingStats(pid){
   let exact=0,resOnly=0,goalError=0;
   const ids=getActiveMatchIds();
+  const competition = getActiveCompetition();
+  const actualChampion = getActualChampionForCompetition(competition);
   for(const[mid,res]of Object.entries(results)){
     if(!ids.has(mid))continue;
     if(!isResultFinal(res))continue;
@@ -3364,13 +3465,23 @@ function getPlayerRankingStats(pid){
     const pW=palHome>palAway?'H':palHome<palAway?'A':'D';
     if(rW===pW)resOnly++;
   }
-  return {pts:(exact*3)+(resOnly*2),exact,resOnly,goalError};
+  const championHit = actualChampion && getPlayerCompetitionVote(pid, competition.key)?.winner === actualChampion ? 1 : 0;
+  return {
+    pts:(exact*3)+(resOnly*2),
+    exact,
+    resOnly,
+    goalError,
+    championHit,
+    firstGuessAt:getPlayerFirstGuessAt(pid)
+  };
 }
 function compareRankingEntries(a,b){
   return (b.pts-a.pts)
     || (b.exact-a.exact)
     || (b.resOnly-a.resOnly)
     || (a.goalError-b.goalError)
+    || (b.championHit-a.championHit)
+    || (a.firstGuessAt-b.firstGuessAt)
     || a.name.localeCompare(b.name,'pt-BR',{sensitivity:'base'});
 }
 function hasSameRankingCriteria(a,b){
@@ -3378,7 +3489,9 @@ function hasSameRankingCriteria(a,b){
     && a.pts===b.pts
     && a.exact===b.exact
     && a.resOnly===b.resOnly
-    && a.goalError===b.goalError;
+    && a.goalError===b.goalError
+    && a.championHit===b.championHit
+    && a.firstGuessAt===b.firstGuessAt;
 }
 function updateLiveLeadersBubble(){
   const bubble=document.getElementById('leaders-bubble');
