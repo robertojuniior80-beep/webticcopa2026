@@ -14,7 +14,7 @@ Projeto do bolao publicado no Firebase Hosting com autenticacao Firebase, dados 
 
 1. O workflow roda a cada 10 minutos.
 2. Consulta apenas partidas sem resultado no Firestore cujo horario ja passou de 3 horas apos o inicio da partida.
-3. Faz tentativas mais rapidas nas primeiras horas apos o fim esperado do jogo e desacelera depois para economizar cota da API.
+3. Faz tentativas a cada execucao do workflow nas primeiras horas apos a janela de fechamento e desacelera depois para economizar cota da API.
 4. Limita a quantidade de datas consultadas por execucao para economizar cota da API.
 5. Partidas antigas sem resultado entram em nova tentativa apenas em janelas espaçadas de backfill.
 6. Atualiza apenas resultados finais em `results/{matchId}`.
