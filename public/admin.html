@@ -2330,9 +2330,9 @@ function renderScoreboard(){
   let html=`<div class="score-table-wrap"><table class="score-table"><thead><tr>
     <th style="width:60px">#</th><th>Participante</th>
     <th class="score-num">Pontos</th>
-    <th class="score-num">Placares Errados</th>
     <th class="score-num">Placares Exatos</th>
     <th class="score-num">Resultados Corretos</th>
+    <th class="score-num">Placares Errados</th>
   </tr></thead><tbody>`;
   ranked.forEach((p,i)=>{
     const rank=i+1;
@@ -2345,9 +2345,9 @@ function renderScoreboard(){
         <strong>${safeName}</strong>
       </div></td>
       <td class="score-num"><span class="score-pts">${p.pts}</span></td>
-      <td class="score-num">${p.wrong}</td>
       <td class="score-num">${p.exact}</td>
       <td class="score-num">${p.resOnly}</td>
+      <td class="score-num">${p.wrong}</td>
     </tr>`;
   });
   html+='</tbody></table></div>';
