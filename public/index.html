@@ -1279,7 +1279,7 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   .palpite-help-highlight{width:100%}
   .palpite-actions{display:grid;grid-template-columns:1fr}
   .palpites-grid,.palpites-other-grid{grid-template-columns:1fr}
-  .score-table{min-width:920px}
+  .score-table{min-width:800px}
   .modal-content{width:min(calc(100% - 24px),500px);max-height:calc(100dvh - 24px);overflow:auto;padding:var(--space-5)}
   .modal-actions{flex-direction:column-reverse}
   .auth-modal-grid{grid-template-columns:1fr}
@@ -3990,11 +3990,6 @@ function formatRankingSubmittedAt(timestamp){
     hour12:false
   }).format(new Date(timestamp));
 }
-function formatChampionTiebreak(value){
-  const champion=getActualChampionForCompetition();
-  if(!champion) return '-';
-  return value ? 'Sim' : 'NÃ£o';
-}
 function renderScoreboard(){
   const container=document.getElementById('scoreboard-container');
   if(players.length===0){container.innerHTML=`<div class="empty-state"><div class="empty-icon">ðŸ…</div><p style="font-weight:700;margin-bottom:var(--space-2);color:var(--color-text)">Adicione participantes primeiro</p></div>`;return;}
@@ -4007,7 +4002,6 @@ function renderScoreboard(){
     <th class="score-num">Placares Exatos</th>
     <th class="score-num">Resultados Corretos</th>
     <th class="score-num">Menor diferenÃ§a de gols</th>
-    <th class="score-num">Acertou CampeÃ£o</th>
     <th class="score-date">Enviado em</th>
   </tr></thead><tbody>`;
   ranked.forEach((p,i)=>{
@@ -4024,7 +4018,6 @@ function renderScoreboard(){
       <td class="score-num">${p.exact}</td>
       <td class="score-num">${p.resOnly}</td>
       <td class="score-num">${p.goalError}</td>
-      <td class="score-num">${formatChampionTiebreak(p.championHit)}</td>
       <td class="score-date">${formatRankingSubmittedAt(p.firstGuessAt)}</td>
     </tr>`;
   });

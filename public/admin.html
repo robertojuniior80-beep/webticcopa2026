@@ -676,7 +676,7 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   .input-group{width:100%}
   .tabs{width:100%}
   .tab{flex:1;text-align:center;padding:var(--space-2) var(--space-3);font-size:var(--text-xs)}
-  .score-table{min-width:920px}
+  .score-table{min-width:800px}
   .logo-sub{display:none}
   .hero{padding:var(--space-10) var(--space-4) var(--space-6)}
   .hero-logo{width:min(100%,420px);padding:var(--space-4);gap:var(--space-3)}
@@ -2411,11 +2411,6 @@ function formatRankingSubmittedAt(timestamp){
     hour12:false
   }).format(new Date(timestamp));
 }
-function formatChampionTiebreak(value){
-  const champion=getActualChampionForCompetition();
-  if(!champion) return '-';
-  return value ? 'Sim' : 'NÃ£o';
-}
 function renderScoreboard(){
   const container=document.getElementById('scoreboard-container');
   if(players.length===0){container.innerHTML=`<div class="empty-state"><div class="empty-icon">ðŸ…</div><p style="font-weight:700;margin-bottom:var(--space-2);color:var(--color-text)">Adicione participantes primeiro</p></div>`;return;}
@@ -2428,7 +2423,6 @@ function renderScoreboard(){
     <th class="score-num">Placares Exatos</th>
     <th class="score-num">Resultados Corretos</th>
     <th class="score-num">Menor diferenÃ§a de gols</th>
-    <th class="score-num">Acertou CampeÃ£o</th>
     <th class="score-date">Enviado em</th>
   </tr></thead><tbody>`;
   ranked.forEach((p,i)=>{
@@ -2445,7 +2439,6 @@ function renderScoreboard(){
       <td class="score-num">${p.exact}</td>
       <td class="score-num">${p.resOnly}</td>
       <td class="score-num">${p.goalError}</td>
-      <td class="score-num">${formatChampionTiebreak(p.championHit)}</td>
       <td class="score-date">${formatRankingSubmittedAt(p.firstGuessAt)}</td>
     </tr>`;
   });
