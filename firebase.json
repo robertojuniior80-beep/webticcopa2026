@@ -2,37 +2,19 @@
   "firestore": {
     "rules": "firestore.rules"
   },
-  "hosting": [
-    {
-      "target": "app",
-      "public": "public",
-      "ignore": [
-        "firebase.json",
-        "**/.*",
-        "**/node_modules/**"
-      ],
-      "rewrites": [
-        {
-          "source": "**",
-          "destination": "/index.html"
-        }
-      ]
-    },
-    {
-      "target": "legacy",
-      "public": "public",
-      "ignore": [
-        "firebase.json",
-        "**/.*",
-        "**/node_modules/**"
-      ],
-      "redirects": [
-        {
-          "source": "**",
-          "destination": "https://infrabets-bolao.web.app",
-          "type": 301
-        }
-      ]
-    }
-  ]
+  "hosting": {
+    "target": "app",
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
 }

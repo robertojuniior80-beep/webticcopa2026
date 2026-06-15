@@ -6,9 +6,6 @@
     "copa2026-c344c": {
       "hosting": {
         "app": [
-          "infrabets-bolao"
-        ],
-        "legacy": [
           "copa2026-c344c"
         ]
       }
