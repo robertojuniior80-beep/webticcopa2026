@@ -31,4 +31,5 @@ jobs:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
           API_FOOTBALL_BASE_URL: https://v3.football.api-sports.io
           API_FOOTBALL_HOST: v3.football.api-sports.io
+          FINAL_SYNC_GRACE_MS: 9000000
         run: node .github/scripts/sync-live-results.mjs

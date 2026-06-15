@@ -14,7 +14,7 @@ const API_FOOTBALL_BASE_URL = process.env.API_FOOTBALL_BASE_URL || 'https://v3.f
 const API_FOOTBALL_HOST = process.env.API_FOOTBALL_HOST || 'v3.football.api-sports.io';
 const DRY_RUN = process.argv.includes('--dry-run') || process.env.DRY_RUN === '1';
 const BRAZIL_TZ = 'America/Sao_Paulo';
-const FINAL_SYNC_GRACE_MS = Number(process.env.FINAL_SYNC_GRACE_MS || 3 * 60 * 60 * 1000);
+const FINAL_SYNC_GRACE_MS = Number(process.env.FINAL_SYNC_GRACE_MS || 150 * 60 * 1000);
 const MAX_DATES_PER_RUN = Math.max(1, Number(process.env.MAX_DATES_PER_RUN || 2));
 const WORKFLOW_INTERVAL_MINUTES = Math.max(5, Number(process.env.WORKFLOW_INTERVAL_MINUTES || 10));
 const HOT_RETRY_INTERVAL_MINUTES = Math.max(5, Number(process.env.HOT_RETRY_INTERVAL_MINUTES || 10));
