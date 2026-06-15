@@ -676,7 +676,7 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   .input-group{width:100%}
   .tabs{width:100%}
   .tab{flex:1;text-align:center;padding:var(--space-2) var(--space-3);font-size:var(--text-xs)}
-  .score-table{min-width:700px}
+  .score-table{min-width:560px}
   .logo-sub{display:none}
   .hero{padding:var(--space-10) var(--space-4) var(--space-6)}
   .hero-logo{width:min(100%,420px);padding:var(--space-4);gap:var(--space-3)}
@@ -996,12 +996,10 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   window._players = [];
   window._palpites = {};
   window._results = {};
-  window._pollVotes = {};
   window._fsReady = false;
   window._authReady = false;
   let unsubscribePlayers = null;
   let unsubscribePalpites = null;
-  let unsubscribePollVotes = null;
 
   function sanitizeGuessValue(value) {
     const text = String(value ?? '').trim();
@@ -1078,32 +1076,6 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
     return sanitized;
   }
 
-  function sanitizePollVoteEntry(data) {
-    if (!data || typeof data !== 'object') return null;
-    if (data.competitionKey !== 'worldcup') return null;
-    if (typeof data.playerId !== 'string' || !data.playerId.trim()) return null;
-    if (typeof data.winner !== 'string' || !data.winner.trim() || data.winner.trim().length > 80) return null;
-    const firstSubmittedAt = normalizeTimestampMs(data.firstSubmittedAt);
-    const updatedAt = normalizeTimestampMs(data.updatedAt);
-    const sanitized = {
-      competitionKey: data.competitionKey,
-      playerId: data.playerId,
-      winner: data.winner.trim()
-    };
-    if (firstSubmittedAt) sanitized.firstSubmittedAt = firstSubmittedAt;
-    if (updatedAt) sanitized.updatedAt = updatedAt;
-    return sanitized;
-  }
-
-  function sanitizePollVotesCollection(rawVotes) {
-    const sanitized = {};
-    for (const [voteId, vote] of Object.entries(rawVotes || {})) {
-      const cleanVote = sanitizePollVoteEntry(vote);
-      if (cleanVote) sanitized[voteId] = cleanVote;
-    }
-    return sanitized;
-  }
-
   function sanitizeResultsEntry(data) {
     if (!data || typeof data !== 'object') return null;
     const home = sanitizeGuessValue(data.home);
@@ -1166,13 +1138,11 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   function clearProtectedCollections() {
     window._players = [];
     window._palpites = {};
-    window._pollVotes = {};
   }
 
   function stopProtectedSubscriptions() {
     if (unsubscribePlayers) { unsubscribePlayers(); unsubscribePlayers = null; }
     if (unsubscribePalpites) { unsubscribePalpites(); unsubscribePalpites = null; }
-    if (unsubscribePollVotes) { unsubscribePollVotes(); unsubscribePollVotes = null; }
   }
 
   function refreshProtectedViews() {
@@ -1209,16 +1179,6 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
       refreshProtectedViews();
     });
 
-    unsubscribePollVotes = onSnapshot(collection(db, "pollVotes"), snap => {
-      const nextVotes = {};
-      snap.forEach(d => { nextVotes[d.id] = d.data(); });
-      window._pollVotes = sanitizePollVotesCollection(nextVotes);
-      refreshProtectedViews();
-    }, error => {
-      console.error('admin pollVotes subscription error', error);
-      window._pollVotes = {};
-      refreshProtectedViews();
-    });
   }
 
   // ---- Listeners em tempo real ----
@@ -1783,7 +1743,6 @@ const COMPETITIONS = {
     description: 'FaÃ§a seus palpites, acompanhe os resultados e veja quem acerta mais.<br>A Copa do Mundo 2026 comeÃ§a em <strong>11 de junho de 2026, Ã s 16h de BrasÃ­lia</strong>, no Estadio Azteca, na Cidade do MÃ©xico.',
     startAt: new Date('2026-06-11T16:00:00-03:00'),
     countdownNote: 'Contagem ate a abertura oficial em 11/06/2026, as 16h de Brasilia.',
-    actualChampion: '',
     year: 2026,
     matches: WORLDCUP_MATCHES_BRASILIA,
     phases: ACTIVE_PHASES
@@ -1812,12 +1771,6 @@ Object.defineProperty(window, 'results', {
   set: (v) => { window._results = v; },
   configurable: true
 });
-Object.defineProperty(window, 'pollVotes', {
-  get: () => window._pollVotes || {},
-  set: (v) => { window._pollVotes = v; },
-  configurable: true
-});
-
 let localPlayerId = '';
 let localPlayerName = '';
 try {
@@ -1872,32 +1825,6 @@ function getCompetitionFinishedGamesCount(){
 }
 function seedCompetitionResults(){
   // Resultados oficiais agora devem vir do Firestore, alimentado manualmente ou pela API.
-}
-function getCompetitionVotes(competitionKey=activeCompetitionKey){
-  return Object.values(pollVotes||{}).filter(v=>v&&v.competitionKey===competitionKey&&v.playerId&&v.winner);
-}
-function getPlayerCompetitionVote(playerId, competitionKey=activeCompetitionKey){
-  return getCompetitionVotes(competitionKey).find(v=>v.playerId===playerId) || null;
-}
-function getActualChampionForCompetition(competition=getActiveCompetition()){
-  return typeof competition?.actualChampion === 'string' ? competition.actualChampion.trim() : '';
-}
-function getLegacyPlayerTimestamp(id){
-  const match = /^p(\d{10,})$/.exec(id || '');
-  return match ? Number(match[1]) : null;
-}
-function getPlayerFirstGuessAt(pid){
-  const palpiteMeta = palpites[pid]?._meta;
-  const matchTimestamps = palpiteMeta?.matchTimestamps || {};
-  const ids = getActiveMatchIds();
-  const guessTimes = Object.entries(matchTimestamps)
-    .filter(([mid])=>ids.has(mid))
-    .map(([,entry])=>entry?.firstSubmittedAt || entry?.updatedAt)
-    .filter(ts=>Number.isFinite(ts) && ts > 0);
-  if(guessTimes.length) return Math.min(...guessTimes);
-  const player = players.find(entry=>entry.id===pid);
-  const fallback = player?.createdAt || getLegacyPlayerTimestamp(pid);
-  return Number.isFinite(fallback) && fallback > 0 ? fallback : Number.MAX_SAFE_INTEGER;
 }
 function updateCompetitionHero(){
   const competition=getActiveCompetition();
@@ -2103,10 +2030,8 @@ function calcScore(pid){
   return getPlayerRankingStats(pid).pts;
 }
 function getPlayerRankingStats(pid){
-  let exact=0,resOnly=0,goalError=0;
+  let exact=0,resOnly=0;
   const ids=getActiveMatchIds();
-  const competition = getActiveCompetition();
-  const actualChampion = getActualChampionForCompetition(competition);
   for(const[mid,res]of Object.entries(results)){
     if(!ids.has(mid))continue;
     if(!isResultFinal(res))continue;
@@ -2116,29 +2041,21 @@ function getPlayerRankingStats(pid){
     const palAway=Number(pal.away);
     const resHome=Number(res.home);
     const resAway=Number(res.away);
-    goalError+=Math.abs(palHome-resHome)+Math.abs(palAway-resAway);
     if(palHome===resHome&&palAway===resAway){exact++;continue;}
     const rW=resHome>resAway?'H':resHome<resAway?'A':'D';
     const pW=palHome>palAway?'H':palHome<palAway?'A':'D';
     if(rW===pW)resOnly++;
   }
-  const championHit = actualChampion && getPlayerCompetitionVote(pid, competition.key)?.winner === actualChampion ? 1 : 0;
   return {
     pts:(exact*3)+(resOnly*2),
     exact,
-    resOnly,
-    goalError,
-    championHit,
-    firstGuessAt:getPlayerFirstGuessAt(pid)
+    resOnly
   };
 }
 function compareRankingEntries(a,b){
   return (b.pts-a.pts)
     || (b.exact-a.exact)
     || (b.resOnly-a.resOnly)
-    || (a.goalError-b.goalError)
-    || (b.championHit-a.championHit)
-    || (a.firstGuessAt-b.firstGuessAt)
     || a.name.localeCompare(b.name,'pt-BR',{sensitivity:'base'});
 }
 function renderPlayers(){
@@ -2412,7 +2329,6 @@ function renderScoreboard(){
     <th class="score-num">Pontos</th>
     <th class="score-num">Placares Exatos</th>
     <th class="score-num">Resultados Corretos</th>
-    <th class="score-num">Menor diferenÃ§a de gols</th>
   </tr></thead><tbody>`;
   ranked.forEach((p,i)=>{
     const rank=i+1;
@@ -2427,7 +2343,6 @@ function renderScoreboard(){
       <td class="score-num"><span class="score-pts">${p.pts}</span></td>
       <td class="score-num">${p.exact}</td>
       <td class="score-num">${p.resOnly}</td>
-      <td class="score-num">${p.goalError}</td>
     </tr>`;
   });
   html+='</tbody></table></div>';

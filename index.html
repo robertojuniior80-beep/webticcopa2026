@@ -1279,7 +1279,7 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   .palpite-help-highlight{width:100%}
   .palpite-actions{display:grid;grid-template-columns:1fr}
   .palpites-grid,.palpites-other-grid{grid-template-columns:1fr}
-  .score-table{min-width:700px}
+  .score-table{min-width:560px}
   .modal-content{width:min(calc(100% - 24px),500px);max-height:calc(100dvh - 24px);overflow:auto;padding:var(--space-5)}
   .modal-actions{flex-direction:column-reverse}
   .auth-modal-grid{grid-template-columns:1fr}
@@ -2414,7 +2414,6 @@ const COMPETITIONS = {
     description: '',
     startAt: new Date('2026-06-11T16:00:00-03:00'),
     countdownNote: 'Contagem ate a abertura oficial em 11/06/2026, as 16h de Brasilia.',
-    actualChampion: '',
     year: 2026,
     matches: WORLDCUP_MATCHES_BRASILIA,
     phases: ACTIVE_PHASES
@@ -2830,29 +2829,6 @@ function getCompetitionVotes(competitionKey=activeCompetitionKey){
 function getLocalCompetitionVote(competitionKey=activeCompetitionKey){
   if(!localPlayerId)return null;
   return getCompetitionVotes(competitionKey).find(v=>v.playerId===localPlayerId) || null;
-}
-function getPlayerCompetitionVote(playerId, competitionKey=activeCompetitionKey){
-  return getCompetitionVotes(competitionKey).find(v=>v.playerId===playerId) || null;
-}
-function getActualChampionForCompetition(competition=getActiveCompetition()){
-  return typeof competition?.actualChampion === 'string' ? competition.actualChampion.trim() : '';
-}
-function getLegacyPlayerTimestamp(id){
-  const match = /^p(\d{10,})$/.exec(id || '');
-  return match ? Number(match[1]) : null;
-}
-function getPlayerFirstGuessAt(pid){
-  const palpiteMeta = palpites[pid]?._meta;
-  const matchTimestamps = palpiteMeta?.matchTimestamps || {};
-  const ids = getActiveMatchIds();
-  const guessTimes = Object.entries(matchTimestamps)
-    .filter(([mid])=>ids.has(mid))
-    .map(([,entry])=>entry?.firstSubmittedAt || entry?.updatedAt)
-    .filter(ts=>Number.isFinite(ts) && ts > 0);
-  if(guessTimes.length) return Math.min(...guessTimes);
-  const player = players.find(entry=>entry.id===pid);
-  const fallback = player?.createdAt || getLegacyPlayerTimestamp(pid);
-  return Number.isFinite(fallback) && fallback > 0 ? fallback : Number.MAX_SAFE_INTEGER;
 }
 function updateCompetitionHero(){
   const competition=getActiveCompetition();
@@ -3447,10 +3423,8 @@ function calcScore(pid){
   return getPlayerRankingStats(pid).pts;
 }
 function getPlayerRankingStats(pid){
-  let exact=0,resOnly=0,goalError=0;
+  let exact=0,resOnly=0;
   const ids=getActiveMatchIds();
-  const competition = getActiveCompetition();
-  const actualChampion = getActualChampionForCompetition(competition);
   for(const[mid,res]of Object.entries(results)){
     if(!ids.has(mid))continue;
     if(!isResultFinal(res))continue;
@@ -3460,39 +3434,28 @@ function getPlayerRankingStats(pid){
     const palAway=Number(pal.away);
     const resHome=Number(res.home);
     const resAway=Number(res.away);
-    goalError+=Math.abs(palHome-resHome)+Math.abs(palAway-resAway);
     if(palHome===resHome&&palAway===resAway){exact++;continue;}
     const rW=resHome>resAway?'H':resHome<resAway?'A':'D';
     const pW=palHome>palAway?'H':palHome<palAway?'A':'D';
     if(rW===pW)resOnly++;
   }
-  const championHit = actualChampion && getPlayerCompetitionVote(pid, competition.key)?.winner === actualChampion ? 1 : 0;
   return {
     pts:(exact*3)+(resOnly*2),
     exact,
-    resOnly,
-    goalError,
-    championHit,
-    firstGuessAt:getPlayerFirstGuessAt(pid)
+    resOnly
   };
 }
 function compareRankingEntries(a,b){
   return (b.pts-a.pts)
     || (b.exact-a.exact)
     || (b.resOnly-a.resOnly)
-    || (a.goalError-b.goalError)
-    || (b.championHit-a.championHit)
-    || (a.firstGuessAt-b.firstGuessAt)
     || a.name.localeCompare(b.name,'pt-BR',{sensitivity:'base'});
 }
 function hasSameRankingCriteria(a,b){
   return !!a && !!b
     && a.pts===b.pts
     && a.exact===b.exact
-    && a.resOnly===b.resOnly
-    && a.goalError===b.goalError
-    && a.championHit===b.championHit
-    && a.firstGuessAt===b.firstGuessAt;
+    && a.resOnly===b.resOnly;
 }
 function updateLiveLeadersBubble(){
   const bubble=document.getElementById('leaders-bubble');
@@ -3991,7 +3954,6 @@ function renderScoreboard(){
     <th class="score-num">Pontos</th>
     <th class="score-num">Placares Exatos</th>
     <th class="score-num">Resultados Corretos</th>
-    <th class="score-num">Menor diferenÃ§a de gols</th>
   </tr></thead><tbody>`;
   ranked.forEach((p,i)=>{
     const rank=i+1;
@@ -4006,7 +3968,6 @@ function renderScoreboard(){
       <td class="score-num"><span class="score-pts">${p.pts}</span></td>
       <td class="score-num">${p.exact}</td>
       <td class="score-num">${p.resOnly}</td>
-      <td class="score-num">${p.goalError}</td>
     </tr>`;
   });
   html+='</tbody></table></div>';
