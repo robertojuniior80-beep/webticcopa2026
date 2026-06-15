@@ -284,10 +284,8 @@ function collectUnmatchedFinishedMatches(trackedMatches, fixturesByDate, now = D
 }
 
 function pickDatesToQuery(trackedMatches, existingResultsByMatchId){
-  const now = getBrazilNowParts();
   const nowMs = Date.now();
   const candidateDates = [];
-  const shouldRetryStaleNow = now.minute < 15 && now.hour % STALE_RETRY_INTERVAL_HOURS === 0;
 
   for(const match of trackedMatches){
     const existing = existingResultsByMatchId.get(match.id);
@@ -302,8 +300,13 @@ function pickDatesToQuery(trackedMatches, existingResultsByMatchId){
 
     const matchAgeMs = nowMs - kickoffMs;
     const isStale = matchAgeMs > STALE_MATCH_AGE_MS;
-    if(isStale && !shouldRetryStaleNow) continue;
-    if(!isStale){
+    if(isStale){
+      const elapsedSinceStaleMs = Math.max(0, matchAgeMs - STALE_MATCH_AGE_MS);
+      const staleRetryMinutes = STALE_RETRY_INTERVAL_HOURS * 60;
+      const stride = Math.max(1, Math.round(staleRetryMinutes / WORKFLOW_INTERVAL_MINUTES));
+      const runBucket = Math.floor(elapsedSinceStaleMs / (WORKFLOW_INTERVAL_MINUTES * 60 * 1000));
+      if(runBucket % stride !== 0) continue;
+    } else {
       const elapsedSinceReadyMs = Math.max(0, nowMs - finalSyncReadyAt);
       const retryIntervalMinutes = elapsedSinceReadyMs <= HOT_RETRY_WINDOW_MS
         ? HOT_RETRY_INTERVAL_MINUTES
