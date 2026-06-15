@@ -1961,19 +1961,34 @@ async function removePlayer(id){
   showToast('Participante removido.');
 }
 function calcScore(pid){
-  let pts=0;
+  return getPlayerRankingStats(pid).pts;
+}
+function getPlayerRankingStats(pid){
+  let exact=0,resOnly=0,goalError=0;
   const ids=getActiveMatchIds();
   for(const[mid,res]of Object.entries(results)){
     if(!ids.has(mid))continue;
     if(!isResultFinal(res))continue;
     const pal=(palpites[pid]||{})[mid];
     if(!pal||pal.home===''||pal.away==='')continue;
-    if(Number(pal.home)===Number(res.home)&&Number(pal.away)===Number(res.away)){pts+=3;continue;}
-    const rW=Number(res.home)>Number(res.away)?'H':Number(res.home)<Number(res.away)?'A':'D';
-    const pW=Number(pal.home)>Number(pal.away)?'H':Number(pal.home)<Number(pal.away)?'A':'D';
-    if(rW===pW)pts+=2;
+    const palHome=Number(pal.home);
+    const palAway=Number(pal.away);
+    const resHome=Number(res.home);
+    const resAway=Number(res.away);
+    goalError+=Math.abs(palHome-resHome)+Math.abs(palAway-resAway);
+    if(palHome===resHome&&palAway===resAway){exact++;continue;}
+    const rW=resHome>resAway?'H':resHome<resAway?'A':'D';
+    const pW=palHome>palAway?'H':palHome<palAway?'A':'D';
+    if(rW===pW)resOnly++;
   }
-  return pts;
+  return {pts:(exact*3)+(resOnly*2),exact,resOnly,goalError};
+}
+function compareRankingEntries(a,b){
+  return (b.pts-a.pts)
+    || (b.exact-a.exact)
+    || (b.resOnly-a.resOnly)
+    || (a.goalError-b.goalError)
+    || a.name.localeCompare(b.name,'pt-BR',{sensitivity:'base'});
 }
 function renderPlayers(){
   const grid=document.getElementById('players-grid');
@@ -2238,24 +2253,9 @@ function recalcAll(){renderScoreboard();showToast('ClassificaÃ§Ã£o atualizad
 function renderScoreboard(){
   const container=document.getElementById('scoreboard-container');
   if(players.length===0){container.innerHTML=`<div class="empty-state"><div class="empty-icon">ðŸ…</div><p style="font-weight:700;margin-bottom:var(--space-2);color:var(--color-text)">Adicione participantes primeiro</p></div>`;return;}
-  const ids=getActiveMatchIds();
-  const ranked=players.map(p=>{
-    let exact=0,resOnly=0,resultPoints=0;
-    for(const[mid,res]of Object.entries(results)){
-      if(!ids.has(mid))continue;
-      if(!isResultFinal(res))continue;
-      const pal=(palpites[p.id]||{})[mid];
-      if(!pal||pal.home===''||pal.away==='')continue;
-      if(Number(pal.home)===Number(res.home)&&Number(pal.away)===Number(res.away)){exact++;continue;}
-      const rW=Number(res.home)>Number(res.away)?'H':Number(res.home)<Number(res.away)?'A':'D';
-      const pW=Number(pal.home)>Number(pal.away)?'H':Number(pal.home)<Number(pal.away)?'A':'D';
-      if(rW===pW){
-        resOnly++;
-        resultPoints+=2;
-      }
-    }
-    return{...p,pts:exact*3+resultPoints,exact,resOnly};
-  }).sort((a,b)=>b.pts-a.pts||b.exact-a.exact);
+  const ranked=players
+    .map(p=>({ ...p, ...getPlayerRankingStats(p.id) }))
+    .sort(compareRankingEntries);
   let html=`<table class="score-table"><thead><tr>
     <th style="width:60px">#</th><th>Participante</th>
     <th style="text-align:right">Pontos</th>
