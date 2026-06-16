@@ -202,6 +202,8 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
 .header-auth{display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap}
 .header-profile{display:none;align-items:center;gap:var(--space-2);padding:8px 12px;border:1px solid var(--color-border);border-radius:var(--radius-full);background:var(--color-surface)}
 .header-profile-name{font-size:var(--text-sm);font-weight:700;color:var(--copa-gold);max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.profile-modal-meta{display:flex;flex-direction:column;gap:6px;margin-bottom:var(--space-3);font-size:var(--text-xs);color:var(--color-text-muted)}
+.profile-modal-feedback{display:none;font-size:var(--text-xs);line-height:1.45;color:#ffb3b3;background:rgba(255,107,107,.1);border:1px solid rgba(255,107,107,.4);border-radius:12px;padding:10px 12px;margin-top:10px}
 .btn-theme{width:36px;height:36px;border-radius:var(--radius-full);display:flex;align-items:center;justify-content:center;background:var(--theme-btn-bg);border:1px solid var(--theme-btn-border);color:var(--color-text);transition:background var(--transition),border-color var(--transition),color var(--transition)}
 .btn-theme:hover{background:var(--theme-btn-hover);border-color:var(--theme-btn-hover-border);color:var(--copa-gold)}
 .btn{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-5);border-radius:var(--radius-full);font-size:var(--text-sm);font-weight:700;transition:all var(--transition)}
@@ -1782,6 +1784,29 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
     if (!snap.exists()) await setDoc(ref, {});
   };
 
+  window.fsUpdateParticipantName = async (id, name, dayKey) => {
+    const cleanName = typeof name === 'string' ? name.trim().replace(/\s+/g, ' ') : '';
+    if (!cleanName) throw new Error('Nome invalido.');
+    const playerRef = doc(db, "players", id);
+    const playerSnap = await getDoc(playerRef);
+    const current = playerSnap.exists() ? sanitizePlayerEntry(id, playerSnap.data()) : null;
+    if (!current) {
+      const error = new Error('Perfil nao encontrado.');
+      error.code = 'profile/not-found';
+      throw error;
+    }
+    if (current.lastNameChangeDay && current.lastNameChangeDay === dayKey) {
+      const error = new Error('Limite diario atingido.');
+      error.code = 'profile/name-change-limit';
+      throw error;
+    }
+    await setDoc(playerRef, {
+      name: cleanName,
+      lastNameChangeDay: dayKey,
+      lastNameChangeAt: Date.now()
+    }, { merge: true });
+  };
+
   window.fsSetPollVote = async (competitionKey, playerId, winner) => {
     const ref = doc(db, "pollVotes", `${competitionKey}__${playerId}`);
     const snap = await getDoc(ref);
@@ -1887,6 +1912,7 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
     </div>
     <div id="header-profile-info" class="header-profile">
       <span id="header-profile-name" class="header-profile-name"></span>
+      <button class="btn btn-outline" onclick="openProfileSettingsModal()" style="padding:var(--space-1) var(--space-3); font-size:var(--text-xs)">Perfil</button>
       <button class="btn btn-outline" onclick="logoutVisitorProfile()" style="padding:var(--space-1) var(--space-3); font-size:var(--text-xs)">Sair</button>
     </div>
     <button class="btn-theme" data-theme-toggle aria-label="Alternar tema">
@@ -2160,6 +2186,27 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   </div>
 </div>
 
+<div id="profile-settings-modal" class="modal-overlay" onclick="if(event.target===this)closeProfileSettingsModal()">
+  <div class="modal-content">
+    <h3 class="modal-title">Seu perfil</h3>
+    <div class="modal-body">
+      <div class="profile-modal-meta">
+        <span id="profile-settings-email"></span>
+        <span id="profile-settings-note">Voce pode alterar seu nome 1 vez por dia.</span>
+      </div>
+      <div class="input-group">
+        <label for="profile-display-name">Nome exibido no bolao</label>
+        <input type="text" id="profile-display-name" class="input" placeholder="Seu nome no ranking" maxlength="30" autocomplete="name">
+      </div>
+      <div id="profile-settings-feedback" class="profile-modal-feedback" role="alert" aria-live="assertive"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" id="profile-settings-cancel" onclick="closeProfileSettingsModal()">Fechar</button>
+      <button class="btn btn-gold" id="profile-settings-save" onclick="saveProfileDisplayName()">Salvar nome</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast" class="toast" role="alert" aria-live="polite"></div>
 
 <script src="/team-assets.js"></script>
@@ -2382,6 +2429,7 @@ Object.defineProperty(window, 'pollVotes', {
 let localPlayerId = '';
 let localPlayerName = '';
 let localPlayerEmail = '';
+let localPlayerProfile = null;
 let activeCompetitionKey = 'worldcup';
 let guessDrafts = {};
 let expandedGuessSections = {};
@@ -2396,6 +2444,7 @@ const IDLE_LOGOUT_MS = 10 * 60 * 1000;
 const IDLE_WARNING_MS = 9 * 60 * 1000;
 let idleLogoutTimer = null;
 let idleWarningTimer = null;
+let profileSettingsBusy = false;
 function save(){
   // Dados persistidos no Firestore automaticamente
 }
@@ -2570,8 +2619,12 @@ function sanitizePlayerEntry(id, data){
   const name = typeof data.name === 'string' ? data.name.trim() : '';
   const role = data.role === 'admin' ? 'admin' : 'participant';
   const createdAt = normalizeTimestampMs(data.createdAt);
+  const lastNameChangeAt = normalizeTimestampMs(data.lastNameChangeAt);
+  const lastNameChangeDay = typeof data.lastNameChangeDay === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(data.lastNameChangeDay)
+    ? data.lastNameChangeDay
+    : '';
   if(!name) return null;
-  return { id, name, role, createdAt };
+  return { id, name, role, createdAt, lastNameChangeAt, lastNameChangeDay };
 }
 
 function sanitizePlayerCollection(rawPlayers){
@@ -4085,14 +4138,16 @@ async function applyAuthState(user) {
   if (user) {
     localPlayerId = user.uid;
     localPlayerEmail = normalizeAuthEmail(user.email || '');
-    const profile = await window.fsGetPlayerProfile(user.uid).catch(() => null);
-    localPlayerName = profile?.name || (user.email ? user.email.split('@')[0] : '') || 'Participante';
+    const rawProfile = await window.fsGetPlayerProfile(user.uid).catch(() => null);
+    localPlayerProfile = sanitizePlayerEntry(user.uid, rawProfile);
+    localPlayerName = localPlayerProfile?.name || (user.email ? user.email.split('@')[0] : '') || 'Participante';
     resetIdleLogoutTimer();
   } else {
     clearIdleLogoutTimer();
     localPlayerId = '';
     localPlayerName = '';
     localPlayerEmail = '';
+    localPlayerProfile = null;
     guessDrafts = {};
   }
   updateVisitorProfileUI();
@@ -4129,6 +4184,134 @@ function getAuthErrorMessage(error) {
   return 'Nao foi possivel concluir a autenticacao agora.';
 }
 
+function getBrazilDateParts(timestamp = Date.now()){
+  const formatter = new Intl.DateTimeFormat('pt-BR', {
+    timeZone: 'America/Sao_Paulo',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  });
+  const parts = formatter.formatToParts(new Date(timestamp));
+  const day = parts.find(part => part.type === 'day')?.value || '01';
+  const month = parts.find(part => part.type === 'month')?.value || '01';
+  const year = parts.find(part => part.type === 'year')?.value || '2026';
+  return {
+    day,
+    month,
+    year,
+    key: `${year}-${month}-${day}`,
+    label: `${day}/${month}/${year}`
+  };
+}
+
+function getProfileNameChangeState(profile = localPlayerProfile){
+  const today = getBrazilDateParts();
+  const lastDay = profile?.lastNameChangeDay || '';
+  const canChange = !lastDay || lastDay !== today.key;
+  const nextWindow = getBrazilDateParts(Date.now() + 24 * 60 * 60 * 1000);
+  return {
+    canChange,
+    todayKey: today.key,
+    nextLabel: nextWindow.label
+  };
+}
+
+function getProfileSettingsMessage(){
+  const state = getProfileNameChangeState();
+  return state.canChange
+    ? 'Voce pode alterar seu nome 1 vez por dia. A mudanca atualiza o ranking automaticamente.'
+    : `Voce ja alterou seu nome hoje. Nova alteracao disponivel em ${state.nextLabel}.`;
+}
+
+function setProfileSettingsFeedback(message=''){
+  const feedback = document.getElementById('profile-settings-feedback');
+  if(!feedback) return;
+  feedback.textContent = message;
+  feedback.style.display = message ? 'block' : 'none';
+}
+
+function setProfileSettingsBusy(isBusy){
+  profileSettingsBusy = !!isBusy;
+  const saveButton = document.getElementById('profile-settings-save');
+  const cancelButton = document.getElementById('profile-settings-cancel');
+  if(saveButton){
+    saveButton.disabled = profileSettingsBusy;
+    saveButton.textContent = profileSettingsBusy ? 'Salvando...' : 'Salvar nome';
+  }
+  if(cancelButton) cancelButton.disabled = profileSettingsBusy;
+}
+
+function openProfileSettingsModal(){
+  if(!localPlayerId){
+    openAuthModal('login');
+    return;
+  }
+  const modal = document.getElementById('profile-settings-modal');
+  const input = document.getElementById('profile-display-name');
+  const note = document.getElementById('profile-settings-note');
+  const email = document.getElementById('profile-settings-email');
+  if(input) input.value = localPlayerName || '';
+  if(note) note.textContent = getProfileSettingsMessage();
+  if(email) email.textContent = localPlayerEmail ? `Conta: ${localPlayerEmail}` : 'Conta conectada';
+  setProfileSettingsFeedback('');
+  setProfileSettingsBusy(false);
+  if(modal) modal.classList.add('show');
+}
+
+function closeProfileSettingsModal(force = false){
+  if(profileSettingsBusy && !force) return;
+  const modal = document.getElementById('profile-settings-modal');
+  if(modal) modal.classList.remove('show');
+}
+
+async function saveProfileDisplayName(){
+  if(profileSettingsBusy || !localPlayerId) return;
+  const input = document.getElementById('profile-display-name');
+  const nextName = typeof input?.value === 'string' ? input.value.trim().replace(/\s+/g, ' ') : '';
+  const state = getProfileNameChangeState();
+  setProfileSettingsFeedback('');
+  if(!nextName) return setProfileSettingsFeedback('Informe o nome que deseja exibir no bolao.');
+  if(nextName.length < 3) return setProfileSettingsFeedback('Use pelo menos 3 caracteres no nome.');
+  if(nextName === localPlayerName) return setProfileSettingsFeedback('Esse nome ja esta em uso na sua conta.');
+  if(!state.canChange) return setProfileSettingsFeedback(`Voce ja alterou seu nome hoje. Nova alteracao disponivel em ${state.nextLabel}.`);
+  try{
+    setProfileSettingsBusy(true);
+    await window.fsUpdateParticipantName(localPlayerId, nextName, state.todayKey);
+    const changedAt = Date.now();
+    localPlayerName = nextName;
+    localPlayerProfile = {
+      ...(localPlayerProfile || { id: localPlayerId, role: 'participant', createdAt: changedAt }),
+      id: localPlayerId,
+      name: nextName,
+      role: localPlayerProfile?.role || 'participant',
+      createdAt: localPlayerProfile?.createdAt || changedAt,
+      lastNameChangeDay: state.todayKey,
+      lastNameChangeAt: changedAt
+    };
+    window.players = (window.players || []).map(player => player.id === localPlayerId
+      ? { ...player, name: nextName, lastNameChangeDay: state.todayKey, lastNameChangeAt: changedAt }
+      : player);
+    updateVisitorProfileUI();
+    renderPlayers();
+    renderScoreboard();
+    updateLiveLeadersBubble();
+    closeProfileSettingsModal(true);
+    showToast('Nome atualizado com sucesso.');
+  } catch(error){
+    if(error?.code === 'profile/name-change-limit'){
+      setProfileSettingsFeedback(`Voce ja alterou seu nome hoje. Nova alteracao disponivel em ${getProfileNameChangeState().nextLabel}.`);
+    } else if(error?.code === 'profile/not-found'){
+      setProfileSettingsFeedback('Nao foi possivel localizar seu perfil agora. Tente entrar novamente.');
+    } else {
+      setProfileSettingsFeedback('Nao foi possivel atualizar seu nome agora. Tente novamente em instantes.');
+    }
+  } finally {
+    setProfileSettingsBusy(false);
+    const note = document.getElementById('profile-settings-note');
+    if(note) note.textContent = getProfileSettingsMessage();
+  }
+}
+
 function updateVisitorProfileUI() {
   const headerLogin = document.getElementById('header-login-form');
   const headerProfile = document.getElementById('header-profile-info');
@@ -4158,6 +4341,7 @@ function updateVisitorProfileUI() {
     if (registerSurnameInput) registerSurnameInput.value = '';
     if (registerEmailInput) registerEmailInput.value = '';
     if (registerPasswordInput) registerPasswordInput.value = '';
+    closeProfileSettingsModal(true);
   }
 
   updateRestrictedTabUI();
@@ -4259,9 +4443,13 @@ updateUpcomingMatchesBubble();
 renderWinnerPoll();
 startCountdown();
 handleAuthLandingState();
-['auth-login-email','auth-login-password','auth-reset-email','auth-register-name','auth-register-surname','auth-register-email','auth-register-password'].forEach(id => {
+['auth-login-email','auth-login-password','auth-reset-email','auth-register-name','auth-register-surname','auth-register-email','auth-register-password','profile-display-name'].forEach(id => {
   const input = document.getElementById(id);
   if (!input) return;
+  if (id === 'profile-display-name') {
+    input.addEventListener('input', () => setProfileSettingsFeedback(''));
+    return;
+  }
   input.addEventListener('input', () => setAuthModalFeedback(''));
   input.addEventListener('keydown', event => {
     if (event.key === 'Enter') {
