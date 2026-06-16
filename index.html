@@ -1601,6 +1601,7 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
 .auth-modal-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-3)}
 .auth-modal-grid.single{grid-template-columns:1fr}
 .auth-modal-note{font-size:var(--text-xs);color:var(--color-text-muted);line-height:1.5;margin-top:var(--space-2)}
+.auth-field-feedback{display:none;font-size:var(--text-xs);line-height:1.45;color:#ffb3b3;background:rgba(255,107,107,.1);border:1px solid rgba(255,107,107,.4);border-radius:12px;padding:10px 12px;margin-top:8px}
 .auth-inline-action{display:flex;justify-content:flex-end}
 .auth-inline-action .btn{min-height:40px}
 .textarea {
@@ -2119,8 +2120,8 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
         <div class="input-group">
           <label for="auth-login-password">Senha</label>
           <input type="password" id="auth-login-password" class="input" placeholder="Sua senha" maxlength="60" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false">
+          <div id="auth-login-feedback" class="auth-field-feedback" role="alert" aria-live="assertive"></div>
         </div>
-        <div id="auth-login-feedback" class="auth-modal-note" style="display:none;color:#ff9f9f;border:1px solid rgba(255,107,107,.35);background:rgba(255,107,107,.08);padding:10px 12px;border-radius:12px"></div>
         <div class="auth-inline-action">
           <button type="button" class="btn btn-outline" style="padding:6px 10px;font-size:12px" onclick="openAuthModal('reset')">Esqueci minha senha</button>
         </div>
