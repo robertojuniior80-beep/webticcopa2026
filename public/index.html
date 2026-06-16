@@ -2148,6 +2148,7 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
           <input type="password" id="auth-register-password" class="input" placeholder="Min. 6 caracteres" maxlength="60" autocomplete="new-password" autocapitalize="off" autocorrect="off" spellcheck="false">
         </div>
       </div>
+      <div id="auth-modal-feedback" class="auth-modal-note" style="display:none;color:#ff9f9f;border:1px solid rgba(255,107,107,.35);background:rgba(255,107,107,.08);padding:10px 12px;border-radius:12px;margin-top:12px"></div>
       <div class="auth-modal-note" id="auth-modal-note">Entre com sua conta para salvar e editar apenas os seus palpites.</div>
     </div>
     <div class="modal-actions">
@@ -3870,6 +3871,7 @@ function showToast(msg){
 // ===== VISITOR ACTIONS =====
 async function registerVisitorProfile() {
   if (authModalBusy) return;
+  setAuthModalFeedback('');
   const nameInput = document.getElementById('auth-register-name');
   const surnameInput = document.getElementById('auth-register-surname');
   const emailInput = document.getElementById('auth-register-email');
@@ -3900,6 +3902,7 @@ async function registerVisitorProfile() {
     closeAuthModal();
     showToast(`Conta criada para ${fullName}. Agora voce pode salvar seus palpites. âš½`);
   } catch (error) {
+    setAuthModalFeedback(getAuthErrorMessage(error));
     showToast(getAuthErrorMessage(error));
   } finally {
     setAuthModalBusy(false);
@@ -3908,6 +3911,7 @@ async function registerVisitorProfile() {
 
 async function loginVisitorProfile() {
   if (authModalBusy) return;
+  setAuthModalFeedback('');
   const emailInput = document.getElementById('auth-login-email');
   const passwordInput = document.getElementById('auth-login-password');
   const email = normalizeAuthEmail(emailInput.value);
@@ -3921,6 +3925,7 @@ async function loginVisitorProfile() {
     closeAuthModal();
     showToast('Login realizado com sucesso.');
   } catch (error) {
+    setAuthModalFeedback(getAuthErrorMessage(error));
     showToast(getAuthErrorMessage(error));
   } finally {
     setAuthModalBusy(false);
@@ -3929,6 +3934,7 @@ async function loginVisitorProfile() {
 
 async function resetVisitorPassword() {
   if (authModalBusy) return;
+  setAuthModalFeedback('');
   const emailInput = document.getElementById('auth-reset-email');
   const email = normalizeAuthEmail(emailInput?.value);
   if (!email) return showToast('Informe o email da conta para redefinir a senha.');
@@ -3943,10 +3949,18 @@ async function resetVisitorPassword() {
     closeAuthModal();
     showToast('Enviamos um link de redefinicao para o seu email.');
   } catch (error) {
+    setAuthModalFeedback(getAuthErrorMessage(error));
     showToast(getAuthErrorMessage(error));
   } finally {
     setAuthModalBusy(false);
   }
+}
+
+function setAuthModalFeedback(message=''){
+  const feedback = document.getElementById('auth-modal-feedback');
+  if (!feedback) return;
+  feedback.textContent = message;
+  feedback.style.display = message ? 'block' : 'none';
 }
 
 function setAuthModalBusy(isBusy, busyLabel='Processando...'){
@@ -3985,6 +3999,7 @@ function openAuthModal(mode='login'){
   if(mode==='reset' && resetEmailInput && loginEmailInput?.value && !resetEmailInput.value){
     resetEmailInput.value = loginEmailInput.value;
   }
+  setAuthModalFeedback('');
   setAuthModalBusy(false);
   if(modal) modal.classList.add('show');
 }
@@ -4236,6 +4251,7 @@ handleAuthLandingState();
 ['auth-login-email','auth-login-password','auth-reset-email','auth-register-name','auth-register-surname','auth-register-email','auth-register-password'].forEach(id => {
   const input = document.getElementById(id);
   if (!input) return;
+  input.addEventListener('input', () => setAuthModalFeedback(''));
   input.addEventListener('keydown', event => {
     if (event.key === 'Enter') {
       event.preventDefault();
