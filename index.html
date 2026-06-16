@@ -2385,6 +2385,7 @@ let expandedGuessSections = {};
 let guessPages = {};
 let openGuessSections = {};
 let authModalMode = 'login';
+let authModalBusy = false;
 let floatingBannerAction = null;
 let floatingBannerLockUntil = 0;
 const WINNER_POLL_COMPETITIONS = new Set(['worldcup']);
@@ -3868,6 +3869,7 @@ function showToast(msg){
 
 // ===== VISITOR ACTIONS =====
 async function registerVisitorProfile() {
+  if (authModalBusy) return;
   const nameInput = document.getElementById('auth-register-name');
   const surnameInput = document.getElementById('auth-register-surname');
   const emailInput = document.getElementById('auth-register-email');
@@ -3883,6 +3885,7 @@ async function registerVisitorProfile() {
   const fullName = `${name} ${surname}`;
 
   try {
+    setAuthModalBusy(true, 'Criando conta...');
     showToast('Criando conta...');
     const cred = await window.authCreateParticipant(email, password);
     await window.fsRegisterParticipant(cred.user.uid, fullName);
@@ -3898,30 +3901,38 @@ async function registerVisitorProfile() {
     showToast(`Conta criada para ${fullName}. Agora voce pode salvar seus palpites. âš½`);
   } catch (error) {
     showToast(getAuthErrorMessage(error));
+  } finally {
+    setAuthModalBusy(false);
   }
 }
 
 async function loginVisitorProfile() {
+  if (authModalBusy) return;
   const emailInput = document.getElementById('auth-login-email');
   const passwordInput = document.getElementById('auth-login-password');
   const email = normalizeAuthEmail(emailInput.value);
   const password = passwordInput.value;
   if (!email || !password) return showToast('Informe email e senha para entrar.');
   try {
+    setAuthModalBusy(true, 'Entrando...');
     showToast('Entrando...');
     await window.authLoginParticipant(email, password);
     closeAuthModal();
     showToast('Login realizado com sucesso.');
   } catch (error) {
     showToast(getAuthErrorMessage(error));
+  } finally {
+    setAuthModalBusy(false);
   }
 }
 
 async function resetVisitorPassword() {
+  if (authModalBusy) return;
   const emailInput = document.getElementById('auth-reset-email');
   const email = normalizeAuthEmail(emailInput?.value);
   if (!email) return showToast('Informe o email da conta para redefinir a senha.');
   try {
+    setAuthModalBusy(true, 'Enviando link...');
     const actionCodeSettings = {
       url: `${window.location.origin}/?auth=login`,
       handleCodeInApp: false
@@ -3932,7 +3943,21 @@ async function resetVisitorPassword() {
     showToast('Enviamos um link de redefinicao para o seu email.');
   } catch (error) {
     showToast(getAuthErrorMessage(error));
+  } finally {
+    setAuthModalBusy(false);
   }
+}
+
+function setAuthModalBusy(isBusy, busyLabel='Processando...'){
+  authModalBusy = !!isBusy;
+  const submit = document.getElementById('auth-modal-submit');
+  const cancel = document.querySelector('#auth-modal .modal-actions .btn.btn-outline');
+  const defaultLabel = authModalMode==='register' ? 'Criar conta' : (authModalMode==='reset' ? 'Enviar link' : 'Entrar');
+  if (submit) {
+    submit.disabled = authModalBusy;
+    submit.textContent = authModalBusy ? busyLabel : defaultLabel;
+  }
+  if (cancel) cancel.disabled = authModalBusy;
 }
 
 function openAuthModal(mode='login'){
@@ -3959,9 +3984,11 @@ function openAuthModal(mode='login'){
   if(mode==='reset' && resetEmailInput && loginEmailInput?.value && !resetEmailInput.value){
     resetEmailInput.value = loginEmailInput.value;
   }
+  setAuthModalBusy(false);
   if(modal) modal.classList.add('show');
 }
 function closeAuthModal(){
+  if(authModalBusy) return;
   const modal=document.getElementById('auth-modal');
   if(modal) modal.classList.remove('show');
 }
@@ -4047,6 +4074,7 @@ async function applyAuthState(user) {
   renderMatchesIfActive();
   renderPlayers();
   renderWinnerPoll();
+  if (user) closeAuthModal();
 }
 
 window.applyAuthState = applyAuthState;
@@ -4204,6 +4232,16 @@ updateUpcomingMatchesBubble();
 renderWinnerPoll();
 startCountdown();
 handleAuthLandingState();
+['auth-login-email','auth-login-password','auth-reset-email','auth-register-name','auth-register-surname','auth-register-email','auth-register-password'].forEach(id => {
+  const input = document.getElementById(id);
+  if (!input) return;
+  input.addEventListener('keydown', event => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      submitAuthModal();
+    }
+  });
+});
 window.setInterval(() => {
   renderMatchesIfActive();
   updateLiveLeadersBubble();
