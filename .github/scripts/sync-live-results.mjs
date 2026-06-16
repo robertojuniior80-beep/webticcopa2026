@@ -268,12 +268,11 @@ function formatKickoffForLog(kickoffAt){
 }
 
 function collectUnmatchedFinishedMatches(trackedMatches, fixturesByDate, now = Date.now()){
+  const pairFixturesIndex = buildPairFixtureIndex(fixturesByDate);
   return trackedMatches.filter(match => {
-    const dateBucket = fixturesByDate.get(match.isoDate);
-    if(!dateBucket) return false;
     if(!match.kickoffAt || Number.isNaN(match.kickoffAt.getTime())) return false;
     if(now < match.kickoffAt.getTime() + FINAL_SYNC_GRACE_MS) return false;
-    const fixture = dateBucket.get(`${match.isoDate}__${match.pairKey}`);
+    const fixture = findFixtureForMatch(match, fixturesByDate, pairFixturesIndex);
     return !fixture;
   });
 }
@@ -361,6 +360,7 @@ function indexFixturesByDate(fixtures, normalizeAlias){
       home,
       away,
       isoDate,
+      pairKey,
       homeScore: toStringScore(fixture?.goals?.home),
       awayScore: toStringScore(fixture?.goals?.away),
       fixtureId: fixture?.fixture?.id || null,
@@ -368,6 +368,56 @@ function indexFixturesByDate(fixtures, normalizeAlias){
     });
   }
   return indexed;
+}
+
+function buildPairFixtureIndex(fixturesByDate){
+  const indexed = new Map();
+  for(const dateBucket of fixturesByDate.values()){
+    for(const fixture of dateBucket.values()){
+      if(!indexed.has(fixture.pairKey)){
+        indexed.set(fixture.pairKey, []);
+      }
+      indexed.get(fixture.pairKey).push(fixture);
+    }
+  }
+
+  for(const fixtures of indexed.values()){
+    fixtures.sort((a, b) => a.isoDate.localeCompare(b.isoDate));
+  }
+
+  return indexed;
+}
+
+function findFixtureForMatch(match, fixturesByDate, pairFixturesIndex){
+  const exactFixture = fixturesByDate.get(match.isoDate)?.get(`${match.isoDate}__${match.pairKey}`) || null;
+  if(exactFixture){
+    return exactFixture;
+  }
+
+  const pairFixtures = pairFixturesIndex.get(match.pairKey) || [];
+  return pairFixtures.find(fixture => {
+    const diffDays = Math.abs(isoToDate(fixture.isoDate).getTime() - isoToDate(match.isoDate).getTime()) / (24 * 60 * 60 * 1000);
+    return diffDays <= 1;
+  }) || null;
+}
+
+function collectResultUpdates(trackedMatches, fixturesByDate){
+  const pairFixturesIndex = buildPairFixtureIndex(fixturesByDate);
+  const updates = [];
+
+  for(const match of trackedMatches){
+    const fixture = findFixtureForMatch(match, fixturesByDate, pairFixturesIndex);
+    if(!fixture) continue;
+    if(fixture.homeScore === '' || fixture.awayScore === '') continue;
+    updates.push({
+      id: match.id,
+      home: fixture.homeScore,
+      away: fixture.awayScore,
+      status: fixture.status
+    });
+  }
+
+  return updates;
 }
 
 async function fetchExistingFirestoreResultsMap(){
@@ -474,22 +524,28 @@ async function main(){
     log(`API-Football ${isoDate}: ${indexed.size} fixture(s) finalizada(s) indexada(s).`);
   }
 
-  const updates = [];
-  for(const match of trackedMatches){
-    const dateBucket = fixturesByDate.get(match.isoDate);
-    if(!dateBucket) continue;
-    const fixture = dateBucket.get(`${match.isoDate}__${match.pairKey}`);
-    if(!fixture) continue;
-    if(fixture.homeScore === '' || fixture.awayScore === '') continue;
-    updates.push({
-      id: match.id,
-      home: fixture.homeScore,
-      away: fixture.awayScore,
-      status: fixture.status
-    });
+  let updates = collectResultUpdates(trackedMatches, fixturesByDate);
+  let unmatchedFinishedMatches = collectUnmatchedFinishedMatches(trackedMatches, fixturesByDate);
+
+  if(unmatchedFinishedMatches.length){
+    const fallbackDates = [...new Set(
+      unmatchedFinishedMatches.flatMap(match => [shiftIsoDate(match.isoDate, -1), shiftIsoDate(match.isoDate, 1)])
+    )].filter(isoDate => !fixturesByDate.has(isoDate));
+
+    if(fallbackDates.length){
+      log(`Datas extras para fallback: ${fallbackDates.join(', ')}`);
+      for(const isoDate of fallbackDates){
+        const payload = await fetchApiFootballFixtures(isoDate);
+        const indexed = indexFixturesByDate(payload?.response || [], normalizeAlias);
+        fixturesByDate.set(isoDate, indexed);
+        log(`API-Football fallback ${isoDate}: ${indexed.size} fixture(s) finalizada(s) indexada(s).`);
+      }
+
+      updates = collectResultUpdates(trackedMatches, fixturesByDate);
+      unmatchedFinishedMatches = collectUnmatchedFinishedMatches(trackedMatches, fixturesByDate);
+    }
   }
 
-  const unmatchedFinishedMatches = collectUnmatchedFinishedMatches(trackedMatches, fixturesByDate);
   for(const match of unmatchedFinishedMatches){
     warn(
       `Partida sem correspondencia final na API: ${match.id} ${match.home} x ${match.away} ` +
