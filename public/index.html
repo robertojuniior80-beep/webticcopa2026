@@ -4121,7 +4121,7 @@ function getAuthErrorMessage(error) {
   if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') return 'Email ou senha incorretos.';
   if (code === 'auth/network-request-failed') return 'Falha de conexao. Tente novamente em instantes.';
   if (code === 'auth/missing-continue-uri' || code === 'auth/unauthorized-continue-uri') return 'Nao foi possivel enviar o link de redefinicao agora.';
-  if (code === 'auth/too-many-requests') return 'Muitas tentativas. Aguarde um pouco e tente de novo.';
+  if (code === 'auth/too-many-requests') return 'Muitas tentativas de acesso. Aguarde alguns minutos ou troque de rede e tente novamente. Se preferir, use "Esqueci minha senha".';
   return 'Nao foi possivel concluir a autenticacao agora.';
 }
 

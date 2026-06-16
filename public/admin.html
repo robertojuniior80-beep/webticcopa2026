@@ -2565,7 +2565,7 @@ function getAuthErrorMessage(error) {
   const code = error?.code || '';
   if (code === 'auth/invalid-email') return 'O email informado nao e valido.';
   if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') return 'Email ou senha incorretos.';
-  if (code === 'auth/too-many-requests') return 'Muitas tentativas. Aguarde um pouco e tente de novo.';
+  if (code === 'auth/too-many-requests') return 'Muitas tentativas de acesso. Aguarde alguns minutos ou troque de rede e tente novamente. Se preferir, use "Esqueci minha senha".';
   return 'Nao foi possivel concluir a autenticacao agora.';
 }
 
