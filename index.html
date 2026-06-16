@@ -3561,6 +3561,10 @@ function renderMatches(){
   const upcoming=sortedMatches
     .filter(entry=>entry.state==='upcoming')
     .map(entry=>entry.match);
+  const awaiting=sortedMatches
+    .filter(entry=>entry.state==='awaiting')
+    .sort((a,b)=>(a.kickoff?.getTime()||0)-(b.kickoff?.getTime()||0))
+    .map(entry=>entry.match);
   const finished=sortedMatches
     .filter(entry=>entry.state==='finished')
     .sort((a,b)=>(b.kickoff?.getTime()||0)-(a.kickoff?.getTime()||0))
@@ -3591,6 +3595,10 @@ function renderMatches(){
   if(upcoming.length){
     html+=`<div class="phase-header"><span class="phase-label">${live.length ? 'PrÃ³ximas partidas' : 'Partidas abertas'}</span><span class="phase-badge green">${upcoming.length}</span></div>`;
     html+=renderMatchList(upcoming);
+  }
+  if(awaiting.length){
+    html+=`<div class="phase-header"><span class="phase-label">Aguardando resultado</span><span class="phase-badge">${awaiting.length}</span></div>`;
+    html+=renderMatchList(awaiting);
   }
   if(finished.length){
     html+=`<div class="phase-header"><span class="phase-label">Partidas jÃ¡ concluÃ­das</span><span class="phase-badge">${finished.length}</span></div>`;
