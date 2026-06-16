@@ -3917,6 +3917,7 @@ async function loginVisitorProfile() {
     setAuthModalBusy(true, 'Entrando...');
     showToast('Entrando...');
     await window.authLoginParticipant(email, password);
+    setAuthModalBusy(false);
     closeAuthModal();
     showToast('Login realizado com sucesso.');
   } catch (error) {
@@ -3987,8 +3988,8 @@ function openAuthModal(mode='login'){
   setAuthModalBusy(false);
   if(modal) modal.classList.add('show');
 }
-function closeAuthModal(){
-  if(authModalBusy) return;
+function closeAuthModal(force = false){
+  if(authModalBusy && !force) return;
   const modal=document.getElementById('auth-modal');
   if(modal) modal.classList.remove('show');
 }
@@ -4074,7 +4075,7 @@ async function applyAuthState(user) {
   renderMatchesIfActive();
   renderPlayers();
   renderWinnerPoll();
-  if (user) closeAuthModal();
+  if (user) closeAuthModal(true);
 }
 
 window.applyAuthState = applyAuthState;
