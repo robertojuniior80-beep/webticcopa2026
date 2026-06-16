@@ -3919,7 +3919,7 @@ async function loginVisitorProfile() {
   const password = passwordInput.value;
   if (!email || !password) {
     setAuthModalFeedback('Informe email e senha para entrar.');
-    return showToast('Informe email e senha para entrar.');
+    return;
   }
   try {
     setAuthModalBusy(true, 'Entrando...');
@@ -3930,7 +3930,6 @@ async function loginVisitorProfile() {
     showToast('Login realizado com sucesso.');
   } catch (error) {
     setAuthModalFeedback(getAuthErrorMessage(error));
-    showToast(getAuthErrorMessage(error));
   } finally {
     setAuthModalBusy(false);
   }
@@ -3963,11 +3962,15 @@ async function resetVisitorPassword() {
 function setAuthModalFeedback(message=''){
   const feedback = document.getElementById('auth-modal-feedback');
   const loginFeedback = document.getElementById('auth-login-feedback');
-  [feedback, loginFeedback].forEach(element => {
-    if (!element) return;
-    element.textContent = message;
-    element.style.display = message ? 'block' : 'none';
-  });
+  const isLoginMode = authModalMode === 'login';
+  if (loginFeedback) {
+    loginFeedback.textContent = message;
+    loginFeedback.style.display = isLoginMode && message ? 'block' : 'none';
+  }
+  if (feedback) {
+    feedback.textContent = message;
+    feedback.style.display = !isLoginMode && message ? 'block' : 'none';
+  }
 }
 
 function setAuthModalBusy(isBusy, busyLabel='Processando...'){
