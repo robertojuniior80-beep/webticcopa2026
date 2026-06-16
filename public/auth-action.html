@@ -422,7 +422,7 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        const currentCacheName = 'bolao-do-ti-v2-clean-20260615';
+        const currentCacheName = 'bolao-do-ti-v3-pwa-20260616';
         if ('caches' in window) {
           caches.keys()
             .then(keys => Promise.all(
@@ -433,7 +433,7 @@
             .catch(() => {});
         }
 
-        navigator.serviceWorker.register('/sw.js?v=20260615-clean')
+        navigator.serviceWorker.register('/sw.js?v=20260616-pwa-fix')
           .then(registration => {
             registration.update().catch(() => {});
             const worker = registration.waiting || registration.active;

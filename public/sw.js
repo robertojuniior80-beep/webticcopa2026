@@ -1,8 +1,9 @@
 const CACHE_PREFIX = 'bolao-do-ti-';
-const CACHE_NAME = `${CACHE_PREFIX}v2-clean-20260615`;
+const CACHE_NAME = `${CACHE_PREFIX}v3-pwa-20260616`;
 const APP_SHELL = [
   '/',
   '/index.html',
+  '/?source=pwa',
   '/manifest.webmanifest',
   '/app-icon.svg',
   '/app-icon-192.png',
@@ -12,10 +13,34 @@ const APP_SHELL = [
   '/competition-history-data.js'
 ];
 
+async function cacheAppShell() {
+  const cache = await caches.open(CACHE_NAME);
+  const results = await Promise.allSettled(
+    APP_SHELL.map(async resource => {
+      const request = new Request(resource, { cache: 'reload' });
+      const response = await fetch(request);
+      if (!response.ok) {
+        throw new Error(`Falha ao cachear ${resource}: ${response.status}`);
+      }
+      await cache.put(request, response);
+    })
+  );
+
+  const successful = results.filter(result => result.status === 'fulfilled').length;
+  if (!successful) {
+    throw new Error('Nenhum asset essencial do PWA foi cacheado.');
+  }
+}
+
+async function matchAppShellFallback() {
+  return (await caches.match('/?source=pwa'))
+    || (await caches.match('/index.html'))
+    || caches.match('/');
+}
+
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(APP_SHELL))
+    cacheAppShell()
       .then(() => self.skipWaiting())
   );
 });
@@ -63,10 +88,13 @@ self.addEventListener('fetch', event => {
       fetch(request)
         .then(response => {
           const copy = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put('/index.html', copy));
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(request, copy.clone());
+            cache.put('/index.html', copy);
+          });
           return response;
         })
-        .catch(() => caches.match('/index.html'))
+        .catch(() => matchAppShellFallback())
     );
     return;
   }
