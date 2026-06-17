@@ -15,7 +15,7 @@ const API_FOOTBALL_HOST = process.env.API_FOOTBALL_HOST || 'v3.football.api-spor
 const DRY_RUN = process.argv.includes('--dry-run') || process.env.DRY_RUN === '1';
 const BRAZIL_TZ = 'America/Sao_Paulo';
 const FINAL_SYNC_GRACE_MS = Number(process.env.FINAL_SYNC_GRACE_MS || 150 * 60 * 1000);
-const MAX_DATES_PER_RUN = Math.max(1, Number(process.env.MAX_DATES_PER_RUN || 2));
+const MAX_DATES_PER_RUN = Math.max(1, Number(process.env.MAX_DATES_PER_RUN || 8));
 const STALE_MATCH_AGE_MS = Number(process.env.STALE_MATCH_AGE_MS || 24 * 60 * 60 * 1000);
 const ROOT_DIR = process.cwd();
 let cachedFirestoreAccessToken = '';
@@ -279,8 +279,7 @@ function collectUnmatchedFinishedMatches(trackedMatches, fixturesByDate, now = D
 
 function pickDatesToQuery(trackedMatches, existingResultsByMatchId){
   const nowMs = Date.now();
-  const hotDates = new Map();
-  const staleDates = new Map();
+  const candidateDates = new Map();
 
   for(const match of trackedMatches){
     const existing = existingResultsByMatchId.get(match.id);
@@ -294,27 +293,34 @@ function pickDatesToQuery(trackedMatches, existingResultsByMatchId){
     if(nowMs < finalSyncReadyAt) continue;
 
     const matchAgeMs = nowMs - kickoffMs;
-    const bucket = matchAgeMs > STALE_MATCH_AGE_MS ? staleDates : hotDates;
-    const current = bucket.get(match.isoDate);
+    const current = candidateDates.get(match.isoDate);
     if(!current){
-      bucket.set(match.isoDate, {
+      candidateDates.set(match.isoDate, {
         isoDate: match.isoDate,
         oldestKickoffMs: kickoffMs,
-        unresolvedMatches: 1
+        unresolvedMatches: 1,
+        newestKickoffMs: kickoffMs,
+        hottestAgeMs: matchAgeMs
       });
       continue;
     }
 
     current.oldestKickoffMs = Math.min(current.oldestKickoffMs, kickoffMs);
+    current.newestKickoffMs = Math.max(current.newestKickoffMs, kickoffMs);
     current.unresolvedMatches += 1;
+    current.hottestAgeMs = Math.min(current.hottestAgeMs, matchAgeMs);
   }
 
   const rankDates = items => items
-    .sort((a, b) => a.oldestKickoffMs - b.oldestKickoffMs || b.unresolvedMatches - a.unresolvedMatches || a.isoDate.localeCompare(b.isoDate))
+    .sort((a, b) =>
+      a.oldestKickoffMs - b.oldestKickoffMs ||
+      b.unresolvedMatches - a.unresolvedMatches ||
+      a.hottestAgeMs - b.hottestAgeMs ||
+      a.isoDate.localeCompare(b.isoDate)
+    )
     .map(item => item.isoDate);
 
-  return [...rankDates([...hotDates.values()]), ...rankDates([...staleDates.values()])]
-    .slice(0, MAX_DATES_PER_RUN);
+  return rankDates([...candidateDates.values()]).slice(0, MAX_DATES_PER_RUN);
 }
 
 async function fetchApiFootballFixtures(isoDate){
