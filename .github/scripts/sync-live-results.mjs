@@ -556,15 +556,8 @@ async function main(){
     warn(
       `Partida sem correspondencia final na API: ${match.id} ${match.home} x ${match.away} ` +
       `(${match.isoDate}, kickoff ${formatKickoffForLog(match.kickoffAt)}). ` +
-      `Gerando placar simulado (2x1) automaticamente para destravar o teste.`
+      `Verifique se surgiu uma nova variacao de nome da selecao.`
     );
-    // Injeta um placar ficticio para testes
-    updates.push({
-      id: match.id,
-      home: '2',
-      away: '1',
-      status: 'FT'
-    });
   }
 
   if(!updates.length){
