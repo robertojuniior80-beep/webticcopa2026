@@ -1,4 +1,4 @@
-# INFRA Bets 2026
+# Bolão TI
 
 Projeto do bolão publicado no Firebase Hosting com autenticação Firebase, dados no Firestore e gerenciamento de resultados finais atualizados manualmente.
 
