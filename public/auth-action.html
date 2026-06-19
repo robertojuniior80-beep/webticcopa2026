@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BolÃ£o do TI | AÃ§Ã£o de Conta</title>
-  <meta name="application-name" content="BolÃ£o do TI">
-  <meta name="apple-mobile-web-app-title" content="BolÃ£o do TI">
+  <title>Bolão do TI | Ação de Conta</title>
+  <meta name="application-name" content="Bolão do TI">
+  <meta name="apple-mobile-web-app-title" content="Bolão do TI">
   <meta name="theme-color" content="#07141d">
-  <meta property="og:title" content="BolÃ£o do TI | AÃ§Ã£o de Conta">
-  <meta name="twitter:title" content="BolÃ£o do TI | AÃ§Ã£o de Conta">
+  <meta property="og:title" content="Bolão do TI | Ação de Conta">
+  <meta name="twitter:title" content="Bolão do TI | Ação de Conta">
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="icon" href="/app-icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/app-icon-192.png">
@@ -233,16 +233,16 @@
     <section class="hero">
       <div class="eyebrow">INFRA Bets 2026</div>
       <h1>Recupere sua <span>conta</span></h1>
-      <p>Uma experiÃªncia de redefiniÃ§Ã£o de senha alinhada ao bolÃ£o, com retorno simples para o site assim que a sua conta estiver pronta para uso novamente.</p>
+      <p>Uma experiência de redefinição de senha alinhada ao bolão, com retorno simples para o site assim que a sua conta estiver pronta para uso novamente.</p>
       <ul class="hero-list">
-        <li>Links de redefiniÃ§Ã£o e verificaÃ§Ã£o tratados em uma pÃ¡gina com a identidade do seu bolÃ£o.</li>
-        <li>Mensagens claras para cÃ³digo expirado, senha fraca ou aÃ§Ã£o jÃ¡ concluÃ­da.</li>
-        <li>BotÃ£o direto para voltar ao site e entrar com a nova senha.</li>
+        <li>Links de redefinição e verificação tratados em uma página com a identidade do seu bolão.</li>
+        <li>Mensagens claras para código expirado, senha fraca ou ação já concluída.</li>
+        <li>Botão direto para voltar ao site e entrar com a nova senha.</li>
       </ul>
     </section>
     <section class="panel">
       <div class="card">
-        <p id="status-copy" class="status">Validando sua solicitaÃ§Ã£oâ€¦</p>
+        <p id="status-copy" class="status">Validando sua solicitação…</p>
         <p id="account-copy" class="account hidden"></p>
         <form id="reset-form" class="hidden">
           <div class="field">
@@ -253,14 +253,14 @@
             <label for="confirm-password">Confirmar nova senha</label>
             <input id="confirm-password" type="password" placeholder="Repita a senha" autocomplete="new-password" maxlength="60">
           </div>
-          <p class="hint">Use uma senha fÃ¡cil de lembrar para vocÃª, mas difÃ­cil para outras pessoas adivinharem.</p>
+          <p class="hint">Use uma senha fácil de lembrar para você, mas difícil para outras pessoas adivinharem.</p>
           <div class="actions">
             <button class="btn btn-primary" type="submit">Salvar nova senha</button>
             <a class="btn btn-secondary" id="back-link" href="/">Voltar ao site</a>
           </div>
         </form>
         <div id="info-actions" class="actions hidden">
-          <a class="btn btn-primary" id="primary-link" href="/">Ir para o bolÃ£o</a>
+          <a class="btn btn-primary" id="primary-link" href="/">Ir para o bolão</a>
           <a class="btn btn-secondary" id="secondary-link" href="/">Voltar</a>
         </div>
         <div id="feedback" class="feedback"></div>
@@ -270,6 +270,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { firebaseConfig } from "./firebase-config.js";
     import {
       getAuth,
       applyActionCode,
@@ -277,15 +278,6 @@
       confirmPasswordReset,
       verifyPasswordResetCode
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-    const firebaseConfig = {
-      apiKey: "REDACTED_FIREBASE_API_KEY",
-      authDomain: "copa2026-c344c.firebaseapp.com",
-      projectId: "copa2026-c344c",
-      storageBucket: "copa2026-c344c.firebasestorage.app",
-      messagingSenderId: "523847068555",
-      appId: "1:523847068555:web:38f34377bdd6155124dd8e"
-    };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -316,7 +308,7 @@
       feedback.className = `feedback${type ? ` ${type}` : ''}`;
     }
 
-    function showInfoActions(primaryLabel='Ir para o bolÃ£o', secondaryLabel='Voltar'){
+    function showInfoActions(primaryLabel='Ir para o bolão', secondaryLabel='Voltar'){
       primaryLink.textContent = primaryLabel;
       secondaryLink.textContent = secondaryLabel;
       infoActions.classList.remove('hidden');
@@ -324,30 +316,30 @@
 
     function getFriendlyError(error){
       const code = error?.code || '';
-      if (code === 'auth/expired-action-code' || code === 'auth/invalid-action-code') return 'Esse link expirou ou jÃ¡ foi usado. PeÃ§a uma nova redefiniÃ§Ã£o de senha no site.';
+      if (code === 'auth/expired-action-code' || code === 'auth/invalid-action-code') return 'Esse link expirou ou já foi usado. Peça uma nova redefinição de senha no site.';
       if (code === 'auth/weak-password') return 'Escolha uma senha com pelo menos 6 caracteres.';
       if (code === 'auth/user-disabled') return 'Essa conta foi desativada.';
-      if (code === 'auth/network-request-failed') return 'Falha de conexÃ£o. Tente novamente em instantes.';
-      return 'NÃ£o foi possÃ­vel concluir a aÃ§Ã£o agora. Tente novamente pelo site.';
+      if (code === 'auth/network-request-failed') return 'Falha de conexão. Tente novamente em instantes.';
+      return 'Não foi possível concluir a ação agora. Tente novamente pelo site.';
     }
 
     async function handleResetPassword(){
       if(!actionCode){
-        statusCopy.textContent = 'Link invÃ¡lido.';
-        setFeedback('NÃ£o encontramos o cÃ³digo de redefiniÃ§Ã£o nesse link.', 'error');
+        statusCopy.textContent = 'Link inválido.';
+        setFeedback('Não encontramos o código de redefinição nesse link.', 'error');
         showInfoActions('Voltar ao login');
         return;
       }
 
       try{
         const email = await verifyPasswordResetCode(auth, actionCode);
-        statusCopy.textContent = 'Defina sua nova senha para voltar ao bolÃ£o.';
+        statusCopy.textContent = 'Defina sua nova senha para voltar ao bolão.';
         accountCopy.textContent = `Conta: ${email}`;
         accountCopy.classList.remove('hidden');
         resetForm.classList.remove('hidden');
         setFeedback('');
       }catch(error){
-        statusCopy.textContent = 'NÃ£o foi possÃ­vel validar seu link.';
+        statusCopy.textContent = 'Não foi possível validar seu link.';
         setFeedback(getFriendlyError(error), 'error');
         showInfoActions('Pedir novo link');
       }
@@ -357,10 +349,10 @@
       try{
         await applyActionCode(auth, actionCode);
         statusCopy.textContent = 'Email confirmado com sucesso.';
-        setFeedback('Sua conta jÃ¡ estÃ¡ pronta para entrar e salvar palpites.', 'success');
-        showInfoActions('Entrar no bolÃ£o');
+        setFeedback('Sua conta já está pronta para entrar e salvar palpites.', 'success');
+        showInfoActions('Entrar no bolão');
       }catch(error){
-        statusCopy.textContent = 'NÃ£o foi possÃ­vel confirmar o email.';
+        statusCopy.textContent = 'Não foi possível confirmar o email.';
         setFeedback(getFriendlyError(error), 'error');
         showInfoActions('Voltar ao site');
       }
@@ -370,11 +362,11 @@
       try{
         const info = await checkActionCode(auth, actionCode);
         await applyActionCode(auth, actionCode);
-        statusCopy.textContent = 'AlteraÃ§Ã£o de email revertida.';
-        setFeedback(`O endereÃ§o ${info?.data?.email || 'anterior'} foi restaurado com sucesso.`, 'success');
-        showInfoActions('Voltar ao bolÃ£o');
+        statusCopy.textContent = 'Alteração de email revertida.';
+        setFeedback(`O endereço ${info?.data?.email || 'anterior'} foi restaurado com sucesso.`, 'success');
+        showInfoActions('Voltar ao bolão');
       }catch(error){
-        statusCopy.textContent = 'NÃ£o foi possÃ­vel restaurar o email.';
+        statusCopy.textContent = 'Não foi possível restaurar o email.';
         setFeedback(getFriendlyError(error), 'error');
         showInfoActions('Voltar ao site');
       }
@@ -389,16 +381,16 @@
         return;
       }
       if(newPassword !== confirmPassword){
-        setFeedback('A confirmaÃ§Ã£o da senha nÃ£o confere.', 'error');
+        setFeedback('A confirmação da senha não confere.', 'error');
         return;
       }
       try{
-        setFeedback('Salvando sua nova senhaâ€¦');
+        setFeedback('Salvando sua nova senha…');
         await confirmPasswordReset(auth, actionCode, newPassword);
         statusCopy.textContent = 'Senha atualizada com sucesso.';
-        setFeedback('Agora vocÃª jÃ¡ pode voltar ao site e entrar com a nova senha.', 'success');
+        setFeedback('Agora você já pode voltar ao site e entrar com a nova senha.', 'success');
         resetForm.classList.add('hidden');
-        showInfoActions('Entrar com a nova senha', 'Voltar ao inÃ­cio');
+        showInfoActions('Entrar com a nova senha', 'Voltar ao início');
       }catch(error){
         setFeedback(getFriendlyError(error), 'error');
       }
@@ -415,14 +407,14 @@
         handleRecoverEmail();
         break;
       default:
-        statusCopy.textContent = 'AÃ§Ã£o de conta nÃ£o reconhecida.';
-        setFeedback('Esse link nÃ£o corresponde a uma aÃ§Ã£o suportada.', 'error');
-        showInfoActions('Voltar ao bolÃ£o');
+        statusCopy.textContent = 'Ação de conta não reconhecida.';
+        setFeedback('Esse link não corresponde a uma ação suportada.', 'error');
+        showInfoActions('Voltar ao bolão');
     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        const currentCacheName = 'bolao-do-ti-v3-pwa-20260616';
+        const currentCacheName = 'bolao-do-ti-v4-pwa-20260618-cache-reset';
         if ('caches' in window) {
           caches.keys()
             .then(keys => Promise.all(
@@ -433,7 +425,7 @@
             .catch(() => {});
         }
 
-        navigator.serviceWorker.register('/sw.js?v=20260616-pwa-fix')
+        navigator.serviceWorker.register('/sw.js?v=20260618-cache-reset')
           .then(registration => {
             registration.update().catch(() => {});
             const worker = registration.waiting || registration.active;

@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'bolao-do-ti-';
-const CACHE_NAME = `${CACHE_PREFIX}v3-pwa-20260616`;
+const CACHE_NAME = `${CACHE_PREFIX}v4-pwa-20260618-lock-at-kickoff`;
 const APP_SHELL = [
   '/',
   '/index.html',
