@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BolÃ£o do TI</title>
-<meta name="application-name" content="BolÃ£o do TI">
-<meta name="apple-mobile-web-app-title" content="BolÃ£o do TI">
+<title>Bolão do TI</title>
+<meta name="application-name" content="Bolão do TI">
+<meta name="apple-mobile-web-app-title" content="Bolão do TI">
 <meta name="theme-color" content="#07141d">
-<meta property="og:title" content="BolÃ£o do TI">
-<meta name="twitter:title" content="BolÃ£o do TI">
+<meta property="og:title" content="Bolão do TI">
+<meta name="twitter:title" content="Bolão do TI">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" href="/app-icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/app-icon-192.png">
@@ -236,9 +236,10 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
 .hero-shell{
   position:relative;
   z-index:1;
-  width:min(960px,100%);
+  width:min(1080px,100%);
   margin:0 auto;
-  display:block;
+  display:flex;
+  justify-content:center;
 }
 .hero-badge{
   display:inline-block;
@@ -252,13 +253,15 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
 .hero-copy{
   display:flex;
   flex-direction:column;
-  align-items:flex-start;
+  align-items:center;
+  width:min(720px,100%);
   gap:var(--space-4);
+  text-align:center;
 }
 .hero-logo{
   position:relative;
   width:min(100%,560px);
-  margin:0;
+  margin:0 auto;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -304,9 +307,10 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   background:radial-gradient(circle at 35% 35%, #7ee2c6, #14b8a6 72%, #0f766e 100%);
 }
 .hero-logo-copy{
-  text-align:left;
+  text-align:center;
   display:flex;
   flex-direction:column;
+  align-items:center;
   gap:6px;
 }
 .hero-logo-kicker{
@@ -338,17 +342,153 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   text-shadow:0 0 60px rgba(34,211,238,0.24);
 }
 .hero h1 span{color:var(--hero-title-accent,var(--copa-gold))}
-.hero p{color:var(--hero-text-soft);max-width:58ch;margin:0;font-size:var(--text-sm);position:relative}
+.hero p{color:var(--hero-text-soft);max-width:58ch;margin:0 auto;font-size:var(--text-sm);position:relative}
 .hero p strong{color:var(--copa-gold)}
 .hero-actions{
   display:flex;
   flex-wrap:wrap;
   gap:var(--space-3);
+  justify-content:center;
+}
+.hero-leader-spotlight{
+  position:relative;
+  width:min(100%,560px);
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  gap:14px;
+  padding:14px 18px;
+  border-radius:26px;
+  border:1px solid rgba(245,200,0,.28);
+  background:
+    linear-gradient(135deg, rgba(245,200,0,.14), rgba(34,211,238,.12)),
+    rgba(7,20,29,.72);
+  box-shadow:0 18px 45px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.05);
+  overflow:hidden;
+}
+.hero-leader-spotlight[hidden]{display:none !important}
+.hero-leader-spotlight::before{
+  content:'';
+  position:absolute;
+  inset:-30% auto auto -10%;
+  width:180px;
+  height:180px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(245,200,0,.22), transparent 70%);
+  opacity:.8;
+  pointer-events:none;
+}
+.hero-leader-spotlight::after{
+  content:'';
+  position:absolute;
+  inset:auto -12% -45% auto;
+  width:180px;
+  height:180px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(34,211,238,.22), transparent 72%);
+  pointer-events:none;
+}
+.hero-leader-avatar{
+  position:relative;
+  width:58px;
+  height:58px;
+  border-radius:20px;
+  display:grid;
+  place-items:center;
+  color:#fff;
+  font-size:18px;
+  font-weight:800;
+  letter-spacing:.04em;
+  box-shadow:0 10px 24px rgba(0,0,0,.24);
+  z-index:1;
+}
+.hero-leader-avatar::after{
+  content:'';
+  position:absolute;
+  inset:-6px;
+  border-radius:24px;
+  border:1px solid rgba(245,200,0,.38);
+  opacity:.7;
+  animation:leaderHalo 2.6s ease-in-out infinite;
+}
+.hero-leader-copy{
+  position:relative;
+  z-index:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.hero-leader-kicker{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--copa-gold);
+}
+.hero-leader-kicker::before{
+  content:'';
+  width:8px;
+  height:8px;
+  border-radius:999px;
+  background:var(--copa-gold);
+  box-shadow:0 0 0 rgba(245,200,0,.55);
+  animation:leaderPulse 1.8s ease-out infinite;
+}
+.hero-leader-name{
+  font-family:var(--font-display);
+  font-size:clamp(1.35rem,1.1rem + .7vw,1.9rem);
+  letter-spacing:.04em;
+  color:var(--copa-white);
+  line-height:.95;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.hero-leader-meta{
+  font-size:var(--text-xs);
+  color:var(--hero-text-soft);
+  line-height:1.45;
+}
+.hero-leader-points{
+  position:relative;
+  z-index:1;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:2px;
+  text-align:right;
+}
+.hero-leader-points strong{
+  font-family:var(--font-display);
+  font-size:clamp(1.8rem,1.4rem + .9vw,2.5rem);
+  line-height:.9;
+  color:var(--copa-gold);
+}
+.hero-leader-points span{
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--hero-text-soft);
+}
+@keyframes leaderPulse{
+  0%{transform:scale(.92);box-shadow:0 0 0 0 rgba(245,200,0,.52)}
+  70%{transform:scale(1.08);box-shadow:0 0 0 12px rgba(245,200,0,0)}
+  100%{transform:scale(.92);box-shadow:0 0 0 0 rgba(245,200,0,0)}
+}
+@keyframes leaderHalo{
+  0%,100%{transform:scale(1);opacity:.34}
+  50%{transform:scale(1.06);opacity:.78}
 }
 .hero-microstats{
   display:flex;
   flex-wrap:wrap;
   gap:10px;
+  justify-content:center;
 }
 .hero-microstat{
   padding:10px 14px;
@@ -506,15 +646,25 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
 }
 .winner-poll{
   position:relative;
-  max-width:920px;
+  max-width:1040px;
   margin:var(--space-6) auto 0;
-  padding:var(--space-5);
-  border-radius:var(--radius-xl);
-  border:1px solid rgba(245,200,0,0.18);
-  background:rgba(7,18,30,0.74);
-  box-shadow:0 18px 40px rgba(0,0,0,0.22);
+  padding:var(--space-6);
+  border-radius:28px;
+  border:1px solid rgba(245,200,0,0.16);
+  background:
+    linear-gradient(180deg, rgba(8,18,30,0.94), rgba(5,14,24,0.9)),
+    radial-gradient(circle at top right, rgba(34,211,238,0.14), transparent 34%);
+  box-shadow:0 28px 64px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.04);
   display:none;
   text-align:left;
+  overflow:hidden;
+}
+.winner-poll::before{
+  content:'';
+  position:absolute;
+  inset:0 0 auto 0;
+  height:1px;
+  background:linear-gradient(90deg, transparent, rgba(126,242,195,0.45), transparent);
 }
 .winner-poll.show{display:block}
 .winner-poll-header{
@@ -522,101 +672,165 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   align-items:flex-start;
   justify-content:space-between;
   gap:var(--space-4);
-  margin-bottom:var(--space-4);
+  margin-bottom:var(--space-3);
 }
 .winner-poll-title{
   font-family:var(--font-display);
-  font-size:var(--text-lg);
+  font-size:clamp(1.4rem,1.18rem + .7vw,2rem);
+  letter-spacing:.03em;
   color:var(--copa-white);
 }
 .winner-poll-subtitle{
-  margin-top:6px;
-  font-size:var(--text-xs);
-  color:rgba(236,248,255,0.62);
+  margin-top:8px;
+  max-width:52ch;
+  font-size:0.95rem;
+  line-height:1.45;
+  color:rgba(236,248,255,0.68);
 }
 .winner-poll-total{
   flex-shrink:0;
   padding:10px 14px;
-  border-radius:var(--radius-lg);
-  border:1px solid rgba(126,242,195,0.22);
-  background:rgba(126,242,195,0.08);
+  border-radius:16px;
+  border:1px solid rgba(126,242,195,0.18);
+  background:linear-gradient(135deg, rgba(20,184,166,0.14), rgba(34,211,238,0.08));
   color:var(--copa-gold);
-  font-size:var(--text-xs);
-  font-weight:700;
-  letter-spacing:.08em;
+  font-size:13px;
+  font-weight:800;
+  letter-spacing:.12em;
   text-transform:uppercase;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.05);
 }
 .winner-poll-grid{
-  display:grid;
-  grid-template-columns:minmax(260px,320px) minmax(0,1fr);
-  gap:var(--space-5);
-  align-items:start;
-}
-.winner-poll-form{
   display:flex;
   flex-direction:column;
-  gap:var(--space-3);
-  padding:var(--space-4);
-  border-radius:var(--radius-lg);
-  border:1px solid rgba(255,255,255,0.08);
-  background:rgba(255,255,255,0.03);
+  gap:var(--space-5);
+}
+.winner-poll-form{
+  display:grid;
+  grid-template-columns:auto minmax(220px,320px) auto;
+  align-items:center;
+  gap:14px;
+  padding:14px 18px;
+  border-radius:18px;
+  border:1px solid rgba(126,242,195,0.14);
+  background:
+    linear-gradient(180deg, rgba(18,34,49,0.92), rgba(11,24,36,0.9)),
+    rgba(255,255,255,0.03);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.04);
 }
 .winner-poll-label{
   font-size:var(--text-xs);
   font-weight:700;
-  letter-spacing:.08em;
+  letter-spacing:.14em;
   text-transform:uppercase;
-  color:var(--hero-text-soft);
+  color:var(--copa-white);
+  white-space:nowrap;
 }
 .winner-poll-select{
   width:100%;
-  background:var(--color-surface-off);
-  border:1px solid var(--color-border);
+  min-height:46px;
+  background:rgba(21,48,65,0.82);
+  border:1px solid rgba(34,211,238,0.18);
   color:var(--color-text);
-  border-radius:var(--radius-md);
+  border-radius:14px;
   padding:12px 14px;
-  font-size:var(--text-sm);
+  font-size:0.98rem;
+  font-weight:700;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.03);
 }
 .winner-poll-select:focus{
   outline:none;
-  border-color:var(--copa-gold);
-  box-shadow:0 0 0 3px rgba(245,200,0,0.12);
+  border-color:rgba(126,242,195,0.5);
+  box-shadow:0 0 0 4px rgba(126,242,195,0.12);
 }
 .winner-poll-hint{
-  min-height:36px;
+  min-height:0;
   font-size:var(--text-xs);
   line-height:1.5;
   color:var(--color-text-muted);
+  padding-top:0;
 }
 .winner-poll-results{
   display:flex;
   flex-direction:column;
-  gap:var(--space-3);
+  gap:10px;
+  max-height:330px;
+  overflow-y:auto;
+  padding-right:6px;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(126,242,195,0.35) rgba(255,255,255,0.06);
+}
+.winner-poll-results-head{
+  position:sticky;
+  top:0;
+  z-index:2;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:0 2px 8px;
+  margin-bottom:2px;
+  background:linear-gradient(180deg, rgba(6,16,25,0.98), rgba(6,16,25,0.86) 76%, rgba(6,16,25,0));
+  backdrop-filter:blur(10px);
+}
+.winner-poll-results-title{
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:rgba(236,248,255,0.64);
+}
+.winner-poll-results-note{
+  font-size:12px;
+  color:var(--color-text-faint);
+  white-space:nowrap;
+}
+.winner-poll-results::-webkit-scrollbar{
+  width:10px;
+}
+.winner-poll-results::-webkit-scrollbar-track{
+  background:rgba(255,255,255,0.05);
+  border-radius:999px;
+}
+.winner-poll-results::-webkit-scrollbar-thumb{
+  background:linear-gradient(180deg, rgba(126,242,195,0.45), rgba(34,211,238,0.4));
+  border-radius:999px;
 }
 .winner-poll-empty{
-  padding:var(--space-4);
-  border-radius:var(--radius-lg);
-  border:1px dashed rgba(255,255,255,0.12);
+  padding:18px 20px;
+  border-radius:20px;
+  border:1px dashed rgba(255,255,255,0.14);
   color:var(--color-text-muted);
   font-size:var(--text-sm);
-  background:rgba(255,255,255,0.02);
+  background:rgba(255,255,255,0.025);
 }
 .winner-poll-row{
-  padding:var(--space-3) var(--space-4);
-  border-radius:var(--radius-lg);
-  border:1px solid rgba(255,255,255,0.08);
-  background:rgba(255,255,255,0.03);
+  padding:12px 14px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.07);
+  background:
+    linear-gradient(180deg, rgba(20,35,49,0.78), rgba(14,26,38,0.72)),
+    rgba(255,255,255,0.03);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.03);
+  transition:transform var(--transition), border-color var(--transition), background var(--transition);
+}
+.winner-poll-row:hover{
+  transform:translateY(-2px);
+  border-color:rgba(34,211,238,0.18);
 }
 .winner-poll-row.is-user-vote{
-  border-color:rgba(245,200,0,0.28);
-  box-shadow:0 0 0 1px rgba(245,200,0,0.08) inset;
+  border-color:rgba(245,200,0,0.34);
+  background:
+    linear-gradient(180deg, rgba(35,44,21,0.38), rgba(17,30,40,0.76)),
+    rgba(255,255,255,0.03);
+  box-shadow:0 0 0 1px rgba(245,200,0,0.08) inset, 0 10px 24px rgba(0,0,0,0.12);
 }
 .winner-poll-row-head{
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:var(--space-3);
-  margin-bottom:10px;
+  margin-bottom:8px;
 }
 .winner-poll-team{
   display:flex;
@@ -625,12 +839,12 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   min-width:0;
 }
 .winner-poll-name{
-  font-size:var(--text-sm);
-  font-weight:700;
+  font-size:1rem;
+  font-weight:800;
   color:var(--color-text);
 }
 .winner-poll-meta{
-  font-size:var(--text-xs);
+  font-size:12px;
   color:var(--color-text-faint);
   white-space:nowrap;
 }
@@ -638,25 +852,29 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   height:10px;
   border-radius:999px;
   overflow:hidden;
-  background:rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.09);
+  box-shadow:inset 0 1px 2px rgba(0,0,0,0.24);
 }
 .winner-poll-bar > span{
   display:block;
   height:100%;
   border-radius:999px;
   background:linear-gradient(90deg,var(--copa-gold),#16c47f 55%,#3b82f6);
+  box-shadow:0 0 18px rgba(34,211,238,0.18);
 }
 .winner-poll-badge{
   display:inline-flex;
   align-items:center;
   gap:6px;
-  padding:4px 8px;
+  margin-top:10px;
+  padding:6px 9px;
   border-radius:999px;
-  background:rgba(245,200,0,0.12);
+  background:rgba(126,242,195,0.08);
+  border:1px solid rgba(126,242,195,0.12);
   color:var(--copa-gold);
-  font-size:10px;
-  font-weight:700;
-  letter-spacing:.06em;
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.12em;
   text-transform:uppercase;
 }
 .competition-switcher{
@@ -988,11 +1206,29 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
 }
 .result-score::-webkit-inner-spin-button,.result-score::-webkit-outer-spin-button{-webkit-appearance:none}
 .result-score:focus{outline:none;border-color:var(--copa-gold);box-shadow:0 0 0 3px rgba(245,200,0,0.2)}
+.result-score-display{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:38px;
+  color:var(--color-text);
+}
+.result-inputs.is-guess .result-score-display{
+  border-color:rgba(126,242,195,0.26);
+  background:rgba(15,65,61,0.34);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.05);
+}
+.result-inputs.is-draft .result-score-display{
+  border-color:rgba(34,211,238,0.3);
+  background:rgba(14,55,72,0.36);
+}
 .result-tag{font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;padding:2px 8px;border-radius:var(--radius-full)}
 .result-tag.final{background:var(--copa-green);color:#fff}
 .result-tag.live{background:var(--copa-red);color:#fff}
 .result-tag.pending{background:var(--pending-bg,var(--color-surface-off));color:var(--pending-text,var(--color-text-faint))}
 .match-meta{font-size:var(--text-xs);color:var(--color-text-faint)}
+.match-meta.is-guess{color:var(--copa-gold)}
+.match-meta.is-draft{color:var(--copa-blue)}
 .palpites-toggle{font-size:var(--text-xs);color:var(--muted-link-color,var(--copa-gold));cursor:pointer;text-decoration:none;opacity:.9;transition:opacity var(--transition)}
 .palpites-toggle:hover{opacity:1}
 
@@ -1173,6 +1409,17 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
     grid-template-columns:1fr;
   }
   .hero-actions .btn{width:100%;justify-content:center}
+  .hero-leader-spotlight{
+    width:min(100%,360px);
+    grid-template-columns:1fr;
+    justify-items:center;
+    text-align:center;
+    padding:16px;
+    gap:10px;
+  }
+  .hero-leader-copy{align-items:center}
+  .hero-leader-name{white-space:normal}
+  .hero-leader-points{align-items:center;text-align:center}
   .hero-microstats{
     width:min(100%,360px);
     display:grid;
@@ -1209,7 +1456,14 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   .winner-poll{padding:var(--space-4);margin-top:var(--space-5)}
   .winner-poll-header{flex-direction:column;align-items:center;text-align:center}
   .winner-poll-total{width:100%;text-align:center}
-  .winner-poll-grid{grid-template-columns:1fr}
+  .winner-poll-grid{gap:var(--space-4)}
+  .winner-poll-form{
+    grid-template-columns:1fr;
+    padding:var(--space-4);
+    justify-items:stretch;
+  }
+  .winner-poll-results{max-height:300px}
+  .winner-poll-results-note{white-space:normal;text-align:right}
   .winner-poll-row-head{flex-direction:column;align-items:flex-start}
   .upcoming-bubble{padding:var(--space-4)}
   .upcoming-bubble-item{padding:12px 13px;border-radius:16px}
@@ -1524,6 +1778,12 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
 .leaders-bubble-name{font-size:var(--text-sm);font-weight:700;color:var(--color-text)}
 .leaders-bubble-meta{font-size:var(--text-xs);color:var(--color-text-faint)}
 .leaders-bubble-points{font-family:var(--font-display);font-size:var(--text-lg);color:var(--copa-gold)}
+@media (prefers-reduced-motion: reduce){
+  .hero-leader-kicker::before,
+  .hero-leader-avatar::after{
+    animation:none;
+  }
+}
 @media(max-width:640px){
   .hero-panels{
     display:grid;
@@ -1543,6 +1803,11 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   .hero-main-column > .upcoming-bubble.show{
     order:1;
   }
+  .upcoming-bubble-list{
+    max-height:320px;
+    overflow-y:auto;
+    padding-right:4px;
+  }
   .leaders-bubble-header{
     min-height:unset;
     margin-bottom:10px;
@@ -1553,10 +1818,10 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   .leaders-bubble-list{
     display:grid;
     gap:10px;
-    overflow:visible;
+    overflow-y:auto;
     min-height:unset;
-    max-height:none;
-    padding-right:0;
+    max-height:320px;
+    padding-right:4px;
   }
 }
 /* ===== MODAL ===== */
@@ -1636,26 +1901,17 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
 <!-- Firebase SDK (Firestore em tempo real) -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { firebaseConfig } from "./firebase-config.js";
   import {
     getFirestore, doc, collection,
     setDoc, deleteDoc, getDoc, onSnapshot
   } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
   import {
     getAuth, onAuthStateChanged,
-    createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     sendPasswordResetEmail,
     signOut
   } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-  const firebaseConfig = {
-    apiKey: "REDACTED_FIREBASE_API_KEY",
-    authDomain: "copa2026-c344c.firebaseapp.com",
-    projectId: "copa2026-c344c",
-    storageBucket: "copa2026-c344c.firebasestorage.app",
-    messagingSenderId: "523847068555",
-    appId: "1:523847068555:web:38f34377bdd6155124dd8e"
-  };
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
@@ -1745,7 +2001,7 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
     if (typeof renderPlayers === 'function') renderPlayers();
   });
 
-  // ---- OperaÃ§Ãµes Firestore expostas globalmente ----
+  // ---- Operações Firestore expostas globalmente ----
   window.fsAddPlayer = async (id, name) => {
     const ref = doc(db, "players", id);
     const snap = await getDoc(ref);
@@ -1770,18 +2026,6 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
     const payload = sanitizeResultsEntry({ home, away });
     if (!payload) throw new Error('Resultado invalido.');
     await setDoc(doc(db, "results", mid), payload);
-  };
-
-  window.fsRegisterParticipant = async (id, name) => {
-    const cleanName = typeof name === 'string' ? name.trim() : '';
-    if (!cleanName) throw new Error('Nome invalido.');
-    const playerRef = doc(db, "players", id);
-    const playerSnap = await getDoc(playerRef);
-    const current = playerSnap.exists() ? sanitizePlayerEntry(id, playerSnap.data()) : null;
-    await setDoc(playerRef, { name: cleanName, role: 'participant', createdAt: current?.createdAt || Date.now() }, { merge: true });
-    const ref = doc(db, "palpites", id);
-    const snap = await getDoc(ref);
-    if (!snap.exists()) await setDoc(ref, {});
   };
 
   window.fsUpdateParticipantName = async (id, name, dayKey) => {
@@ -1826,10 +2070,6 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   window.fsGetPlayerProfile = async (id) => {
     const snap = await getDoc(doc(db, "players", id));
     return snap.exists() ? snap.data() : null;
-  };
-
-  window.authCreateParticipant = async (email, password) => {
-    return createUserWithEmailAndPassword(auth, normalizeAuthEmail(email), password);
   };
 
   window.authLoginParticipant = async (email, password) => {
@@ -1902,13 +2142,12 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
     </svg>
     <div>
       <div class="logo-text">Chuta que Acerta</div>
-      <div class="logo-sub">Copa do Mundo 2026 Â· Palpites oficiais</div>
+      <div class="logo-sub">Copa do Mundo 2026 · Palpites oficiais</div>
     </div>
   </div>
   <div class="header-actions">
     <div id="header-login-form" class="header-auth">
-      <button class="btn btn-gold" onclick="openAuthModal('register')">Criar conta</button>
-      <button class="btn btn-outline" onclick="openAuthModal('login')">Entrar</button>
+      <button class="btn btn-gold" onclick="openAuthModal('login')">Entrar</button>
     </div>
     <div id="header-profile-info" class="header-profile">
       <span id="header-profile-name" class="header-profile-name"></span>
@@ -1931,7 +2170,7 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
         <div class="hero-logo-copy">
           <span class="hero-logo-kicker">Copa do Mundo</span>
           <strong class="hero-logo-title">World Cup <span>2026</span></strong>
-          <span class="hero-logo-meta">CanadÃ¡ â€¢ MÃ©xico â€¢ Estados Unidos</span>
+          <span class="hero-logo-meta">Canadá • México • Estados Unidos</span>
         </div>
       </div>
       <h1>Palpites, ranking e clima de arquibancada em <span>tempo real</span></h1>
@@ -1940,11 +2179,12 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
         <button class="btn btn-gold" type="button" onclick="showTab('matches'); document.getElementById('content-matches').scrollIntoView({ behavior: 'smooth', block: 'start' });">Ver jogos e palpites</button>
         <button class="btn btn-outline" id="hero-secondary-action" type="button" onclick="handleHeroSecondaryAction()">Entrar para ver classificacao</button>
       </div>
+      <div class="hero-leader-spotlight" id="hero-leader-spotlight" aria-live="polite" hidden></div>
       <div class="hero-microstats" aria-label="Destaques do bolao">
         <div class="hero-microstat hero-microstat-deadline" id="hero-deadline-pill">
           <div class="hero-microstat-copy">
             <strong class="hero-microstat-match" id="hero-deadline-match">Carregando confronto...</strong>
-            <span class="hero-microstat-note" id="hero-deadline-note">Palpite encerra automaticamente 1h antes.</span>
+            <span class="hero-microstat-note" id="hero-deadline-note">Palpite encerra automaticamente no inicio da partida.</span>
           </div>
           <span class="hero-microstat-countdown" id="hero-deadline-countdown">--:--</span>
         </div>
@@ -1954,15 +2194,15 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   <div class="winner-poll" id="winner-poll">
     <div class="winner-poll-header">
       <div>
-        <div class="winner-poll-title" id="winner-poll-title">Enquete do campeÃ£o</div>
-        <div class="winner-poll-subtitle" id="winner-poll-subtitle">Vote em quem vocÃª acredita que vai ser o campeÃ£o.</div>
+        <div class="winner-poll-title" id="winner-poll-title">Enquete do campeão</div>
+        <div class="winner-poll-subtitle" id="winner-poll-subtitle">Vote em quem você acredita que vai levantar a taça. O percentual atual aparece em tempo real.</div>
       </div>
       <div class="winner-poll-total" id="winner-poll-total">0 votos</div>
     </div>
     <div class="winner-poll-grid">
       <div class="winner-poll-form">
         <label class="winner-poll-label" for="winner-poll-select">Seu voto</label>
-        <select class="winner-poll-select" id="winner-poll-select" aria-label="Escolha o campeÃ£o"></select>
+        <select class="winner-poll-select" id="winner-poll-select" aria-label="Escolha o campeão"></select>
         <button class="btn btn-gold" type="button" id="winner-poll-submit" onclick="submitWinnerPollVote()">Confirmar voto</button>
         <div class="winner-poll-hint" id="winner-poll-hint"></div>
       </div>
@@ -1984,7 +2224,7 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
     <aside id="leaders-bubble" class="leaders-bubble" aria-live="polite">
       <div class="leaders-bubble-header">
         <div>
-          <div class="leaders-bubble-title">LideranÃ§a ao vivo</div>
+          <div class="leaders-bubble-title">Liderança ao vivo</div>
           <div class="leaders-bubble-sub" id="leaders-bubble-sub">Aguardando resultados</div>
         </div>
       </div>
@@ -1997,32 +2237,32 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
       <div class="rules-box">
         <div class="panel-heading">
           <span class="panel-kicker">Formato do jogo</span>
-          <h3>Como a pontuacao funciona</h3>
-          <p class="panel-copy">Regras objetivas para todo mundo acompanhar rapido, comparar desempenho e saber quanto vale cada acerto.</p>
+          <h3>Como a pontuação funciona</h3>
+          <p class="panel-copy">Regras objetivas para todo mundo acompanhar rápido, comparar desempenho e saber quanto vale cada acerto.</p>
         </div>
         <div class="rules-grid">
           <div class="rule-item">
             <div class="rule-icon">3 pts</div>
-            <div class="rule-text"><strong>Placar Exato â€” 3 pts</strong><span>Acertou o placar exato (ex: 2Ã—1 = 2Ã—1)</span></div>
+            <div class="rule-text"><strong>Placar Exato — 3 pts</strong><span>Acertou o placar exato (ex: 2×1 = 2×1)</span></div>
           </div>
           <div class="rule-item">
             <div class="rule-icon">2 pts</div>
-            <div class="rule-text"><strong>Resultado Certo â€” 2 pts</strong><span>Acertou o resultado da partida.</span></div>
+            <div class="rule-text"><strong>Resultado Certo — 2 pts</strong><span>Acertou o resultado da partida.</span></div>
           </div>
           <div class="rule-item">
             <div class="rule-icon">0 pt</div>
-            <div class="rule-text"><strong>Errou â€” 0 pts</strong><span>Resultado completamente errado</span></div>
+            <div class="rule-text"><strong>Errou — 0 pts</strong><span>Resultado completamente errado</span></div>
           </div>
           <div class="rule-item">
             <div class="rule-icon">Livre</div>
-            <div class="rule-text"><strong>Janela de palpite</strong><span>Palpites ficam abertos ate 1h antes de cada partida</span></div>
+            <div class="rule-text"><strong>Janela de palpite</strong><span>Palpites ficam abertos ate o inicio de cada partida</span></div>
           </div>
           <div class="rule-item">
             <div class="rule-icon">Pool</div>
             <div class="rule-text">
-              <strong>PremiaÃ§Ã£o do bolÃ£o</strong>
-              <span>Cada participante contribui com R$ 10,00. O total arrecadado Ã© dividido em 70% para o 1Âº lugar, 20% para o 2Âº lugar e 10% para o 3Âº lugar.</span>
-              <span class="rule-highlight" id="rules-prize-live">0 participantes â€¢ prÃªmio total R$ 0,00 â€¢ 1Âº R$ 0,00 â€¢ 2Âº R$ 0,00 â€¢ 3Âº R$ 0,00</span>
+              <strong>Premiação do bolão</strong>
+              <span>Cada participante contribuiu com R$ 10,00. O total arrecadado foi dividido em 70% para o 1º lugar, 20% para o 2º lugar e 10% para o 3º lugar.</span>
+              <span class="rule-highlight" id="rules-prize-live">18 participantes • prêmio total R$ 180,00 • 1º R$ 126,00 • 2º R$ 36,00 • 3º R$ 18,00</span>
             </div>
           </div>
         </div>
@@ -2037,7 +2277,7 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   <div class="tabs">
     <button class="tab" onclick="showTab('players')" id="tab-players">Participantes</button>
     <button class="tab active" onclick="showTab('matches')" id="tab-matches">Jogos e Palpites</button>
-    <button class="tab" onclick="showTab('scores')" id="tab-scores">Classificacao</button>
+    <button class="tab" onclick="showTab('scores')" id="tab-scores">Classificação</button>
   </div>
 </div>
 
@@ -2049,8 +2289,8 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
     <!-- ADMIN PANEL -->
     <div id="admin-panel" style="display:none; background:var(--color-surface-2); border:1px solid var(--copa-gold); border-radius:var(--radius-lg); padding:var(--space-4); margin-bottom:var(--space-6); justify-content:space-between; align-items:center; gap:var(--space-4); flex-wrap:wrap;">
       <div style="flex:1; min-width:260px;">
-        <strong style="color:var(--copa-gold); display:block; margin-bottom:4px; font-weight:700;">Painel de Controle do Administrador</strong>
-        <span style="font-size:var(--text-xs); color:var(--color-text-muted); line-height:1.4; display:block;">Adicione participantes, insira os palpites e resultados. Quando quiser publicar para todos verem online, clique ao lado para gerar o cÃ³digo atualizado.</span>
+        <strong style="color:var(--copa-gold); display:block; margin-bottom:4px; font-weight:700;">Painel de controle do administrador</strong>
+        <span style="font-size:var(--text-xs); color:var(--color-text-muted); line-height:1.4; display:block;">Adicione participantes, insira os palpites e resultados. Quando quiser publicar para todos verem online, clique ao lado para gerar o código atualizado.</span>
       </div>
       <div style="display:flex; gap:var(--space-2); flex-wrap:wrap;">
         <button class="btn btn-outline" onclick="openImportModal()">
@@ -2059,7 +2299,7 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
         </button>
         <button class="btn btn-gold" onclick="exportHTML()" style="white-space:nowrap;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          Exportar para Google Sites
+          Exportar para o Google Sites
         </button>
       </div>
     </div>
@@ -2067,7 +2307,7 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
     <div class="add-player-form" id="admin-add-player-form" style="display:none;">
       <div class="input-group">
         <label for="player-name-input">Nome do participante</label>
-        <input type="text" id="player-name-input" class="input" placeholder="Ex: JoÃ£o Silva" maxlength="30" style="min-width:240px">
+        <input type="text" id="player-name-input" class="input" placeholder="Ex: João Silva" maxlength="30" style="min-width:240px">
       </div>
       <button class="btn btn-gold" onclick="addPlayer()">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -2076,9 +2316,9 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
     </div>
     <div id="players-grid" class="players-grid">
       <div class="empty-state" id="empty-players" style="grid-column:1/-1">
-        <div class="empty-icon">ðŸ‘¥</div>
+        <div class="empty-icon">👥</div>
         <p style="font-weight:700;margin-bottom:var(--space-2);color:var(--color-text)">Nenhum participante ainda</p>
-        <p style="font-size:var(--text-sm)">Adicione participantes para comeÃ§ar o bolÃ£o!</p>
+        <p style="font-size:var(--text-sm)">Adicione participantes para começar o bolão!</p>
       </div>
     </div>
   </div>
@@ -2091,7 +2331,7 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   <!-- TAB: SCORES -->
   <div class="tab-content content-surface" id="content-scores">
     <div class="section-header">
-      <h2 class="section-title" style="color:var(--copa-gold)">ðŸ… ClassificaÃ§Ã£o Geral</h2>
+      <h2 class="section-title" style="color:var(--copa-gold)">🏅 Classificação Geral</h2>
       <button class="btn btn-outline" onclick="recalcAll()">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
         Recalcular
@@ -2099,7 +2339,7 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
     </div>
     <div id="scoreboard-container">
       <div class="empty-state">
-        <div class="empty-icon">ðŸ…</div>
+        <div class="empty-icon">🏅</div>
         <p style="font-weight:700;margin-bottom:var(--space-2);color:var(--color-text)">Adicione participantes e palpites</p>
       </div>
     </div>
@@ -2115,17 +2355,17 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   </div>
   <div class="floating-banner-actions">
     <button id="floating-banner-action" class="btn btn-gold" type="button" style="display:none" onclick="handleFloatingBannerAction()">Fazer palpite</button>
-    <button id="floating-banner-close" class="floating-banner-close" type="button" aria-label="Fechar aviso" onclick="dismissFloatingBanner()">Ã—</button>
+    <button id="floating-banner-close" class="floating-banner-close" type="button" aria-label="Fechar aviso" onclick="dismissFloatingBanner()">×</button>
   </div>
 </div>
 
 <!-- IMPORT MODAL -->
 <div id="import-modal" class="modal-overlay" onclick="if(event.target===this)closeImportModal()">
   <div class="modal-content">
-    <h3 class="modal-title">ðŸ“¥ Importar Participante e Palpites</h3>
+    <h3 class="modal-title">📥 Importar Participante e Palpites</h3>
     <div class="modal-body">
-      <p style="font-size:var(--text-xs); color:var(--color-text-muted); margin-bottom:var(--space-3);">Cole aqui o texto ou cÃ³digo enviado pelo participante via WhatsApp:</p>
-      <textarea id="import-data-textarea" class="textarea" placeholder="Cole aqui o texto de importaÃ§Ã£o..."></textarea>
+      <p style="font-size:var(--text-xs); color:var(--color-text-muted); margin-bottom:var(--space-3);">Cole aqui o texto ou código enviado pelo participante via WhatsApp:</p>
+      <textarea id="import-data-textarea" class="textarea" placeholder="Cole aqui o texto de importação..."></textarea>
     </div>
     <div class="modal-actions">
       <button class="btn btn-outline" onclick="closeImportModal()">Cancelar</button>
@@ -2158,26 +2398,8 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
           <input type="email" id="auth-reset-email" class="input" placeholder="voce@email.com" maxlength="60" autocomplete="email" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="email">
         </div>
       </div>
-      <div id="auth-register-fields" class="auth-modal-grid" style="display:none">
-        <div class="input-group">
-          <label for="auth-register-name">Nome</label>
-          <input type="text" id="auth-register-name" class="input" placeholder="Ex: Joao" maxlength="15" autocomplete="given-name">
-        </div>
-        <div class="input-group">
-          <label for="auth-register-surname">Sobrenome</label>
-          <input type="text" id="auth-register-surname" class="input" placeholder="Ex: Silva" maxlength="15" autocomplete="family-name">
-        </div>
-        <div class="input-group">
-          <label for="auth-register-email">Email</label>
-          <input type="email" id="auth-register-email" class="input" placeholder="voce@email.com" maxlength="60" autocomplete="email" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="email">
-        </div>
-        <div class="input-group">
-          <label for="auth-register-password">Senha</label>
-          <input type="password" id="auth-register-password" class="input" placeholder="Min. 6 caracteres" maxlength="60" autocomplete="new-password" autocapitalize="off" autocorrect="off" spellcheck="false">
-        </div>
-      </div>
       <div id="auth-modal-feedback" class="auth-modal-note" style="display:none;color:#ff9f9f;border:1px solid rgba(255,107,107,.35);background:rgba(255,107,107,.08);padding:10px 12px;border-radius:12px;margin-top:12px"></div>
-      <div class="auth-modal-note" id="auth-modal-note">Entre com sua conta para salvar e editar apenas os seus palpites.</div>
+      <div class="auth-modal-note" id="auth-modal-note">Entre com a sua conta já cadastrada para acompanhar e editar os seus palpites.</div>
     </div>
     <div class="modal-actions">
       <button class="btn btn-outline" onclick="closeAuthModal()">Cancelar</button>
@@ -2192,10 +2414,10 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
     <div class="modal-body">
       <div class="profile-modal-meta">
         <span id="profile-settings-email"></span>
-        <span id="profile-settings-note">Voce pode alterar seu nome 1 vez por dia.</span>
+        <span id="profile-settings-note">Você pode alterar seu nome 1 vez por dia.</span>
       </div>
       <div class="input-group">
-        <label for="profile-display-name">Nome exibido no bolao</label>
+        <label for="profile-display-name">Nome exibido no bolão</label>
         <input type="text" id="profile-display-name" class="input" placeholder="Seu nome no ranking" maxlength="30" autocomplete="name">
       </div>
       <div id="profile-settings-feedback" class="profile-modal-feedback" role="alert" aria-live="assertive"></div>
@@ -2224,110 +2446,110 @@ const AVATAR_COLORS = [
 const SOLO_COLORS = ['#e8272b','#7b2d8b','#00a651','#1565c0','#c9a800','#9c42ad','#00888a','#c75000','#2d8b2d','#5580cc'];
 
 const ACTIVE_MATCHES = [
-  {id:'A1',group:'A',home:'ðŸ³ï¸ Mexico',away:'ðŸ³ï¸ South Africa',date:'11/06 Â· 13h',phase:'fase-grupos'},
-  {id:'A2',group:'A',home:'ðŸ³ï¸ South Korea',away:'ðŸ³ï¸ Czech Republic',date:'11/06 Â· 20h',phase:'fase-grupos'},
-  {id:'B1',group:'B',home:'ðŸ³ï¸ Canada',away:'ðŸ³ï¸ Bosnia and Herzegovina',date:'12/06 Â· 15h',phase:'fase-grupos'},
-  {id:'D1',group:'D',home:'ðŸ³ï¸ United States',away:'ðŸ³ï¸ Paraguay',date:'12/06 Â· 18h',phase:'fase-grupos'},
-  {id:'C1',group:'C',home:'ðŸ³ï¸ Haiti',away:'ðŸ³ï¸ Scotland',date:'13/06 Â· 21h',phase:'fase-grupos'},
-  {id:'D2',group:'D',home:'ðŸ³ï¸ Australia',away:'ðŸ³ï¸ Turkey',date:'13/06 Â· 21h',phase:'fase-grupos'},
-  {id:'C2',group:'C',home:'ðŸ³ï¸ Brazil',away:'ðŸ³ï¸ Morocco',date:'13/06 Â· 18h',phase:'fase-grupos'},
-  {id:'B2',group:'B',home:'ðŸ³ï¸ Qatar',away:'ðŸ³ï¸ Switzerland',date:'13/06 Â· 12h',phase:'fase-grupos'},
-  {id:'E1',group:'E',home:'ðŸ³ï¸ Ivory Coast',away:'ðŸ³ï¸ Ecuador',date:'14/06 Â· 19h',phase:'fase-grupos'},
-  {id:'E2',group:'E',home:'ðŸ³ï¸ Germany',away:'ðŸ³ï¸ Curacao',date:'14/06 Â· 12h',phase:'fase-grupos'},
-  {id:'F1',group:'F',home:'ðŸ³ï¸ Netherlands',away:'ðŸ³ï¸ Japan',date:'14/06 Â· 15h',phase:'fase-grupos'},
-  {id:'F2',group:'F',home:'ðŸ³ï¸ Sweden',away:'ðŸ³ï¸ Tunisia',date:'14/06 Â· 20h',phase:'fase-grupos'},
-  {id:'H1',group:'H',home:'ðŸ³ï¸ Saudi Arabia',away:'ðŸ³ï¸ Uruguay',date:'15/06 Â· 18h',phase:'fase-grupos'},
-  {id:'H2',group:'H',home:'ðŸ³ï¸ Spain',away:'ðŸ³ï¸ Cape Verde',date:'15/06 Â· 12h',phase:'fase-grupos'},
-  {id:'G1',group:'G',home:'ðŸ³ï¸ Iran',away:'ðŸ³ï¸ New Zealand',date:'15/06 Â· 18h',phase:'fase-grupos'},
-  {id:'G2',group:'G',home:'ðŸ³ï¸ Belgium',away:'ðŸ³ï¸ Egypt',date:'15/06 Â· 12h',phase:'fase-grupos'},
-  {id:'I1',group:'I',home:'ðŸ³ï¸ France',away:'ðŸ³ï¸ Senegal',date:'16/06 Â· 15h',phase:'fase-grupos'},
-  {id:'I2',group:'I',home:'ðŸ³ï¸ Iraq',away:'ðŸ³ï¸ Norway',date:'16/06 Â· 18h',phase:'fase-grupos'},
-  {id:'J1',group:'J',home:'ðŸ³ï¸ Argentina',away:'ðŸ³ï¸ Algeria',date:'16/06 Â· 20h',phase:'fase-grupos'},
-  {id:'J2',group:'J',home:'ðŸ³ï¸ Austria',away:'ðŸ³ï¸ Jordan',date:'16/06 Â· 21h',phase:'fase-grupos'},
-  {id:'L1',group:'L',home:'ðŸ³ï¸ Ghana',away:'ðŸ³ï¸ Panama',date:'17/06 Â· 19h',phase:'fase-grupos'},
-  {id:'L2',group:'L',home:'ðŸ³ï¸ England',away:'ðŸ³ï¸ Croatia',date:'17/06 Â· 15h',phase:'fase-grupos'},
-  {id:'K1',group:'K',home:'ðŸ³ï¸ Portugal',away:'ðŸ³ï¸ DR Congo',date:'17/06 Â· 12h',phase:'fase-grupos'},
-  {id:'K2',group:'K',home:'ðŸ³ï¸ Uzbekistan',away:'ðŸ³ï¸ Colombia',date:'17/06 Â· 20h',phase:'fase-grupos'},
-  {id:'A3',group:'A',home:'ðŸ³ï¸ Czech Republic',away:'ðŸ³ï¸ South Africa',date:'18/06 Â· 12h',phase:'fase-grupos'},
-  {id:'B3',group:'B',home:'ðŸ³ï¸ Switzerland',away:'ðŸ³ï¸ Bosnia and Herzegovina',date:'18/06 Â· 12h',phase:'fase-grupos'},
-  {id:'B4',group:'B',home:'ðŸ³ï¸ Canada',away:'ðŸ³ï¸ Qatar',date:'18/06 Â· 15h',phase:'fase-grupos'},
-  {id:'A4',group:'A',home:'ðŸ³ï¸ Mexico',away:'ðŸ³ï¸ South Korea',date:'18/06 Â· 19h',phase:'fase-grupos'},
-  {id:'C3',group:'C',home:'ðŸ³ï¸ Brazil',away:'ðŸ³ï¸ Haiti',date:'19/06 Â· 21h',phase:'fase-grupos'},
-  {id:'C4',group:'C',home:'ðŸ³ï¸ Scotland',away:'ðŸ³ï¸ Morocco',date:'19/06 Â· 18h',phase:'fase-grupos'},
-  {id:'D3',group:'D',home:'ðŸ³ï¸ Turkey',away:'ðŸ³ï¸ Paraguay',date:'19/06 Â· 20h',phase:'fase-grupos'},
-  {id:'D4',group:'D',home:'ðŸ³ï¸ United States',away:'ðŸ³ï¸ Australia',date:'19/06 Â· 12h',phase:'fase-grupos'},
-  {id:'E3',group:'E',home:'ðŸ³ï¸ Germany',away:'ðŸ³ï¸ Ivory Coast',date:'20/06 Â· 16h',phase:'fase-grupos'},
-  {id:'E4',group:'E',home:'ðŸ³ï¸ Ecuador',away:'ðŸ³ï¸ Curacao',date:'20/06 Â· 19h',phase:'fase-grupos'},
-  {id:'F3',group:'F',home:'ðŸ³ï¸ Netherlands',away:'ðŸ³ï¸ Sweden',date:'20/06 Â· 12h',phase:'fase-grupos'},
-  {id:'F4',group:'F',home:'ðŸ³ï¸ Tunisia',away:'ðŸ³ï¸ Japan',date:'20/06 Â· 22h',phase:'fase-grupos'},
-  {id:'H3',group:'H',home:'ðŸ³ï¸ Uruguay',away:'ðŸ³ï¸ Cape Verde',date:'21/06 Â· 18h',phase:'fase-grupos'},
-  {id:'H4',group:'H',home:'ðŸ³ï¸ Spain',away:'ðŸ³ï¸ Saudi Arabia',date:'21/06 Â· 12h',phase:'fase-grupos'},
-  {id:'G3',group:'G',home:'ðŸ³ï¸ Belgium',away:'ðŸ³ï¸ Iran',date:'21/06 Â· 12h',phase:'fase-grupos'},
-  {id:'G4',group:'G',home:'ðŸ³ï¸ New Zealand',away:'ðŸ³ï¸ Egypt',date:'21/06 Â· 18h',phase:'fase-grupos'},
-  {id:'I3',group:'I',home:'ðŸ³ï¸ Norway',away:'ðŸ³ï¸ Senegal',date:'22/06 Â· 20h',phase:'fase-grupos'},
-  {id:'I4',group:'I',home:'ðŸ³ï¸ France',away:'ðŸ³ï¸ Iraq',date:'22/06 Â· 17h',phase:'fase-grupos'},
-  {id:'J3',group:'J',home:'ðŸ³ï¸ Argentina',away:'ðŸ³ï¸ Austria',date:'22/06 Â· 12h',phase:'fase-grupos'},
-  {id:'J4',group:'J',home:'ðŸ³ï¸ Jordan',away:'ðŸ³ï¸ Algeria',date:'22/06 Â· 20h',phase:'fase-grupos'},
-  {id:'L3',group:'L',home:'ðŸ³ï¸ England',away:'ðŸ³ï¸ Ghana',date:'23/06 Â· 16h',phase:'fase-grupos'},
-  {id:'L4',group:'L',home:'ðŸ³ï¸ Panama',away:'ðŸ³ï¸ Croatia',date:'23/06 Â· 19h',phase:'fase-grupos'},
-  {id:'K3',group:'K',home:'ðŸ³ï¸ Portugal',away:'ðŸ³ï¸ Uzbekistan',date:'23/06 Â· 12h',phase:'fase-grupos'},
-  {id:'K4',group:'K',home:'ðŸ³ï¸ Colombia',away:'ðŸ³ï¸ DR Congo',date:'23/06 Â· 20h',phase:'fase-grupos'},
-  {id:'C5',group:'C',home:'ðŸ³ï¸ Scotland',away:'ðŸ³ï¸ Brazil',date:'24/06 Â· 18h',phase:'fase-grupos'},
-  {id:'C6',group:'C',home:'ðŸ³ï¸ Morocco',away:'ðŸ³ï¸ Haiti',date:'24/06 Â· 18h',phase:'fase-grupos'},
-  {id:'B5',group:'B',home:'ðŸ³ï¸ Switzerland',away:'ðŸ³ï¸ Canada',date:'24/06 Â· 12h',phase:'fase-grupos'},
-  {id:'B6',group:'B',home:'ðŸ³ï¸ Bosnia and Herzegovina',away:'ðŸ³ï¸ Qatar',date:'24/06 Â· 12h',phase:'fase-grupos'},
-  {id:'A5',group:'A',home:'ðŸ³ï¸ Czech Republic',away:'ðŸ³ï¸ Mexico',date:'24/06 Â· 19h',phase:'fase-grupos'},
-  {id:'A6',group:'A',home:'ðŸ³ï¸ South Africa',away:'ðŸ³ï¸ South Korea',date:'24/06 Â· 19h',phase:'fase-grupos'},
-  {id:'E5',group:'E',home:'ðŸ³ï¸ Curacao',away:'ðŸ³ï¸ Ivory Coast',date:'25/06 Â· 16h',phase:'fase-grupos'},
-  {id:'E6',group:'E',home:'ðŸ³ï¸ Ecuador',away:'ðŸ³ï¸ Germany',date:'25/06 Â· 16h',phase:'fase-grupos'},
-  {id:'F5',group:'F',home:'ðŸ³ï¸ Japan',away:'ðŸ³ï¸ Sweden',date:'25/06 Â· 18h',phase:'fase-grupos'},
-  {id:'F6',group:'F',home:'ðŸ³ï¸ Tunisia',away:'ðŸ³ï¸ Netherlands',date:'25/06 Â· 18h',phase:'fase-grupos'},
-  {id:'D5',group:'D',home:'ðŸ³ï¸ Turkey',away:'ðŸ³ï¸ United States',date:'25/06 Â· 19h',phase:'fase-grupos'},
-  {id:'D6',group:'D',home:'ðŸ³ï¸ Paraguay',away:'ðŸ³ï¸ Australia',date:'25/06 Â· 19h',phase:'fase-grupos'},
-  {id:'I5',group:'I',home:'ðŸ³ï¸ Norway',away:'ðŸ³ï¸ France',date:'26/06 Â· 15h',phase:'fase-grupos'},
-  {id:'I6',group:'I',home:'ðŸ³ï¸ Senegal',away:'ðŸ³ï¸ Iraq',date:'26/06 Â· 15h',phase:'fase-grupos'},
-  {id:'G5',group:'G',home:'ðŸ³ï¸ Egypt',away:'ðŸ³ï¸ Iran',date:'26/06 Â· 20h',phase:'fase-grupos'},
-  {id:'G6',group:'G',home:'ðŸ³ï¸ New Zealand',away:'ðŸ³ï¸ Belgium',date:'26/06 Â· 20h',phase:'fase-grupos'},
-  {id:'H5',group:'H',home:'ðŸ³ï¸ Cape Verde',away:'ðŸ³ï¸ Saudi Arabia',date:'26/06 Â· 19h',phase:'fase-grupos'},
-  {id:'H6',group:'H',home:'ðŸ³ï¸ Uruguay',away:'ðŸ³ï¸ Spain',date:'26/06 Â· 18h',phase:'fase-grupos'},
-  {id:'L5',group:'L',home:'ðŸ³ï¸ Panama',away:'ðŸ³ï¸ England',date:'27/06 Â· 17h',phase:'fase-grupos'},
-  {id:'L6',group:'L',home:'ðŸ³ï¸ Croatia',away:'ðŸ³ï¸ Ghana',date:'27/06 Â· 17h',phase:'fase-grupos'},
-  {id:'J5',group:'J',home:'ðŸ³ï¸ Algeria',away:'ðŸ³ï¸ Austria',date:'27/06 Â· 21h',phase:'fase-grupos'},
-  {id:'J6',group:'J',home:'ðŸ³ï¸ Jordan',away:'ðŸ³ï¸ Argentina',date:'27/06 Â· 21h',phase:'fase-grupos'},
-  {id:'K5',group:'K',home:'ðŸ³ï¸ Colombia',away:'ðŸ³ï¸ Portugal',date:'27/06 Â· 19h30',phase:'fase-grupos'},
-  {id:'K6',group:'K',home:'ðŸ³ï¸ DR Congo',away:'ðŸ³ï¸ Uzbekistan',date:'27/06 Â· 19h30',phase:'fase-grupos'},
-  {id:'R32-1',group:null,home:'ðŸ³ï¸ 2Âº Grupo A',away:'ðŸ³ï¸ 2Âº Grupo B',date:'28/06 Â· 12h',phase:'trintaedois'},
-  {id:'R32-2',group:null,home:'ðŸ³ï¸ 1Âº Grupo E',away:'ðŸ³ï¸ Melhor 3Âº de A/B/C/D/F',date:'29/06 Â· 16h30',phase:'trintaedois'},
-  {id:'R32-3',group:null,home:'ðŸ³ï¸ 1Âº Grupo F',away:'ðŸ³ï¸ 2Âº Grupo C',date:'29/06 Â· 19h',phase:'trintaedois'},
-  {id:'R32-4',group:null,home:'ðŸ³ï¸ 1Âº Grupo C',away:'ðŸ³ï¸ 2Âº Grupo F',date:'29/06 Â· 12h',phase:'trintaedois'},
-  {id:'R32-5',group:null,home:'ðŸ³ï¸ 1Âº Grupo I',away:'ðŸ³ï¸ Melhor 3Âº de C/D/F/G/H',date:'30/06 Â· 17h',phase:'trintaedois'},
-  {id:'R32-6',group:null,home:'ðŸ³ï¸ 2Âº Grupo E',away:'ðŸ³ï¸ 2Âº Grupo I',date:'30/06 Â· 12h',phase:'trintaedois'},
-  {id:'R32-7',group:null,home:'ðŸ³ï¸ 1Âº Grupo A',away:'ðŸ³ï¸ Melhor 3Âº de C/E/F/H/I',date:'30/06 Â· 19h',phase:'trintaedois'},
-  {id:'R32-8',group:null,home:'ðŸ³ï¸ 1Âº Grupo L',away:'ðŸ³ï¸ Melhor 3Âº de E/H/I/J/K',date:'01/07 Â· 12h',phase:'trintaedois'},
-  {id:'R32-9',group:null,home:'ðŸ³ï¸ 1Âº Grupo D',away:'ðŸ³ï¸ Melhor 3Âº de B/E/F/I/J',date:'01/07 Â· 17h',phase:'trintaedois'},
-  {id:'R32-10',group:null,home:'ðŸ³ï¸ 1Âº Grupo G',away:'ðŸ³ï¸ Melhor 3Âº de A/E/H/I/J',date:'01/07 Â· 13h',phase:'trintaedois'},
-  {id:'R32-11',group:null,home:'ðŸ³ï¸ 2Âº Grupo K',away:'ðŸ³ï¸ 2Âº Grupo L',date:'02/07 Â· 19h',phase:'trintaedois'},
-  {id:'R32-12',group:null,home:'ðŸ³ï¸ 1Âº Grupo H',away:'ðŸ³ï¸ 2Âº Grupo J',date:'02/07 Â· 12h',phase:'trintaedois'},
-  {id:'R32-13',group:null,home:'ðŸ³ï¸ 1Âº Grupo B',away:'ðŸ³ï¸ Melhor 3Âº de E/F/G/I/J',date:'02/07 Â· 20h',phase:'trintaedois'},
-  {id:'R32-14',group:null,home:'ðŸ³ï¸ 1Âº Grupo J',away:'ðŸ³ï¸ 2Âº Grupo H',date:'03/07 Â· 18h',phase:'trintaedois'},
-  {id:'R32-15',group:null,home:'ðŸ³ï¸ 1Âº Grupo K',away:'ðŸ³ï¸ Melhor 3Âº de D/E/I/J/L',date:'03/07 Â· 20h30',phase:'trintaedois'},
-  {id:'R32-16',group:null,home:'ðŸ³ï¸ 2Âº Grupo D',away:'ðŸ³ï¸ 2Âº Grupo G',date:'03/07 Â· 13h',phase:'trintaedois'},
-  {id:'R16-1',group:null,home:'ðŸ³ï¸ Vencedor Jogo 74',away:'ðŸ³ï¸ Vencedor Jogo 77',date:'04/07 Â· 17h',phase:'oitavas'},
-  {id:'R16-2',group:null,home:'ðŸ³ï¸ Vencedor Jogo 73',away:'ðŸ³ï¸ Vencedor Jogo 75',date:'04/07 Â· 12h',phase:'oitavas'},
-  {id:'R16-3',group:null,home:'ðŸ³ï¸ Vencedor Jogo 76',away:'ðŸ³ï¸ Vencedor Jogo 78',date:'05/07 Â· 16h',phase:'oitavas'},
-  {id:'R16-4',group:null,home:'ðŸ³ï¸ Vencedor Jogo 79',away:'ðŸ³ï¸ Vencedor Jogo 80',date:'05/07 Â· 18h',phase:'oitavas'},
-  {id:'R16-5',group:null,home:'ðŸ³ï¸ Vencedor Jogo 83',away:'ðŸ³ï¸ Vencedor Jogo 84',date:'06/07 Â· 14h',phase:'oitavas'},
-  {id:'R16-6',group:null,home:'ðŸ³ï¸ Vencedor Jogo 81',away:'ðŸ³ï¸ Vencedor Jogo 82',date:'06/07 Â· 17h',phase:'oitavas'},
-  {id:'R16-7',group:null,home:'ðŸ³ï¸ Vencedor Jogo 86',away:'ðŸ³ï¸ Vencedor Jogo 88',date:'07/07 Â· 12h',phase:'oitavas'},
-  {id:'R16-8',group:null,home:'ðŸ³ï¸ Vencedor Jogo 85',away:'ðŸ³ï¸ Vencedor Jogo 87',date:'07/07 Â· 13h',phase:'oitavas'},
-  {id:'QF1',group:null,home:'ðŸ³ï¸ Vencedor Jogo 89',away:'ðŸ³ï¸ Vencedor Jogo 90',date:'09/07 Â· 16h',phase:'quartas'},
-  {id:'QF2',group:null,home:'ðŸ³ï¸ Vencedor Jogo 93',away:'ðŸ³ï¸ Vencedor Jogo 94',date:'10/07 Â· 12h',phase:'quartas'},
-  {id:'QF3',group:null,home:'ðŸ³ï¸ Vencedor Jogo 91',away:'ðŸ³ï¸ Vencedor Jogo 92',date:'11/07 Â· 17h',phase:'quartas'},
-  {id:'QF4',group:null,home:'ðŸ³ï¸ Vencedor Jogo 95',away:'ðŸ³ï¸ Vencedor Jogo 96',date:'11/07 Â· 20h',phase:'quartas'},
-  {id:'SF1',group:null,home:'ðŸ³ï¸ Vencedor Jogo 97',away:'ðŸ³ï¸ Vencedor Jogo 98',date:'14/07 Â· 14h',phase:'semis'},
-  {id:'SF2',group:null,home:'ðŸ³ï¸ Vencedor Jogo 99',away:'ðŸ³ï¸ Vencedor Jogo 100',date:'15/07 Â· 15h',phase:'semis'},
-  {id:'3PL',group:null,home:'ðŸ³ï¸ Perdedor Jogo 101',away:'ðŸ³ï¸ Perdedor Jogo 102',date:'18/07 Â· 17h',phase:'terceiro'},
-  {id:'FIN',group:null,home:'ðŸ³ï¸ Vencedor Jogo 101',away:'ðŸ³ï¸ Vencedor Jogo 102',date:'19/07 Â· 15h ðŸ†',phase:'final'},
+  {id:'A1',group:'A',home:'🏳️ Mexico',away:'🏳️ South Africa',date:'11/06 · 13h',phase:'fase-grupos'},
+  {id:'A2',group:'A',home:'🏳️ South Korea',away:'🏳️ Czech Republic',date:'11/06 · 20h',phase:'fase-grupos'},
+  {id:'B1',group:'B',home:'🏳️ Canada',away:'🏳️ Bosnia and Herzegovina',date:'12/06 · 15h',phase:'fase-grupos'},
+  {id:'D1',group:'D',home:'🏳️ United States',away:'🏳️ Paraguay',date:'12/06 · 18h',phase:'fase-grupos'},
+  {id:'C1',group:'C',home:'🏳️ Haiti',away:'🏳️ Scotland',date:'13/06 · 21h',phase:'fase-grupos'},
+  {id:'D2',group:'D',home:'🏳️ Australia',away:'🏳️ Turkey',date:'13/06 · 21h',phase:'fase-grupos'},
+  {id:'C2',group:'C',home:'🏳️ Brazil',away:'🏳️ Morocco',date:'13/06 · 18h',phase:'fase-grupos'},
+  {id:'B2',group:'B',home:'🏳️ Qatar',away:'🏳️ Switzerland',date:'13/06 · 12h',phase:'fase-grupos'},
+  {id:'E1',group:'E',home:'🏳️ Ivory Coast',away:'🏳️ Ecuador',date:'14/06 · 19h',phase:'fase-grupos'},
+  {id:'E2',group:'E',home:'🏳️ Germany',away:'🏳️ Curacao',date:'14/06 · 12h',phase:'fase-grupos'},
+  {id:'F1',group:'F',home:'🏳️ Netherlands',away:'🏳️ Japan',date:'14/06 · 15h',phase:'fase-grupos'},
+  {id:'F2',group:'F',home:'🏳️ Sweden',away:'🏳️ Tunisia',date:'14/06 · 20h',phase:'fase-grupos'},
+  {id:'H1',group:'H',home:'🏳️ Saudi Arabia',away:'🏳️ Uruguay',date:'15/06 · 18h',phase:'fase-grupos'},
+  {id:'H2',group:'H',home:'🏳️ Spain',away:'🏳️ Cape Verde',date:'15/06 · 12h',phase:'fase-grupos'},
+  {id:'G1',group:'G',home:'🏳️ Iran',away:'🏳️ New Zealand',date:'15/06 · 18h',phase:'fase-grupos'},
+  {id:'G2',group:'G',home:'🏳️ Belgium',away:'🏳️ Egypt',date:'15/06 · 12h',phase:'fase-grupos'},
+  {id:'I1',group:'I',home:'🏳️ France',away:'🏳️ Senegal',date:'16/06 · 15h',phase:'fase-grupos'},
+  {id:'I2',group:'I',home:'🏳️ Iraq',away:'🏳️ Norway',date:'16/06 · 18h',phase:'fase-grupos'},
+  {id:'J1',group:'J',home:'🏳️ Argentina',away:'🏳️ Algeria',date:'16/06 · 20h',phase:'fase-grupos'},
+  {id:'J2',group:'J',home:'🏳️ Austria',away:'🏳️ Jordan',date:'16/06 · 21h',phase:'fase-grupos'},
+  {id:'L1',group:'L',home:'🏳️ Ghana',away:'🏳️ Panama',date:'17/06 · 19h',phase:'fase-grupos'},
+  {id:'L2',group:'L',home:'🏳️ England',away:'🏳️ Croatia',date:'17/06 · 15h',phase:'fase-grupos'},
+  {id:'K1',group:'K',home:'🏳️ Portugal',away:'🏳️ DR Congo',date:'17/06 · 12h',phase:'fase-grupos'},
+  {id:'K2',group:'K',home:'🏳️ Uzbekistan',away:'🏳️ Colombia',date:'17/06 · 20h',phase:'fase-grupos'},
+  {id:'A3',group:'A',home:'🏳️ Czech Republic',away:'🏳️ South Africa',date:'18/06 · 12h',phase:'fase-grupos'},
+  {id:'B3',group:'B',home:'🏳️ Switzerland',away:'🏳️ Bosnia and Herzegovina',date:'18/06 · 12h',phase:'fase-grupos'},
+  {id:'B4',group:'B',home:'🏳️ Canada',away:'🏳️ Qatar',date:'18/06 · 15h',phase:'fase-grupos'},
+  {id:'A4',group:'A',home:'🏳️ Mexico',away:'🏳️ South Korea',date:'18/06 · 19h',phase:'fase-grupos'},
+  {id:'C3',group:'C',home:'🏳️ Brazil',away:'🏳️ Haiti',date:'19/06 · 21h',phase:'fase-grupos'},
+  {id:'C4',group:'C',home:'🏳️ Scotland',away:'🏳️ Morocco',date:'19/06 · 18h',phase:'fase-grupos'},
+  {id:'D3',group:'D',home:'🏳️ Turkey',away:'🏳️ Paraguay',date:'19/06 · 20h',phase:'fase-grupos'},
+  {id:'D4',group:'D',home:'🏳️ United States',away:'🏳️ Australia',date:'19/06 · 12h',phase:'fase-grupos'},
+  {id:'E3',group:'E',home:'🏳️ Germany',away:'🏳️ Ivory Coast',date:'20/06 · 16h',phase:'fase-grupos'},
+  {id:'E4',group:'E',home:'🏳️ Ecuador',away:'🏳️ Curacao',date:'20/06 · 19h',phase:'fase-grupos'},
+  {id:'F3',group:'F',home:'🏳️ Netherlands',away:'🏳️ Sweden',date:'20/06 · 12h',phase:'fase-grupos'},
+  {id:'F4',group:'F',home:'🏳️ Tunisia',away:'🏳️ Japan',date:'20/06 · 22h',phase:'fase-grupos'},
+  {id:'H3',group:'H',home:'🏳️ Uruguay',away:'🏳️ Cape Verde',date:'21/06 · 18h',phase:'fase-grupos'},
+  {id:'H4',group:'H',home:'🏳️ Spain',away:'🏳️ Saudi Arabia',date:'21/06 · 12h',phase:'fase-grupos'},
+  {id:'G3',group:'G',home:'🏳️ Belgium',away:'🏳️ Iran',date:'21/06 · 12h',phase:'fase-grupos'},
+  {id:'G4',group:'G',home:'🏳️ New Zealand',away:'🏳️ Egypt',date:'21/06 · 18h',phase:'fase-grupos'},
+  {id:'I3',group:'I',home:'🏳️ Norway',away:'🏳️ Senegal',date:'22/06 · 20h',phase:'fase-grupos'},
+  {id:'I4',group:'I',home:'🏳️ France',away:'🏳️ Iraq',date:'22/06 · 17h',phase:'fase-grupos'},
+  {id:'J3',group:'J',home:'🏳️ Argentina',away:'🏳️ Austria',date:'22/06 · 12h',phase:'fase-grupos'},
+  {id:'J4',group:'J',home:'🏳️ Jordan',away:'🏳️ Algeria',date:'22/06 · 20h',phase:'fase-grupos'},
+  {id:'L3',group:'L',home:'🏳️ England',away:'🏳️ Ghana',date:'23/06 · 16h',phase:'fase-grupos'},
+  {id:'L4',group:'L',home:'🏳️ Panama',away:'🏳️ Croatia',date:'23/06 · 19h',phase:'fase-grupos'},
+  {id:'K3',group:'K',home:'🏳️ Portugal',away:'🏳️ Uzbekistan',date:'23/06 · 12h',phase:'fase-grupos'},
+  {id:'K4',group:'K',home:'🏳️ Colombia',away:'🏳️ DR Congo',date:'23/06 · 20h',phase:'fase-grupos'},
+  {id:'C5',group:'C',home:'🏳️ Scotland',away:'🏳️ Brazil',date:'24/06 · 18h',phase:'fase-grupos'},
+  {id:'C6',group:'C',home:'🏳️ Morocco',away:'🏳️ Haiti',date:'24/06 · 18h',phase:'fase-grupos'},
+  {id:'B5',group:'B',home:'🏳️ Switzerland',away:'🏳️ Canada',date:'24/06 · 12h',phase:'fase-grupos'},
+  {id:'B6',group:'B',home:'🏳️ Bosnia and Herzegovina',away:'🏳️ Qatar',date:'24/06 · 12h',phase:'fase-grupos'},
+  {id:'A5',group:'A',home:'🏳️ Czech Republic',away:'🏳️ Mexico',date:'24/06 · 19h',phase:'fase-grupos'},
+  {id:'A6',group:'A',home:'🏳️ South Africa',away:'🏳️ South Korea',date:'24/06 · 19h',phase:'fase-grupos'},
+  {id:'E5',group:'E',home:'🏳️ Curacao',away:'🏳️ Ivory Coast',date:'25/06 · 16h',phase:'fase-grupos'},
+  {id:'E6',group:'E',home:'🏳️ Ecuador',away:'🏳️ Germany',date:'25/06 · 16h',phase:'fase-grupos'},
+  {id:'F5',group:'F',home:'🏳️ Japan',away:'🏳️ Sweden',date:'25/06 · 18h',phase:'fase-grupos'},
+  {id:'F6',group:'F',home:'🏳️ Tunisia',away:'🏳️ Netherlands',date:'25/06 · 18h',phase:'fase-grupos'},
+  {id:'D5',group:'D',home:'🏳️ Turkey',away:'🏳️ United States',date:'25/06 · 19h',phase:'fase-grupos'},
+  {id:'D6',group:'D',home:'🏳️ Paraguay',away:'🏳️ Australia',date:'25/06 · 19h',phase:'fase-grupos'},
+  {id:'I5',group:'I',home:'🏳️ Norway',away:'🏳️ France',date:'26/06 · 15h',phase:'fase-grupos'},
+  {id:'I6',group:'I',home:'🏳️ Senegal',away:'🏳️ Iraq',date:'26/06 · 15h',phase:'fase-grupos'},
+  {id:'G5',group:'G',home:'🏳️ Egypt',away:'🏳️ Iran',date:'26/06 · 20h',phase:'fase-grupos'},
+  {id:'G6',group:'G',home:'🏳️ New Zealand',away:'🏳️ Belgium',date:'26/06 · 20h',phase:'fase-grupos'},
+  {id:'H5',group:'H',home:'🏳️ Cape Verde',away:'🏳️ Saudi Arabia',date:'26/06 · 19h',phase:'fase-grupos'},
+  {id:'H6',group:'H',home:'🏳️ Uruguay',away:'🏳️ Spain',date:'26/06 · 18h',phase:'fase-grupos'},
+  {id:'L5',group:'L',home:'🏳️ Panama',away:'🏳️ England',date:'27/06 · 17h',phase:'fase-grupos'},
+  {id:'L6',group:'L',home:'🏳️ Croatia',away:'🏳️ Ghana',date:'27/06 · 17h',phase:'fase-grupos'},
+  {id:'J5',group:'J',home:'🏳️ Algeria',away:'🏳️ Austria',date:'27/06 · 21h',phase:'fase-grupos'},
+  {id:'J6',group:'J',home:'🏳️ Jordan',away:'🏳️ Argentina',date:'27/06 · 21h',phase:'fase-grupos'},
+  {id:'K5',group:'K',home:'🏳️ Colombia',away:'🏳️ Portugal',date:'27/06 · 19h30',phase:'fase-grupos'},
+  {id:'K6',group:'K',home:'🏳️ DR Congo',away:'🏳️ Uzbekistan',date:'27/06 · 19h30',phase:'fase-grupos'},
+  {id:'R32-1',group:null,home:'🏳️ 2º Grupo A',away:'🏳️ 2º Grupo B',date:'28/06 · 12h',phase:'trintaedois'},
+  {id:'R32-2',group:null,home:'🏳️ 1º Grupo E',away:'🏳️ Melhor 3º de A/B/C/D/F',date:'29/06 · 16h30',phase:'trintaedois'},
+  {id:'R32-3',group:null,home:'🏳️ 1º Grupo F',away:'🏳️ 2º Grupo C',date:'29/06 · 19h',phase:'trintaedois'},
+  {id:'R32-4',group:null,home:'🏳️ 1º Grupo C',away:'🏳️ 2º Grupo F',date:'29/06 · 12h',phase:'trintaedois'},
+  {id:'R32-5',group:null,home:'🏳️ 1º Grupo I',away:'🏳️ Melhor 3º de C/D/F/G/H',date:'30/06 · 17h',phase:'trintaedois'},
+  {id:'R32-6',group:null,home:'🏳️ 2º Grupo E',away:'🏳️ 2º Grupo I',date:'30/06 · 12h',phase:'trintaedois'},
+  {id:'R32-7',group:null,home:'🏳️ 1º Grupo A',away:'🏳️ Melhor 3º de C/E/F/H/I',date:'30/06 · 19h',phase:'trintaedois'},
+  {id:'R32-8',group:null,home:'🏳️ 1º Grupo L',away:'🏳️ Melhor 3º de E/H/I/J/K',date:'01/07 · 12h',phase:'trintaedois'},
+  {id:'R32-9',group:null,home:'🏳️ 1º Grupo D',away:'🏳️ Melhor 3º de B/E/F/I/J',date:'01/07 · 17h',phase:'trintaedois'},
+  {id:'R32-10',group:null,home:'🏳️ 1º Grupo G',away:'🏳️ Melhor 3º de A/E/H/I/J',date:'01/07 · 13h',phase:'trintaedois'},
+  {id:'R32-11',group:null,home:'🏳️ 2º Grupo K',away:'🏳️ 2º Grupo L',date:'02/07 · 19h',phase:'trintaedois'},
+  {id:'R32-12',group:null,home:'🏳️ 1º Grupo H',away:'🏳️ 2º Grupo J',date:'02/07 · 12h',phase:'trintaedois'},
+  {id:'R32-13',group:null,home:'🏳️ 1º Grupo B',away:'🏳️ Melhor 3º de E/F/G/I/J',date:'02/07 · 20h',phase:'trintaedois'},
+  {id:'R32-14',group:null,home:'🏳️ 1º Grupo J',away:'🏳️ 2º Grupo H',date:'03/07 · 18h',phase:'trintaedois'},
+  {id:'R32-15',group:null,home:'🏳️ 1º Grupo K',away:'🏳️ Melhor 3º de D/E/I/J/L',date:'03/07 · 20h30',phase:'trintaedois'},
+  {id:'R32-16',group:null,home:'🏳️ 2º Grupo D',away:'🏳️ 2º Grupo G',date:'03/07 · 13h',phase:'trintaedois'},
+  {id:'R16-1',group:null,home:'🏳️ Vencedor Jogo 74',away:'🏳️ Vencedor Jogo 77',date:'04/07 · 17h',phase:'oitavas'},
+  {id:'R16-2',group:null,home:'🏳️ Vencedor Jogo 73',away:'🏳️ Vencedor Jogo 75',date:'04/07 · 12h',phase:'oitavas'},
+  {id:'R16-3',group:null,home:'🏳️ Vencedor Jogo 76',away:'🏳️ Vencedor Jogo 78',date:'05/07 · 16h',phase:'oitavas'},
+  {id:'R16-4',group:null,home:'🏳️ Vencedor Jogo 79',away:'🏳️ Vencedor Jogo 80',date:'05/07 · 18h',phase:'oitavas'},
+  {id:'R16-5',group:null,home:'🏳️ Vencedor Jogo 83',away:'🏳️ Vencedor Jogo 84',date:'06/07 · 14h',phase:'oitavas'},
+  {id:'R16-6',group:null,home:'🏳️ Vencedor Jogo 81',away:'🏳️ Vencedor Jogo 82',date:'06/07 · 17h',phase:'oitavas'},
+  {id:'R16-7',group:null,home:'🏳️ Vencedor Jogo 86',away:'🏳️ Vencedor Jogo 88',date:'07/07 · 12h',phase:'oitavas'},
+  {id:'R16-8',group:null,home:'🏳️ Vencedor Jogo 85',away:'🏳️ Vencedor Jogo 87',date:'07/07 · 13h',phase:'oitavas'},
+  {id:'QF1',group:null,home:'🏳️ Vencedor Jogo 89',away:'🏳️ Vencedor Jogo 90',date:'09/07 · 16h',phase:'quartas'},
+  {id:'QF2',group:null,home:'🏳️ Vencedor Jogo 93',away:'🏳️ Vencedor Jogo 94',date:'10/07 · 12h',phase:'quartas'},
+  {id:'QF3',group:null,home:'🏳️ Vencedor Jogo 91',away:'🏳️ Vencedor Jogo 92',date:'11/07 · 17h',phase:'quartas'},
+  {id:'QF4',group:null,home:'🏳️ Vencedor Jogo 95',away:'🏳️ Vencedor Jogo 96',date:'11/07 · 20h',phase:'quartas'},
+  {id:'SF1',group:null,home:'🏳️ Vencedor Jogo 97',away:'🏳️ Vencedor Jogo 98',date:'14/07 · 14h',phase:'semis'},
+  {id:'SF2',group:null,home:'🏳️ Vencedor Jogo 99',away:'🏳️ Vencedor Jogo 100',date:'15/07 · 15h',phase:'semis'},
+  {id:'3PL',group:null,home:'🏳️ Perdedor Jogo 101',away:'🏳️ Perdedor Jogo 102',date:'18/07 · 17h',phase:'terceiro'},
+  {id:'FIN',group:null,home:'🏳️ Vencedor Jogo 101',away:'🏳️ Vencedor Jogo 102',date:'19/07 · 15h 🏆',phase:'final'},
 ];
 
 const WORLDCUP_BRAZILIA_OFFSETS = {
@@ -2350,8 +2572,8 @@ const WORLDCUP_BRAZILIA_OFFSETS = {
 };
 function convertWorldCupDateToBrasilia(dateString, offsetHours){
   const raw=String(dateString||'');
-  const hasTrophy=raw.includes('ðŸ†');
-  const match=raw.match(/(\d{2})\/(\d{2})(?:\s*Â·\s*(\d{1,2})h(?:(\d{2}))?)?/);
+  const hasTrophy=raw.includes('🏆');
+  const match=raw.match(/(\d{2})\/(\d{2})(?:\s*·\s*(\d{1,2})h(?:(\d{2}))?)?/);
   if(!match || match[3]===undefined || offsetHours===undefined)return raw;
   const day=Number(match[1]);
   const month=Number(match[2]);
@@ -2362,7 +2584,7 @@ function convertWorldCupDateToBrasilia(dateString, offsetHours){
   const mm=String(shifted.getUTCMonth()+1).padStart(2,'0');
   const hh=String(shifted.getUTCHours()).padStart(2,'0');
   const min=String(shifted.getUTCMinutes()).padStart(2,'0');
-  return `${dd}/${mm} Â· ${hh}h${min}${hasTrophy?' ðŸ†':''}`;
+  return `${dd}/${mm} · ${hh}h${min}${hasTrophy?' 🏆':''}`;
 }
 const WORLDCUP_MATCHES_BRASILIA = ACTIVE_MATCHES.map(match=>({
   ...match,
@@ -2370,18 +2592,18 @@ const WORLDCUP_MATCHES_BRASILIA = ACTIVE_MATCHES.map(match=>({
 }));
 
 const ACTIVE_PHASES = [
-  {key:'fase-grupos',label:'Fase de Grupos',badge:'11 Jun â€“ 27 Jun',badgeClass:''},
-  {key:'trintaedois',label:'16 Avos de Final',badge:'28 Jun â€“ 3 Jul',badgeClass:'red'},
-  {key:'oitavas',label:'Oitavas de Final',badge:'4 â€“ 7 Jul',badgeClass:'red'},
-  {key:'quartas',label:'Quartas de Final',badge:'9 â€“ 11 Jul',badgeClass:'purple'},
-  {key:'semis',label:'Semifinais',badge:'14 â€“ 15 Jul',badgeClass:'green'},
-  {key:'terceiro',label:'3Âº Lugar',badge:'18 Jul',badgeClass:''},
-  {key:'final',label:'Grande Final',badge:'19 Jul ðŸ†',badgeClass:'final-badge'},
+  {key:'fase-grupos',label:'Fase de Grupos',badge:'11 Jun – 27 Jun',badgeClass:''},
+  {key:'trintaedois',label:'16 Avos de Final',badge:'28 Jun – 3 Jul',badgeClass:'red'},
+  {key:'oitavas',label:'Oitavas de Final',badge:'4 – 7 Jul',badgeClass:'red'},
+  {key:'quartas',label:'Quartas de Final',badge:'9 – 11 Jul',badgeClass:'purple'},
+  {key:'semis',label:'Semifinais',badge:'14 – 15 Jul',badgeClass:'green'},
+  {key:'terceiro',label:'3º Lugar',badge:'18 Jul',badgeClass:''},
+  {key:'final',label:'Grande Final',badge:'19 Jul 🏆',badgeClass:'final-badge'},
 ];
 
 const DEFAULT_MATCH_YEAR = 2026;
 const DEFAULT_MATCH_HOUR = 12;
-const LOCK_WINDOW_MINUTES = 60;
+const LOCK_WINDOW_MINUTES = 0;
 const LIVE_STATUS_WINDOW_MS = 150 * 60 * 1000;
 const ENTRY_FEE = 10;
 const PRIZE_SPLIT = { first: 0.7, second: 0.2, third: 0.1 };
@@ -2390,11 +2612,11 @@ const COMPETITIONS = {
     key: 'worldcup',
     shortLabel: 'Copa do Mundo 2026',
     label: 'Copa do Mundo 2026',
-    badge: 'FIFA World Cup 2026',
-    title: 'BOLÃƒO <span>COPA 2026</span>',
+    badge: 'Copa do Mundo FIFA 2026',
+    title: 'BOLÃO <span>COPA 2026</span>',
     description: '',
     startAt: new Date('2026-06-11T16:00:00-03:00'),
-    countdownNote: 'Contagem ate a abertura oficial em 11/06/2026, as 16h de Brasilia.',
+    countdownNote: 'Contagem até a abertura oficial em 11/06/2026, às 16h de Brasília.',
     year: 2026,
     matches: WORLDCUP_MATCHES_BRASILIA,
     phases: ACTIVE_PHASES
@@ -2476,7 +2698,7 @@ function updateRestrictedTabUI(){
 
 function showTab(name){
   if(tabRequiresAccount(name) && !localPlayerId){
-    showToast('Entre com sua conta para visualizar Participantes e Classificacao.');
+    showToast('Entre com sua conta para visualizar Participantes e Classificação.');
     openAuthModal('login');
     name='matches';
   }
@@ -2791,7 +3013,7 @@ function showSavedFloatingBanner(){
 }
 function isPlaceholderTeam(name){
   const team=normalizeTeamName(name);
-  return !team || /^(1Âº|2Âº|3Âº|4Âº|Melhor 3Âº|Vencedor|Perdedor|Ganhador|Classificado|A definir|Time a definir)/i.test(team);
+  return !team || /^(1º|2º|3º|4º|Melhor 3º|Vencedor|Perdedor|Ganhador|Classificado|A definir|Time a definir)/i.test(team);
 }
 function escapeHtml(value){
   return String(value||'')
@@ -2856,9 +3078,9 @@ function updateHeroGuessDeadline(){
     return;
   }
   const diff=nextEntry.lockTime.getTime()-now;
-  matchEl.textContent=`${normalizeTeamName(nextEntry.match.home)} x ${normalizeTeamName(nextEntry.match.away)}`;
+  matchEl.textContent=`${getDisplayTeamName(nextEntry.match.home)} x ${getDisplayTeamName(nextEntry.match.away)}`;
   countdownEl.textContent=diff<=0 ? '00:00' : formatCompactCountdown(diff);
-  noteEl.textContent=`Fecha em ${formatBrazilHour(nextEntry.lockTime)} para este confronto.`;
+  noteEl.textContent=`Fecha no inicio da partida, as ${formatBrazilHour(nextEntry.lockTime)}.`;
 }
 function startHeroGuessDeadlineTicker(){
   updateHeroGuessDeadline();
@@ -2905,19 +3127,72 @@ function normalizeAuthEmail(value){
 function updatePrizePoolRule(){
   const el=document.getElementById('rules-prize-live');
   if(!el)return;
-  if(!localPlayerId){
-    el.textContent='Entre com sua conta para ver a arrecadaÃ§Ã£o atual e a projeÃ§Ã£o da premiaÃ§Ã£o.';
-    return;
-  }
-  const count=players.length;
-  const total=count*ENTRY_FEE;
-  const first=total*PRIZE_SPLIT.first;
-  const second=total*PRIZE_SPLIT.second;
-  const third=total*PRIZE_SPLIT.third;
-  el.textContent=`${count} participante${count!==1?'s':''} â€¢ prÃªmio total ${formatCurrency(total)} â€¢ 1Âº ${formatCurrency(first)} â€¢ 2Âº ${formatCurrency(second)} â€¢ 3Âº ${formatCurrency(third)}`;
+  el.textContent='18 participantes • prêmio total R$ 180,00 • 1º R$ 126,00 • 2º R$ 36,00 • 3º R$ 18,00';
 }
 function normalizeTeamName(name){
   return (name||'').replace(/^[^\p{L}\p{N}]+\s+/u,'').trim();
+}
+const TEAM_DISPLAY_NAMES_PT_BR = {
+  'Mexico':'México',
+  'South Africa':'África do Sul',
+  'South Korea':'Coreia do Sul',
+  'Korea Republic':'Coreia do Sul',
+  'Czech Republic':'República Tcheca',
+  'Canada':'Canadá',
+  'Bosnia and Herzegovina':'Bósnia e Herzegovina',
+  'United States':'Estados Unidos',
+  'Paraguay':'Paraguai',
+  'Haiti':'Haiti',
+  'Scotland':'Escócia',
+  'Australia':'Austrália',
+  'Turkey':'Turquia',
+  'Brazil':'Brasil',
+  'Morocco':'Marrocos',
+  'Qatar':'Catar',
+  'Switzerland':'Suíça',
+  'Ivory Coast':'Costa do Marfim',
+  'Ecuador':'Equador',
+  'Germany':'Alemanha',
+  'Curacao':'Curaçao',
+  'Netherlands':'Holanda',
+  'Japan':'Japão',
+  'Sweden':'Suécia',
+  'Tunisia':'Tunísia',
+  'Saudi Arabia':'Arábia Saudita',
+  'Uruguay':'Uruguai',
+  'Spain':'Espanha',
+  'Cape Verde':'Cabo Verde',
+  'Iran':'Irã',
+  'New Zealand':'Nova Zelândia',
+  'Belgium':'Bélgica',
+  'Egypt':'Egito',
+  'France':'França',
+  'Senegal':'Senegal',
+  'Iraq':'Iraque',
+  'Norway':'Noruega',
+  'Argentina':'Argentina',
+  'Algeria':'Argélia',
+  'Austria':'Áustria',
+  'Jordan':'Jordânia',
+  'Ghana':'Gana',
+  'Panama':'Panamá',
+  'England':'Inglaterra',
+  'Croatia':'Croácia',
+  'Portugal':'Portugal',
+  'DR Congo':'RD Congo',
+  'Uzbekistan':'Uzbequistão',
+  'Colombia':'Colômbia'
+};
+function getDisplayTeamName(name){
+  const team=normalizeTeamName(name);
+  return TEAM_DISPLAY_NAMES_PT_BR[team] || team;
+}
+function translateTeamNamesInText(text){
+  let output=String(text||'');
+  for(const [source, target] of Object.entries(TEAM_DISPLAY_NAMES_PT_BR)){
+    output=output.replaceAll(source, target);
+  }
+  return output;
 }
 function getTeamToken(name){
   const team=normalizeTeamName(name);
@@ -2934,65 +3209,65 @@ function getTeamFlag(name){
   const logos=window.TEAM_LOGOS||{};
   if(logos[team]){
     const src=logos[team];
-    return `<img src="${src}" alt="Escudo do ${team}" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'"><span class="team-flag is-fallback" style="display:none;width:100%;height:100%;place-items:center">${getTeamToken(team)}</span>`;
+    return `<img src="${src}" alt="Escudo do ${getDisplayTeamName(team)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'"><span class="team-flag is-fallback" style="display:none;width:100%;height:100%;place-items:center">${getTeamToken(team)}</span>`;
   }
   const flags={
-    'Mexico':{code:'mx',emoji:'ðŸ‡²ðŸ‡½'},
-    'South Africa':{code:'za',emoji:'ðŸ‡¿ðŸ‡¦'},
-    'South Korea':{code:'kr',emoji:'ðŸ‡°ðŸ‡·'},
-    'Korea Republic':{code:'kr',emoji:'ðŸ‡°ðŸ‡·'},
-    'Czech Republic':{code:'cz',emoji:'ðŸ‡¨ðŸ‡¿'},
-    'Canada':{code:'ca',emoji:'ðŸ‡¨ðŸ‡¦'},
-    'Bosnia and Herzegovina':{code:'ba',emoji:'ðŸ‡§ðŸ‡¦'},
-    'United States':{code:'us',emoji:'ðŸ‡ºðŸ‡¸'},
-    'Paraguay':{code:'py',emoji:'ðŸ‡µðŸ‡¾'},
-    'Haiti':{code:'ht',emoji:'ðŸ‡­ðŸ‡¹'},
-    'Scotland':{code:'gb-sct',emoji:'ðŸ´'},
-    'Australia':{code:'au',emoji:'ðŸ‡¦ðŸ‡º'},
-    'Turkey':{code:'tr',emoji:'ðŸ‡¹ðŸ‡·'},
-    'Brazil':{code:'br',emoji:'ðŸ‡§ðŸ‡·'},
-    'Morocco':{code:'ma',emoji:'ðŸ‡²ðŸ‡¦'},
-    'Qatar':{code:'qa',emoji:'ðŸ‡¶ðŸ‡¦'},
-    'Switzerland':{code:'ch',emoji:'ðŸ‡¨ðŸ‡­'},
-    'Ivory Coast':{code:'ci',emoji:'ðŸ‡¨ðŸ‡®'},
-    'Ecuador':{code:'ec',emoji:'ðŸ‡ªðŸ‡¨'},
-    'Germany':{code:'de',emoji:'ðŸ‡©ðŸ‡ª'},
-    'Curacao':{code:'cw',emoji:'ðŸ‡¨ðŸ‡¼'},
-    'Netherlands':{code:'nl',emoji:'ðŸ‡³ðŸ‡±'},
-    'Japan':{code:'jp',emoji:'ðŸ‡¯ðŸ‡µ'},
-    'Sweden':{code:'se',emoji:'ðŸ‡¸ðŸ‡ª'},
-    'Tunisia':{code:'tn',emoji:'ðŸ‡¹ðŸ‡³'},
-    'Saudi Arabia':{code:'sa',emoji:'ðŸ‡¸ðŸ‡¦'},
-    'Uruguay':{code:'uy',emoji:'ðŸ‡ºðŸ‡¾'},
-    'Spain':{code:'es',emoji:'ðŸ‡ªðŸ‡¸'},
-    'Cape Verde':{code:'cv',emoji:'ðŸ‡¨ðŸ‡»'},
-    'Iran':{code:'ir',emoji:'ðŸ‡®ðŸ‡·'},
-    'New Zealand':{code:'nz',emoji:'ðŸ‡³ðŸ‡¿'},
-    'Belgium':{code:'be',emoji:'ðŸ‡§ðŸ‡ª'},
-    'Egypt':{code:'eg',emoji:'ðŸ‡ªðŸ‡¬'},
-    'France':{code:'fr',emoji:'ðŸ‡«ðŸ‡·'},
-    'Senegal':{code:'sn',emoji:'ðŸ‡¸ðŸ‡³'},
-    'Iraq':{code:'iq',emoji:'ðŸ‡®ðŸ‡¶'},
-    'Norway':{code:'no',emoji:'ðŸ‡³ðŸ‡´'},
-    'Argentina':{code:'ar',emoji:'ðŸ‡¦ðŸ‡·'},
-    'Algeria':{code:'dz',emoji:'ðŸ‡©ðŸ‡¿'},
-    'Austria':{code:'at',emoji:'ðŸ‡¦ðŸ‡¹'},
-    'Jordan':{code:'jo',emoji:'ðŸ‡¯ðŸ‡´'},
-    'Ghana':{code:'gh',emoji:'ðŸ‡¬ðŸ‡­'},
-    'Panama':{code:'pa',emoji:'ðŸ‡µðŸ‡¦'},
-    'England':{code:'gb-eng',emoji:'ðŸ´'},
-    'Croatia':{code:'hr',emoji:'ðŸ‡­ðŸ‡·'},
-    'Portugal':{code:'pt',emoji:'ðŸ‡µðŸ‡¹'},
-    'DR Congo':{code:'cd',emoji:'ðŸ‡¨ðŸ‡©'},
-    'Uzbekistan':{code:'uz',emoji:'ðŸ‡ºðŸ‡¿'},
-    'Colombia':{code:'co',emoji:'ðŸ‡¨ðŸ‡´'}
+    'Mexico':{code:'mx',emoji:'🇲🇽'},
+    'South Africa':{code:'za',emoji:'🇿🇦'},
+    'South Korea':{code:'kr',emoji:'🇰🇷'},
+    'Korea Republic':{code:'kr',emoji:'🇰🇷'},
+    'Czech Republic':{code:'cz',emoji:'🇨🇿'},
+    'Canada':{code:'ca',emoji:'🇨🇦'},
+    'Bosnia and Herzegovina':{code:'ba',emoji:'🇧🇦'},
+    'United States':{code:'us',emoji:'🇺🇸'},
+    'Paraguay':{code:'py',emoji:'🇵🇾'},
+    'Haiti':{code:'ht',emoji:'🇭🇹'},
+    'Scotland':{code:'gb-sct',emoji:'🏴'},
+    'Australia':{code:'au',emoji:'🇦🇺'},
+    'Turkey':{code:'tr',emoji:'🇹🇷'},
+    'Brazil':{code:'br',emoji:'🇧🇷'},
+    'Morocco':{code:'ma',emoji:'🇲🇦'},
+    'Qatar':{code:'qa',emoji:'🇶🇦'},
+    'Switzerland':{code:'ch',emoji:'🇨🇭'},
+    'Ivory Coast':{code:'ci',emoji:'🇨🇮'},
+    'Ecuador':{code:'ec',emoji:'🇪🇨'},
+    'Germany':{code:'de',emoji:'🇩🇪'},
+    'Curacao':{code:'cw',emoji:'🇨🇼'},
+    'Netherlands':{code:'nl',emoji:'🇳🇱'},
+    'Japan':{code:'jp',emoji:'🇯🇵'},
+    'Sweden':{code:'se',emoji:'🇸🇪'},
+    'Tunisia':{code:'tn',emoji:'🇹🇳'},
+    'Saudi Arabia':{code:'sa',emoji:'🇸🇦'},
+    'Uruguay':{code:'uy',emoji:'🇺🇾'},
+    'Spain':{code:'es',emoji:'🇪🇸'},
+    'Cape Verde':{code:'cv',emoji:'🇨🇻'},
+    'Iran':{code:'ir',emoji:'🇮🇷'},
+    'New Zealand':{code:'nz',emoji:'🇳🇿'},
+    'Belgium':{code:'be',emoji:'🇧🇪'},
+    'Egypt':{code:'eg',emoji:'🇪🇬'},
+    'France':{code:'fr',emoji:'🇫🇷'},
+    'Senegal':{code:'sn',emoji:'🇸🇳'},
+    'Iraq':{code:'iq',emoji:'🇮🇶'},
+    'Norway':{code:'no',emoji:'🇳🇴'},
+    'Argentina':{code:'ar',emoji:'🇦🇷'},
+    'Algeria':{code:'dz',emoji:'🇩🇿'},
+    'Austria':{code:'at',emoji:'🇦🇹'},
+    'Jordan':{code:'jo',emoji:'🇯🇴'},
+    'Ghana':{code:'gh',emoji:'🇬🇭'},
+    'Panama':{code:'pa',emoji:'🇵🇦'},
+    'England':{code:'gb-eng',emoji:'🏴'},
+    'Croatia':{code:'hr',emoji:'🇭🇷'},
+    'Portugal':{code:'pt',emoji:'🇵🇹'},
+    'DR Congo':{code:'cd',emoji:'🇨🇩'},
+    'Uzbekistan':{code:'uz',emoji:'🇺🇿'},
+    'Colombia':{code:'co',emoji:'🇨🇴'}
   };
   if(flags[team]){
     const { code, emoji } = flags[team];
     const src=`https://flagcdn.com/w80/${code}.png`;
-    return `<img src="${src}" alt="Bandeira de ${team}" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'"><span style="display:none;width:100%;height:100%;place-items:center">${emoji}</span>`;
+    return `<img src="${src}" alt="Bandeira de ${getDisplayTeamName(team)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'"><span style="display:none;width:100%;height:100%;place-items:center">${emoji}</span>`;
   }
-  if(/^(1Âº|2Âº|Melhor 3Âº|Vencedor|Perdedor)/.test(team))return '<span style="display:grid;width:100%;height:100%;place-items:center">ðŸ†</span>';
+  if(/^(1º|2º|Melhor 3º|Vencedor|Perdedor)/.test(team))return '<span style="display:grid;width:100%;height:100%;place-items:center">🏆</span>';
   return `<span class="team-flag is-fallback" style="display:grid;width:100%;height:100%;place-items:center">${getTeamToken(team)}</span>`;
 }
 const BRAZIL_TIMEZONE='America/Sao_Paulo';
@@ -3013,18 +3288,18 @@ function formatBrazilParts(date){
   return values;
 }
 function formatBrazilMatchDate(date){
-  if(!date) return 'Horario do jogo indisponivel';
+  if(!date) return 'Horário do jogo indisponível';
   const {day,month,hour,minute}=formatBrazilParts(date);
-  return `${day}/${month} Â· ${hour}:${minute}`;
+  return `${day}/${month} · ${hour}:${minute}`;
 }
 function formatBrazilHour(date){
   const {hour,minute}=formatBrazilParts(date);
   return `${hour}h${minute}`;
 }
 function parseMatchKickoff(match, competitionOverride=null){
-  const cleaned=(match.date||'').replace(/[^\d/ hÂ·:]/g,'').trim();
+  const cleaned=(match.date||'').replace(/[^\d/ h·:]/g,'').trim();
   const normalized=cleaned.replace(':','h');
-  const parts=normalized.match(/(\d{2})\/(\d{2})(?:\s*Â·\s*(\d{1,2})h(?:(\d{2}))?)?/);
+  const parts=normalized.match(/(\d{2})\/(\d{2})(?:\s*·\s*(\d{1,2})h(?:(\d{2}))?)?/);
   if(!parts)return null;
   const day=Number(parts[1]);
   const month=Number(parts[2]);
@@ -3060,7 +3335,7 @@ function renderWinnerPoll(){
   if(countdownEl)countdownEl.style.display='none';
   if(noteEl)noteEl.style.display='none';
   titleEl.textContent=`Enquete do campeao - ${competition.shortLabel}`;
-  subtitleEl.textContent='Vote em quem voce acredita que vai levantar a taÃ§a. O percentual atual aparece em tempo real.';
+  subtitleEl.textContent='Vote em quem você acredita que vai levantar a taça. O percentual atual aparece em tempo real.';
 
   if(!localPlayerId){
     totalEl.textContent='Login necessario';
@@ -3082,16 +3357,14 @@ function renderWinnerPoll(){
 
   selectEl.innerHTML=[
     '<option value="">Selecione um time</option>',
-    ...candidates.map(team=>`<option value="${escapeHtml(team)}">${escapeHtml(team)}</option>`)
+    ...candidates.map(team=>`<option value="${escapeHtml(team)}">${escapeHtml(getDisplayTeamName(team))}</option>`)
   ].join('');
   if(localVote?.winner) selectEl.value=localVote.winner;
 
   const canVote=true;
   selectEl.disabled=false;
   submitEl.disabled=false;
-  hintEl.textContent=localVote?.winner
-    ? `Seu voto atual: ${localVote.winner}. Voce pode trocar enquanto quiser.`
-    : 'Seu voto fica salvo na hora e entra no percentual total.';
+  hintEl.textContent='';
 
   const ranked=Array.from(totals.entries())
     .sort((a,b)=>b[1]-a[1] || a[0].localeCompare(b[0],'pt-BR'));
@@ -3100,16 +3373,20 @@ function renderWinnerPoll(){
     return;
   }
 
-  resultsEl.innerHTML=ranked.map(([team,count],index)=>{
+  const resultsHead=`<div class="winner-poll-results-head">
+      <span class="winner-poll-results-title">Seleções mais votadas</span>
+      <span class="winner-poll-results-note">${ranked.length} opção${ranked.length===1?'':'ões'} com voto</span>
+    </div>`;
+  resultsEl.innerHTML=resultsHead + ranked.map(([team,count],index)=>{
     const percent=totalVotes?Math.round((count/totalVotes)*100):0;
     const isUserVote=localVote?.winner===team;
     return `<div class="winner-poll-row${isUserVote?' is-user-vote':''}">
       <div class="winner-poll-row-head">
         <div class="winner-poll-team">
           <span class="${getTeamFlagClass(team)}">${getTeamFlag(team)}</span>
-          <span class="winner-poll-name">${escapeHtml(team)}</span>
+          <span class="winner-poll-name">${escapeHtml(getDisplayTeamName(team))}</span>
         </div>
-        <div class="winner-poll-meta">${count} ${count===1?'voto':'votos'} Â· ${percent}%</div>
+        <div class="winner-poll-meta">${count} ${count===1?'voto':'votos'} · ${percent}%</div>
       </div>
       <div class="winner-poll-bar"><span style="width:${percent}%"></span></div>
       ${isUserVote?'<div class="winner-poll-badge">Seu voto</div>':(index===0?'<div class="winner-poll-badge">Lidera a enquete</div>':'')}
@@ -3131,10 +3408,10 @@ async function submitWinnerPollVote(){
   }
   try{
     await window.fsSetPollVote(competition.key, localPlayerId, winner);
-    showToast(`Voto confirmado em ${winner}.`);
+    showToast(`Voto confirmado em ${getDisplayTeamName(winner)}.`);
   }catch(error){
     console.error(error);
-    showToast('Nao foi possivel salvar seu voto agora.');
+    showToast('Não foi possível salvar seu voto agora.');
   }
 }
 function startCountdown(){
@@ -3206,12 +3483,12 @@ function canRevealOtherGuesses(match){
 }
 function getLockMessage(match){
   const state=getMatchLockState(match);
-  if(!state.kickoff)return 'Horario do jogo indisponivel.';
+  if(!state.kickoff)return 'Horário do jogo indisponível.';
   const kickoffParts=formatBrazilParts(state.kickoff);
   if(state.isLocked){
-    return `Palpite encerrado. A janela fechou em ${formatBrazilMatchDate(state.lockTime).replace(' Â· ',' as ')}.`;
+    return `Palpite encerrado. A janela fechou no inicio da partida, em ${formatBrazilMatchDate(state.lockTime).replace(' · ',' às ')}.`;
   }
-  return `Jogo em ${formatBrazilMatchDate(state.kickoff).replace(' Â· ',' as ')}. Palpite liberado ate ${kickoffParts.day}/${kickoffParts.month} as ${formatBrazilHour(state.lockTime)}.`;
+  return `Jogo em ${formatBrazilMatchDate(state.kickoff).replace(' · ',' às ')}. Palpite liberado até o inicio da partida, às ${formatBrazilHour(state.lockTime)}.`;
 }
 function getSavedGuess(pid, mid){
   return (palpites[pid]||{})[mid]||{home:'',away:''};
@@ -3225,6 +3502,61 @@ function getDraftGuess(mid){
 function getEditableGuess(pid, mid){
   if(pid===localPlayerId && getDraftGuess(mid)) return getDraftGuess(mid);
   return getSavedGuess(pid, mid);
+}
+function getMatchCenterViewModel(match){
+  const res=results[match.id]||{home:'',away:''};
+  if(!IS_READ_ONLY){
+    return {
+      mode:'official',
+      home:String(res.home ?? ''),
+      away:String(res.away ?? ''),
+      meta:'Resultado oficial'
+    };
+  }
+  if(isResultFinal(res)){
+    return {
+      mode:'official',
+      home:String(res.home ?? ''),
+      away:String(res.away ?? ''),
+      meta:'Resultado oficial'
+    };
+  }
+  if(localPlayerId){
+    const savedGuess=getSavedGuess(localPlayerId, match.id);
+    const previewGuess=getEditableGuess(localPlayerId, match.id) || {home:'',away:''};
+    const isDraft=hasDraftChanges(localPlayerId, match.id);
+    return {
+      mode:isDraft ? 'draft' : 'guess',
+      home:String(previewGuess.home ?? ''),
+      away:String(previewGuess.away ?? ''),
+      meta:isDraft ? 'Palpite em edição' : (hasConfirmedGuess(savedGuess) ? 'Seu palpite confirmado' : 'Seu palpite')
+    };
+  }
+  return {
+    mode:'official',
+    home:'',
+    away:'',
+    meta:'Resultado oficial'
+  };
+}
+function renderMatchCenterScore(match){
+  const view=getMatchCenterViewModel(match);
+  if(!IS_READ_ONLY){
+    return `<div class="result-inputs" id="match-center-score-${match.id}">
+      <input type="number" class="result-score" min="0" max="99" placeholder="–" value="${view.home}" id="res-h-${match.id}" oninput="setResult('${match.id}')" aria-label="Gols casa">
+      <span style="font-weight:700;color:var(--color-text-muted)">:</span>
+      <input type="number" class="result-score" min="0" max="99" placeholder="–" value="${view.away}" id="res-a-${match.id}" oninput="setResult('${match.id}')" aria-label="Gols fora">
+    </div>
+    <span class="match-meta" id="match-center-meta-${match.id}">${view.meta}</span>`;
+  }
+  const stateClass = view.mode==='draft' ? ' is-draft' : (view.mode==='guess' ? ' is-guess' : '');
+  const metaClass = view.mode==='draft' ? 'match-meta is-draft' : (view.mode==='guess' ? 'match-meta is-guess' : 'match-meta');
+  return `<div class="result-inputs${stateClass}" id="match-center-score-${match.id}">
+      <span class="result-score result-score-display">${view.home || '–'}</span>
+      <span style="font-weight:700;color:var(--color-text-muted)">:</span>
+      <span class="result-score result-score-display">${view.away || '–'}</span>
+    </div>
+    <span class="${metaClass}" id="match-center-meta-${match.id}">${view.meta}</span>`;
 }
 function hasDraftChanges(pid, mid){
   const draft=getDraftGuess(mid);
@@ -3254,7 +3586,7 @@ function renderReadonlyGuessCard(player, guess, ptsTag, isLoggedUser){
     </div>
     <div class="palpite-other-score">
       <span>${guess.home}</span>
-      <span class="palpite-sep">Ã—</span>
+      <span class="palpite-sep">×</span>
       <span>${guess.away}</span>
     </div>
     <div class="palpite-other-meta">${ptsTag || 'Palpite confirmado'}</div>
@@ -3275,9 +3607,24 @@ function refreshDraftControls(mid){
       : '';
   }
 }
+function updateMatchCenterPreview(mid){
+  const match=getActiveMatches().find(m=>m.id===mid);
+  const scoreWrap=document.getElementById(`match-center-score-${mid}`);
+  const metaEl=document.getElementById(`match-center-meta-${mid}`);
+  if(!match || !scoreWrap || !metaEl || !IS_READ_ONLY) return;
+  const view=getMatchCenterViewModel(match);
+  const stateClass = view.mode==='draft' ? ' is-draft' : (view.mode==='guess' ? ' is-guess' : '');
+  const metaClass = view.mode==='draft' ? 'match-meta is-draft' : (view.mode==='guess' ? 'match-meta is-guess' : 'match-meta');
+  scoreWrap.className = `result-inputs${stateClass}`;
+  scoreWrap.innerHTML = `<span class="result-score result-score-display">${view.home || '–'}</span>
+      <span style="font-weight:700;color:var(--color-text-muted)">:</span>
+      <span class="result-score result-score-display">${view.away || '–'}</span>`;
+  metaEl.className = metaClass;
+  metaEl.textContent = view.meta;
+}
 function updateGuessDraft(pid, mid, side, val){
   if(pid!==localPlayerId){
-    showToast('Voce so pode editar os seus proprios palpites.');
+    showToast('Você só pode editar os seus próprios palpites.');
     return;
   }
   const match=getActiveMatches().find(m=>m.id===mid);
@@ -3292,6 +3639,7 @@ function updateGuessDraft(pid, mid, side, val){
     away: String(side==='away' ? val : (base.away ?? ''))
   };
   refreshDraftControls(mid);
+  updateMatchCenterPreview(mid);
 }
 function editGuessChoice(mid){
   delete guessDrafts[mid];
@@ -3335,11 +3683,11 @@ async function addPlayer(){
   const input=document.getElementById('player-name-input');
   const name=input.value.trim();
   if(!name)return showToast('Digite um nome!');
-  if(players.find(p=>p.name.toLowerCase()===name.toLowerCase()))return showToast('Participante jÃ¡ existe!');
+  if(players.find(p=>p.name.toLowerCase()===name.toLowerCase()))return showToast('Participante já existe!');
   const id='p'+Date.now();
   await window.fsAddPlayer(id, name);
   input.value='';
-  showToast(`${name} adicionado! âš½`);
+  showToast(`${name} adicionado! ⚽`);
 }
 async function removePlayer(id){
   const p=players.find(x=>x.id===id);
@@ -3389,6 +3737,50 @@ function hasSameRankingCriteria(a,b){
     && a.exact===b.exact
     && a.resOnly===b.resOnly;
 }
+function getLiveRankingSnapshot(){
+  const ids=getActiveMatchIds();
+  const finishedGames=Object.entries(results).filter(([mid,r])=>ids.has(mid)&&isResultFinal(r)).length;
+  if(!players.length){
+    return { finishedGames, ranked:[], topLeader:null, leaders:[] };
+  }
+  const ranked=players
+    .map(p=>({ ...p, ...getPlayerRankingStats(p.id) }))
+    .sort(compareRankingEntries);
+  const topLeader=ranked[0] || null;
+  const leaders=ranked.filter(p=>hasSameRankingCriteria(p, topLeader));
+  return { finishedGames, ranked, topLeader, leaders };
+}
+function updateHeroLeaderSpotlight(snapshot = getLiveRankingSnapshot()){
+  const spotlight=document.getElementById('hero-leader-spotlight');
+  if(!spotlight) return;
+  if(!localPlayerId || !snapshot.topLeader){
+    spotlight.hidden = true;
+    spotlight.innerHTML = '';
+    return;
+  }
+  const leader=snapshot.topLeader;
+  const tied=snapshot.leaders.length > 1;
+  const [c1,c2]=avatarGrad(leader.name);
+  const safeName=escapeHtml(leader.name);
+  const safeInitials=escapeHtml(initials(leader.name));
+  const meta = tied
+    ? `${snapshot.leaders.length} participantes dividem a ponta com ${leader.pts} pontos`
+    : snapshot.finishedGames === 0
+      ? 'Ranking inicial aberto. O primeiro resultado pode mudar tudo.'
+      : `${leader.exact} placares exatos e ${leader.resOnly} resultados cravados ate aqui.`;
+  const label = tied ? 'Ponta embolada' : 'Lider da disputa';
+  spotlight.hidden = false;
+  spotlight.innerHTML = `<div class="hero-leader-avatar" style="background:linear-gradient(135deg,${c1},${c2})">${safeInitials}</div>
+    <div class="hero-leader-copy">
+      <span class="hero-leader-kicker">${label}</span>
+      <strong class="hero-leader-name">${safeName}${leader.id===localPlayerId ? ' • você' : ''}</strong>
+      <span class="hero-leader-meta">${meta}</span>
+    </div>
+    <div class="hero-leader-points">
+      <strong>${leader.pts}</strong>
+      <span>${leader.pts===1 ? 'ponto' : 'pontos'}</span>
+    </div>`;
+}
 function updateLiveLeadersBubble(){
   const bubble=document.getElementById('leaders-bubble');
   const list=document.getElementById('leaders-bubble-list');
@@ -3396,34 +3788,29 @@ function updateLiveLeadersBubble(){
   if(!bubble||!list||!sub)return;
 
   if(!localPlayerId){
-    list.innerHTML='<div class="leaders-bubble-empty">Entre com sua conta para visualizar a lideranÃ§a ao vivo.</div>';
+    updateHeroLeaderSpotlight({ finishedGames:0, ranked:[], topLeader:null, leaders:[] });
+    list.innerHTML='<div class="leaders-bubble-empty">Entre com sua conta para visualizar a liderança ao vivo.</div>';
     sub.textContent='Ranking visivel apenas para participantes conectados';
     return;
   }
 
-  const ids=getActiveMatchIds();
-  const finishedGames=Object.entries(results).filter(([mid,r])=>ids.has(mid)&&isResultFinal(r)).length;
-  if(!players.length){
-    list.innerHTML='<div class="leaders-bubble-empty">A lideranÃ§a ao vivo aparecerÃ¡ aqui assim que houver participantes cadastrados no bolÃ£o.</div>';
+  const snapshot=getLiveRankingSnapshot();
+  if(!snapshot.ranked.length){
+    updateHeroLeaderSpotlight(snapshot);
+    list.innerHTML='<div class="leaders-bubble-empty">A liderança ao vivo aparecerá aqui assim que houver participantes cadastrados no bolão.</div>';
     sub.textContent='Aguardando participantes';
     return;
   }
-
-  const ranked=players
-    .map(p=>({ ...p, ...getPlayerRankingStats(p.id) }))
-    .sort(compareRankingEntries);
-
-  const topLeader=ranked[0] || null;
-  const leaders=ranked.filter(p=>hasSameRankingCriteria(p, topLeader));
-  if(finishedGames===0){
-    sub.textContent=`${ranked.length} participante${ranked.length!==1?'s':''} no ranking inicial`;
+  updateHeroLeaderSpotlight(snapshot);
+  if(snapshot.finishedGames===0){
+    sub.textContent=`${snapshot.ranked.length} participante${snapshot.ranked.length!==1?'s':''} no ranking inicial`;
   }else{
-    sub.textContent = leaders.length > 1
-      ? `${leaders.length} participantes empatados na lideranÃ§a`
-      : `${finishedGames} jogo${finishedGames!==1?'s':''} com resultado`;
+    sub.textContent = snapshot.leaders.length > 1
+      ? `${snapshot.leaders.length} participantes empatados na liderança`
+      : `${snapshot.finishedGames} jogo${snapshot.finishedGames!==1?'s':''} com resultado`;
   }
 
-  list.innerHTML=ranked.map((p,index)=>{
+  list.innerHTML=snapshot.ranked.map((p,index)=>{
     const isLogged=p.id===localPlayerId;
     const [c1,c2]=avatarGrad(p.name);
     const safeName=escapeHtml(p.name);
@@ -3432,8 +3819,8 @@ function updateLiveLeadersBubble(){
       <div style="display:flex;align-items:center;gap:10px;min-width:0">
         <span style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,${c1},${c2});display:inline-flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:700;flex-shrink:0">${initials(p.name)}</span>
         <div style="min-width:0">
-          <div class="leaders-bubble-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${safeName}${isLogged ? ' â€¢ voce' : ''}</div>
-          <div class="leaders-bubble-meta">${p.exact} exatos Â· ${p.resOnly} resultados</div>
+          <div class="leaders-bubble-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${safeName}${isLogged ? ' • você' : ''}</div>
+          <div class="leaders-bubble-meta">${p.exact} exatos · ${p.resOnly} resultados</div>
         </div>
       </div>
       <div class="leaders-bubble-points">${p.pts}</div>
@@ -3467,16 +3854,16 @@ function updateUpcomingMatchesBubble(){
   const endWindow=new Intl.DateTimeFormat('pt-BR',{timeZone:BRAZIL_TIMEZONE,hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date(next24h));
   sub.textContent=`${items.length} partida${items.length!==1?'s':''} nas proximas 24h ate ${endWindow}`;
   list.innerHTML=items.map(({competition,match,kickoff})=>{
-    const when=formatBrazilMatchDate(kickoff).replace(' Â· ',', ');
+    const when=formatBrazilMatchDate(kickoff).replace(' · ',', ');
     const headToHead=competition.key==='worldcup' ? getMatchHeadToHead(match, competition.key) : null;
     return `<div class="upcoming-bubble-item">
       <div class="upcoming-bubble-competition">${competition.shortLabel || competition.label}</div>
-      <div class="upcoming-bubble-match">${normalizeTeamName(match.home)} x ${normalizeTeamName(match.away)}</div>
+      <div class="upcoming-bubble-match">${getDisplayTeamName(match.home)} x ${getDisplayTeamName(match.away)}</div>
       <div class="upcoming-bubble-time">${when}</div>
       ${headToHead ? `<div class="upcoming-bubble-h2h">
         <div class="upcoming-bubble-h2h-label">Confronto direto em Copas</div>
-        <div class="upcoming-bubble-h2h-summary">${headToHead.homeRecord} Â· ${headToHead.centerRecord} Â· ${headToHead.awayRecord}</div>
-        <div class="upcoming-bubble-h2h-last">${headToHead.lastMeeting || 'Primeiro confronto em Copas do Mundo.'}</div>
+        <div class="upcoming-bubble-h2h-summary">${translateTeamNamesInText(headToHead.homeRecord)} · ${translateTeamNamesInText(headToHead.centerRecord)} · ${translateTeamNamesInText(headToHead.awayRecord)}</div>
+        <div class="upcoming-bubble-h2h-last">${translateTeamNamesInText(headToHead.lastMeeting || 'Primeiro confronto em Copas do Mundo.')}</div>
       </div>` : ''}
     </div>`;
   }).join('');
@@ -3485,7 +3872,7 @@ function updateUpcomingMatchesBubble(){
 function renderPlayers(){
   const grid=document.getElementById('players-grid');
   updatePrizePoolRule();
-  if(players.length===0){grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">ðŸ‘¥</div><p style="font-weight:700;margin-bottom:var(--space-2);color:var(--color-text)">Nenhum participante ainda</p><p style="font-size:var(--text-sm)">Adicione participantes para comeÃ§ar o bolÃ£o!</p></div>`;return;}
+  if(players.length===0){grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">👥</div><p style="font-weight:700;margin-bottom:var(--space-2);color:var(--color-text)">Nenhum participante ainda</p><p style="font-size:var(--text-sm)">Adicione participantes para começar o bolão!</p></div>`;return;}
   const finishedGames=getCompetitionFinishedGamesCount();
   grid.innerHTML=players.map(p=>{
     const pts=calcScore(p.id);
@@ -3493,7 +3880,7 @@ function renderPlayers(){
     const safeName=escapeHtml(p.name);
     const safeId=escapeHtml(p.id);
     return `<div class="player-card" style="--card-c1:${c1};--card-c2:${c2}">
-      ${IS_READ_ONLY ? '' : `<button class="remove-player" onclick="removePlayer('${safeId}')" aria-label="Remover ${safeName}">âœ•</button>`}
+      ${IS_READ_ONLY ? '' : `<button class="remove-player" onclick="removePlayer('${safeId}')" aria-label="Remover ${safeName}">✕</button>`}
       <div class="player-header">
         <div class="player-avatar" style="background:linear-gradient(135deg,${c1},${c2})">${initials(p.name)}</div>
         <div>
@@ -3519,18 +3906,18 @@ function getNextUpcomingMatch(matches){
 }
 function getMatchHeadToHead(match, competitionKey=activeCompetitionKey){
   return window.HEAD_TO_HEAD?.getHeadToHead(match.home, match.away, competitionKey) || {
-    scope:'Historico geral',
-    homeRecord:'Historico em atualizacao',
-    awayRecord:'Historico em atualizacao',
-    centerRecord:'Confronto direto em atualizacao.',
+    scope:'Histórico geral',
+    homeRecord:'Histórico em atualização',
+    awayRecord:'Histórico em atualização',
+    centerRecord:'Confronto direto em atualização.',
     lastMeeting:''
   };
 }
 function renderMatchCard(m){
   const res=results[m.id]||{home:'',away:''};
   const hasFinal=isResultFinal(res);
-  const homeName=normalizeTeamName(m.home);
-  const awayName=normalizeTeamName(m.away);
+  const homeName=getDisplayTeamName(m.home);
+  const awayName=getDisplayTeamName(m.away);
   const kickoff=parseMatchKickoff(m);
   const statusMeta=getMatchStatusMeta(m);
   const headToHead=getMatchHeadToHead(m);
@@ -3541,26 +3928,21 @@ function renderMatchCard(m){
       <div class="${getTeamFlagClass(m.home)}">${getTeamFlag(m.home)}</div>
       <div class="team-stack">
         <div class="team-name">${homeName}</div>
-        <div class="team-sub">${headToHead.homeRecord}</div>
+        <div class="team-sub">${translateTeamNamesInText(headToHead.homeRecord)}</div>
       </div>
     </div>
     <div class="match-center">
       <div class="match-date">${formatBrazilMatchDate(kickoff)}</div>
       <div class="match-vs">VS</div>
       <span class="result-tag ${statusMeta.className}">${statusMeta.label}</span>
-      <div class="result-inputs">
-        <input type="number" class="result-score" min="0" max="99" placeholder="â€“" value="${res.home}" id="res-h-${m.id}" oninput="setResult('${m.id}')" aria-label="Gols casa" ${IS_READ_ONLY ? 'disabled' : ''}>
-        <span style="font-weight:700;color:var(--color-text-muted)">:</span>
-        <input type="number" class="result-score" min="0" max="99" placeholder="â€“" value="${res.away}" id="res-a-${m.id}" oninput="setResult('${m.id}')" aria-label="Gols fora" ${IS_READ_ONLY ? 'disabled' : ''}>
-      </div>
-      <span class="match-meta">Resultado real</span>
-      <span class="palpites-toggle" role="button" tabindex="0" onclick="togglePalpites('${m.id}')" onkeydown="if(event.key==='Enter')togglePalpites('${m.id}')">${isOpen ? 'â–² Ocultar' : (canRevealOthers ? `â–¼ Palpites (${getConfirmedGuessCount(m.id)})` : 'â–¼ Seu palpite')}</span>
+      ${renderMatchCenterScore(m)}
+      <span class="palpites-toggle" role="button" tabindex="0" onclick="togglePalpites('${m.id}')" onkeydown="if(event.key==='Enter')togglePalpites('${m.id}')">${isOpen ? '▲ Ocultar' : (canRevealOthers ? `▼ Palpites dos adversarios (${getConfirmedGuessCount(m.id)})` : '▼ Palpites dos adversarios')}</span>
     </div>
     <div class="team right">
       <div class="${getTeamFlagClass(m.away)}">${getTeamFlag(m.away)}</div>
       <div class="team-stack">
         <div class="team-name">${awayName}</div>
-        <div class="team-sub">${headToHead.awayRecord}</div>
+        <div class="team-sub">${translateTeamNamesInText(headToHead.awayRecord)}</div>
       </div>
     </div>
     <div class="palpites-area${isOpen ? ' open' : ''}" id="pal-${m.id}">${renderPalpitesArea(m)}</div>
@@ -3582,7 +3964,7 @@ function getMatchDisplayState(match, kickoff, now=Date.now()){
 function getMatchStatusMeta(match){
   const kickoff=parseMatchKickoff(match);
   const state=getMatchDisplayState(match, kickoff);
-  if(state==='finished') return { className:'final', label:'âœ“ Final' };
+  if(state==='finished') return { className:'final', label:'✓ Final' };
   if(state==='live') return { className:'live', label:'Ao vivo' };
   if(state==='awaiting') return { className:'pending', label:'Aguardando resultado' };
   return { className:'pending', label:'Pendente' };
@@ -3650,7 +4032,7 @@ function renderMatches(){
     html+=renderMatchList(live);
   }
   if(upcoming.length){
-    html+=`<div class="phase-header"><span class="phase-label">${live.length ? 'PrÃ³ximas partidas' : 'Partidas abertas'}</span><span class="phase-badge green">${upcoming.length}</span></div>`;
+    html+=`<div class="phase-header"><span class="phase-label">${live.length ? 'Próximas partidas' : 'Partidas abertas'}</span><span class="phase-badge green">${upcoming.length}</span></div>`;
     html+=renderMatchList(upcoming);
   }
   if(awaiting.length){
@@ -3658,11 +4040,11 @@ function renderMatches(){
     html+=renderMatchList(awaiting);
   }
   if(finished.length){
-    html+=`<div class="phase-header"><span class="phase-label">Partidas jÃ¡ concluÃ­das</span><span class="phase-badge">${finished.length}</span></div>`;
+    html+=`<div class="phase-header"><span class="phase-label">Partidas já concluídas</span><span class="phase-badge">${finished.length}</span></div>`;
     html+=renderMatchList(finished);
   }
   if(noKickoff.length){
-    html+=`<div class="phase-header"><span class="phase-label">Partidas sem horÃ¡rio definido</span><span class="phase-badge">${noKickoff.length}</span></div>`;
+    html+=`<div class="phase-header"><span class="phase-label">Partidas sem horário definido</span><span class="phase-badge">${noKickoff.length}</span></div>`;
     html+=renderMatchList(noKickoff);
   }
   if(!html){
@@ -3694,37 +4076,22 @@ function renderPalpitesArea(m){
   const localGuess = localPlayer ? getEditableGuess(localPlayer.id, m.id) : null;
   const canEdit = !!localPlayer && canEditGuessForMatch(m);
   const hasChanges = !!localPlayer && hasDraftChanges(localPlayer.id, m.id);
-  const localPtsTag = (() => {
-    if(!localGuess || !isResultFinal(res) || localGuess.home==='' || localGuess.away==='') return '';
-    if(Number(localGuess.home)===Number(res.home)&&Number(localGuess.away)===Number(res.away)) return '<span class="palpite-pts exact">+3 â­</span>';
-    const rW=Number(res.home)>Number(res.away)?'H':Number(res.home)<Number(res.away)?'A':'D';
-    const pW=Number(localGuess.home)>Number(localGuess.away)?'H':Number(localGuess.home)<Number(localGuess.away)?'A':'D';
-    return rW===pW?'<span class="palpite-pts result">+2 âœ“</span>':'<span class="palpite-pts">0</span>';
-  })();
   const localSection = localPlayer ? (() => {
-    const [c1,c2]=avatarGrad(localPlayer.name);
-    const safeLocalName=escapeHtml(localPlayer.name);
     const safeLocalId=escapeHtml(localPlayer.id);
     return `<div class="palpite-section palpite-user-highlight">
       <div class="palpite-section-header">
-        <div class="palpite-section-title">Seu palpite ${localPtsTag}</div>
+        <div class="palpite-section-title">Editar palpite</div>
       </div>
-      <div class="palpite-row">
-        <label>
-          <span style="width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,${c1},${c2});display:inline-flex;align-items:center;justify-content:center;font-size:9px;color:#fff;font-weight:700;flex-shrink:0">${initials(localPlayer.name)}</span>
-          ${safeLocalName}
-        </label>
-        <div>
-          <div class="palpite-inputs">
-            <input type="number" class="palpite-score" min="0" max="99" placeholder="â€“" value="${localGuess?.home ?? ''}" oninput="updateGuessDraft('${safeLocalId}','${m.id}','home',this.value)" aria-label="${safeLocalName} casa" title="${canEdit ? lockMessage : lockMessage}" ${canEdit ? '' : 'disabled'}>
-            <span class="palpite-sep">Ã—</span>
-            <input type="number" class="palpite-score" min="0" max="99" placeholder="â€“" value="${localGuess?.away ?? ''}" oninput="updateGuessDraft('${safeLocalId}','${m.id}','away',this.value)" aria-label="${safeLocalName} fora" title="${canEdit ? lockMessage : lockMessage}" ${canEdit ? '' : 'disabled'}>
-          </div>
-          <span id="draft-help-${m.id}" class="palpite-help-highlight" style="margin-top:10px">${lockMessage}${hasChanges ? ' Ha alteracoes nao confirmadas.' : ' Seu ultimo palpite confirmado aparece acima.'}</span>
-          <div class="palpite-actions">
-            <button class="btn btn-gold" id="confirm-guess-${m.id}" type="button" onclick="confirmGuessDraft('${m.id}')" ${canEdit && hasChanges ? '' : 'disabled'} style="padding:6px 10px;font-size:12px;min-width:88px">Confirmar</button>
-            <button class="btn btn-outline" id="cancel-guess-${m.id}" type="button" onclick="editGuessChoice('${m.id}')" ${hasChanges ? '' : 'disabled'} style="padding:6px 10px;font-size:12px;min-width:110px">Editar escolha</button>
-          </div>
+      <div>
+        <div class="palpite-inputs">
+          <input type="number" class="palpite-score" min="0" max="99" placeholder="–" value="${localGuess?.home ?? ''}" oninput="updateGuessDraft('${safeLocalId}','${m.id}','home',this.value)" aria-label="Meu palpite gols casa" title="${canEdit ? lockMessage : lockMessage}" ${canEdit ? '' : 'disabled'}>
+          <span class="palpite-sep">×</span>
+          <input type="number" class="palpite-score" min="0" max="99" placeholder="–" value="${localGuess?.away ?? ''}" oninput="updateGuessDraft('${safeLocalId}','${m.id}','away',this.value)" aria-label="Meu palpite gols fora" title="${canEdit ? lockMessage : lockMessage}" ${canEdit ? '' : 'disabled'}>
+        </div>
+        <span id="draft-help-${m.id}" class="palpite-help-highlight" style="margin-top:10px">${lockMessage}${hasChanges ? ' Ha alteracoes nao confirmadas.' : ' Seu ultimo palpite confirmado aparece no card principal.'}</span>
+        <div class="palpite-actions">
+          <button class="btn btn-gold" id="confirm-guess-${m.id}" type="button" onclick="confirmGuessDraft('${m.id}')" ${canEdit && hasChanges ? '' : 'disabled'} style="padding:6px 10px;font-size:12px;min-width:88px">Confirmar</button>
+          <button class="btn btn-outline" id="cancel-guess-${m.id}" type="button" onclick="editGuessChoice('${m.id}')" ${hasChanges ? '' : 'disabled'} style="padding:6px 10px;font-size:12px;min-width:110px">Editar escolha</button>
         </div>
       </div>
     </div>`;
@@ -3737,7 +4104,7 @@ function renderPalpitesArea(m){
 
   let othersSection = `<div class="palpite-section">
       <div class="palpite-section-header">
-        <div class="palpite-section-title">Palpites confirmados</div>
+        <div class="palpite-section-title">Palpites dos adversarios</div>
       </div>
       <div class="palpite-empty">Os palpites dos outros participantes aparecem aqui assim que a janela desta partida fechar.</div>
     </div>`;
@@ -3758,11 +4125,11 @@ function renderPalpitesArea(m){
     const othersHtml = visibleOthers.map(({player, guess}) => {
       let ptsTag = '';
       if(isResultFinal(res)&&guess.home!==''&&guess.away!==''){
-        if(Number(guess.home)===Number(res.home)&&Number(guess.away)===Number(res.away)) ptsTag='<span class="palpite-pts exact">+3 â­</span>';
+        if(Number(guess.home)===Number(res.home)&&Number(guess.away)===Number(res.away)) ptsTag='<span class="palpite-pts exact">+3 ⭐</span>';
         else {
           const rW=Number(res.home)>Number(res.away)?'H':Number(res.home)<Number(res.away)?'A':'D';
           const pW=Number(guess.home)>Number(guess.away)?'H':Number(guess.home)<Number(guess.away)?'A':'D';
-          ptsTag=rW===pW?'<span class="palpite-pts result">+2 âœ“</span>':'<span class="palpite-pts">0</span>';
+          ptsTag=rW===pW?'<span class="palpite-pts result">+2 ✓</span>':'<span class="palpite-pts">0</span>';
         }
       }
       return renderReadonlyGuessCard(player, guess, ptsTag, false);
@@ -3774,13 +4141,13 @@ function renderPalpitesArea(m){
     const pagination = expanded && totalOthers > perPage
       ? `<div class="palpite-pagination">
           <button class="btn btn-outline" type="button" onclick="changeGuessPage('${m.id}', ${safePage - 1})" ${safePage === 1 ? 'disabled' : ''} style="padding:6px 10px;font-size:12px">Anterior</button>
-          <span class="palpite-page-info">Pagina ${safePage} de ${totalPages}</span>
-          <button class="btn btn-outline" type="button" onclick="changeGuessPage('${m.id}', ${safePage + 1})" ${safePage === totalPages ? 'disabled' : ''} style="padding:6px 10px;font-size:12px">Proxima</button>
+          <span class="palpite-page-info">Página ${safePage} de ${totalPages}</span>
+          <button class="btn btn-outline" type="button" onclick="changeGuessPage('${m.id}', ${safePage + 1})" ${safePage === totalPages ? 'disabled' : ''} style="padding:6px 10px;font-size:12px">Próxima</button>
         </div>`
       : '';
     othersSection = `<div class="palpite-section">
         <div class="palpite-section-header">
-          <div class="palpite-section-title">Palpites confirmados ${totalOthers ? `(${totalOthers})` : ''}</div>
+          <div class="palpite-section-title">Palpites dos adversarios ${totalOthers ? `(${totalOthers})` : ''}</div>
           ${toggleButton}
         </div>
         ${totalOthers
@@ -3808,8 +4175,8 @@ function togglePalpites(mid){
   const confirmedCount=getConfirmedGuessCount(mid);
   const canRevealOthers=!!localPlayerId && !!match && canRevealOtherGuesses(match);
   if(btn)btn.textContent=nextOpen
-    ? 'â–² Ocultar'
-    : (canRevealOthers ? `â–¼ Palpites (${confirmedCount})` : 'â–¼ Seu palpite');
+    ? '▲ Ocultar'
+    : (canRevealOthers ? `▼ Palpites dos adversarios (${confirmedCount})` : '▼ Palpites dos adversarios');
 }
 
 async function setResult(mid){
@@ -3824,7 +4191,7 @@ async function setResult(mid){
   // ---- visual update ----
   const match=getActiveMatches().find(item=>item.id===mid);
   const hasFinal=h!==''&&a!=='';
-  const statusMeta=match ? getMatchStatusMeta(match) : { className: hasFinal ? 'final' : 'pending', label: hasFinal ? 'âœ“ Final' : 'Pendente' };
+  const statusMeta=match ? getMatchStatusMeta(match) : { className: hasFinal ? 'final' : 'pending', label: hasFinal ? '✓ Final' : 'Pendente' };
   const card=document.getElementById('mc-'+mid);
   if(card){hasFinal?card.classList.add('has-result'):card.classList.remove('has-result');}
   const tag=document.querySelector(`#mc-${mid} .result-tag`);
@@ -3836,11 +4203,11 @@ async function setResult(mid){
       let ptsTag='';
       if(hasFinal&&pal.home!==''&&pal.away!==''){
         if(Number(pal.home)===Number(h)&&Number(pal.away)===Number(a)){
-          ptsTag='<span class="palpite-pts exact">+3 â­</span>';
+          ptsTag='<span class="palpite-pts exact">+3 ⭐</span>';
         } else {
           const rW=Number(h)>Number(a)?'H':Number(h)<Number(a)?'A':'D';
           const pW=Number(pal.home)>Number(pal.away)?'H':Number(pal.home)<Number(pal.away)?'A':'D';
-          ptsTag=rW===pW?'<span class="palpite-pts result">+2 âœ“</span>':'<span class="palpite-pts">0</span>';
+          ptsTag=rW===pW?'<span class="palpite-pts result">+2 ✓</span>':'<span class="palpite-pts">0</span>';
         }
       }
       badge.innerHTML=ptsTag;
@@ -3850,7 +4217,7 @@ async function setResult(mid){
 
 async function setPalpite(pid,mid,side,val){
   if (IS_READ_ONLY && pid !== localPlayerId) {
-    showToast('Voce so pode editar os seus proprios palpites.');
+    showToast('Você só pode editar os seus próprios palpites.');
     return;
   }
   const match=getActiveMatches().find(m=>m.id===mid);
@@ -3868,11 +4235,11 @@ async function setPalpite(pid,mid,side,val){
     let ptsTag='';
     if(isResultFinal(res)&&pal.home!==''&&pal.away!==''){
       if(Number(pal.home)===Number(res.home)&&Number(pal.away)===Number(res.away)){
-        ptsTag='<span class="palpite-pts exact">+3 â­</span>';
+        ptsTag='<span class="palpite-pts exact">+3 ⭐</span>';
       } else {
         const rW=Number(res.home)>Number(res.away)?'H':Number(res.home)<Number(res.away)?'A':'D';
         const pW=Number(pal.home)>Number(pal.away)?'H':Number(pal.home)<Number(pal.away)?'A':'D';
-        ptsTag=rW===pW?'<span class="palpite-pts result">+2 âœ“</span>':'<span class="palpite-pts">0</span>';
+        ptsTag=rW===pW?'<span class="palpite-pts result">+2 ✓</span>':'<span class="palpite-pts">0</span>';
       }
     }
     badge.innerHTML=ptsTag;
@@ -3881,10 +4248,10 @@ async function setPalpite(pid,mid,side,val){
 }
 
 // ===== SCOREBOARD =====
-function recalcAll(){renderScoreboard();showToast('ClassificaÃ§Ã£o atualizada! ðŸ†');}
+function recalcAll(){renderScoreboard();showToast('Classificação atualizada! 🏆');}
 function renderScoreboard(){
   const container=document.getElementById('scoreboard-container');
-  if(players.length===0){container.innerHTML=`<div class="empty-state"><div class="empty-icon">ðŸ…</div><p style="font-weight:700;margin-bottom:var(--space-2);color:var(--color-text)">Adicione participantes primeiro</p></div>`;return;}
+  if(players.length===0){container.innerHTML=`<div class="empty-state"><div class="empty-icon">🏅</div><p style="font-weight:700;margin-bottom:var(--space-2);color:var(--color-text)">Adicione participantes primeiro</p></div>`;return;}
   const ranked=players
     .map(p=>({ ...p, ...getPlayerRankingStats(p.id) }))
     .sort(compareRankingEntries);
@@ -3892,7 +4259,7 @@ function renderScoreboard(){
     <th style="width:60px">#</th><th>Participante</th>
     <th class="score-num">Pontos</th>
     <th class="score-num">Placares Exatos</th>
-    <th class="score-num">Resultados Corretos</th>
+    <th class="score-num">Resultados corretos</th>
     <th class="score-num">Placares Errados</th>
   </tr></thead><tbody>`;
   ranked.forEach((p,i)=>{
@@ -3924,46 +4291,6 @@ function showToast(msg){
 }
 
 // ===== VISITOR ACTIONS =====
-async function registerVisitorProfile() {
-  if (authModalBusy) return;
-  setAuthModalFeedback('');
-  const nameInput = document.getElementById('auth-register-name');
-  const surnameInput = document.getElementById('auth-register-surname');
-  const emailInput = document.getElementById('auth-register-email');
-  const passwordInput = document.getElementById('auth-register-password');
-  const name = nameInput.value.trim();
-  const surname = surnameInput.value.trim();
-  const email = normalizeAuthEmail(emailInput.value);
-  const password = passwordInput.value;
-  if (!name || !surname) return showToast('Preencha seu nome e sobrenome.');
-  if (!email) return showToast('Preencha seu email.');
-  if (password.length < 6) return showToast('A senha precisa ter pelo menos 6 caracteres.');
-
-  const fullName = `${name} ${surname}`;
-
-  try {
-    setAuthModalBusy(true, 'Criando conta...');
-    showToast('Criando conta...');
-    const cred = await window.authCreateParticipant(email, password);
-    await window.fsRegisterParticipant(cred.user.uid, fullName);
-    localPlayerId = cred.user.uid;
-    localPlayerName = fullName;
-    localPlayerEmail = email;
-    updateVisitorProfileUI();
-    updateFloatingBanner();
-    renderMatchesIfActive();
-    renderPlayers();
-    renderWinnerPoll();
-    closeAuthModal();
-    showToast(`Conta criada para ${fullName}. Agora voce pode salvar seus palpites. âš½`);
-  } catch (error) {
-    setAuthModalFeedback(getAuthErrorMessage(error));
-    showToast(getAuthErrorMessage(error));
-  } finally {
-    setAuthModalBusy(false);
-  }
-}
-
 async function loginVisitorProfile() {
   if (authModalBusy) return;
   setAuthModalFeedback('');
@@ -4031,7 +4358,7 @@ function setAuthModalBusy(isBusy, busyLabel='Processando...'){
   authModalBusy = !!isBusy;
   const submit = document.getElementById('auth-modal-submit');
   const cancel = document.querySelector('#auth-modal .modal-actions .btn.btn-outline');
-  const defaultLabel = authModalMode==='register' ? 'Criar conta' : (authModalMode==='reset' ? 'Enviar link' : 'Entrar');
+  const defaultLabel = authModalMode==='reset' ? 'Enviar link' : 'Entrar';
   if (submit) {
     submit.disabled = authModalBusy;
     submit.textContent = authModalBusy ? busyLabel : defaultLabel;
@@ -4040,27 +4367,23 @@ function setAuthModalBusy(isBusy, busyLabel='Processando...'){
 }
 
 function openAuthModal(mode='login'){
-  authModalMode = mode;
+  authModalMode = mode === 'reset' ? 'reset' : 'login';
   const modal=document.getElementById('auth-modal');
   const title=document.getElementById('auth-modal-title');
   const submit=document.getElementById('auth-modal-submit');
   const note=document.getElementById('auth-modal-note');
   const loginFields=document.getElementById('auth-login-fields');
   const resetFields=document.getElementById('auth-reset-fields');
-  const registerFields=document.getElementById('auth-register-fields');
-  if(title) title.textContent = mode==='register' ? 'Criar conta' : (mode==='reset' ? 'Redefinir senha' : 'Entrar');
-  if(submit) submit.textContent = mode==='register' ? 'Criar conta' : (mode==='reset' ? 'Enviar link' : 'Entrar');
-  if(note) note.textContent = mode==='register'
-    ? 'Crie sua conta com email e senha para editar apenas os seus proprios palpites.'
-    : (mode==='reset'
-      ? 'Informe o email cadastrado para receber o link de redefinicao de senha.'
-      : 'Entre com sua conta para salvar e editar apenas os seus palpites.');
-  if(loginFields) loginFields.style.display = mode==='login' ? 'grid' : 'none';
-  if(resetFields) resetFields.style.display = mode==='reset' ? 'grid' : 'none';
-  if(registerFields) registerFields.style.display = mode==='register' ? 'grid' : 'none';
+  if(title) title.textContent = authModalMode==='reset' ? 'Redefinir senha' : 'Entrar';
+  if(submit) submit.textContent = authModalMode==='reset' ? 'Enviar link' : 'Entrar';
+  if(note) note.textContent = authModalMode==='reset'
+    ? 'Informe o email cadastrado para receber o link de redefinicao de senha.'
+    : 'Entre com a sua conta já cadastrada para acompanhar e editar os seus palpites.';
+  if(loginFields) loginFields.style.display = authModalMode==='login' ? 'grid' : 'none';
+  if(resetFields) resetFields.style.display = authModalMode==='reset' ? 'grid' : 'none';
   const loginEmailInput = document.getElementById('auth-login-email');
   const resetEmailInput = document.getElementById('auth-reset-email');
-  if(mode==='reset' && resetEmailInput && loginEmailInput?.value && !resetEmailInput.value){
+  if(authModalMode==='reset' && resetEmailInput && loginEmailInput?.value && !resetEmailInput.value){
     resetEmailInput.value = loginEmailInput.value;
   }
   setAuthModalFeedback('');
@@ -4073,7 +4396,6 @@ function closeAuthModal(force = false){
   if(modal) modal.classList.remove('show');
 }
 function submitAuthModal(){
-  if(authModalMode==='register') return registerVisitorProfile();
   if(authModalMode==='reset') return resetVisitorPassword();
   return loginVisitorProfile();
 }
@@ -4105,12 +4427,12 @@ function resetIdleLogoutTimer(){
   if(!localPlayerId) return;
   idleWarningTimer = setTimeout(() => {
     if(localPlayerId){
-      showToast('Sem interaÃ§Ã£o hÃ¡ 9 minutos. Sua sessÃ£o serÃ¡ encerrada em 1 minuto.');
+      showToast('Sem interação há 9 minutos. Sua sessão será encerrada em 1 minuto.');
     }
   }, IDLE_WARNING_MS);
   idleLogoutTimer = setTimeout(async () => {
     try{
-      await logoutVisitorProfile(false, 'Voce ficou 10 minutos sem interagir. Login encerrado por seguranca.');
+      await logoutVisitorProfile(false, 'Você ficou 10 minutos sem interagir. Login encerrado por segurança.');
     }catch(_err){}
   }, IDLE_LOGOUT_MS);
 }
@@ -4122,7 +4444,7 @@ function initializeIdleSessionTracking(){
     }, { passive:true });
   });
 }
-async function logoutVisitorProfile(manual = true, toastMessage = 'Voce saiu da sua conta.') {
+async function logoutVisitorProfile(manual = true, toastMessage = 'Você saiu da sua conta.') {
   if (manual && !confirm('Deseja sair da sua conta? Seus palpites continuam salvos no servidor.')) return;
   try {
     clearIdleLogoutTimer();
@@ -4173,15 +4495,15 @@ function handleHeroSecondaryAction() {
 
 function getAuthErrorMessage(error) {
   const code = error?.code || '';
-  if (code === 'auth/email-already-in-use') return 'Esse email ja esta em uso. Cada conta aceita apenas um cadastro por email.';
-  if (code === 'auth/invalid-email') return 'O email informado nao e valido.';
+  if (code === 'auth/email-already-in-use') return 'Esse email já está em uso. Cada conta aceita apenas um cadastro por email.';
+  if (code === 'auth/invalid-email') return 'O email informado não é válido.';
   if (code === 'auth/missing-email') return 'Informe o email da conta.';
   if (code === 'auth/weak-password') return 'Escolha uma senha mais forte.';
   if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') return 'Email ou senha incorretos.';
-  if (code === 'auth/network-request-failed') return 'Falha de conexao. Tente novamente em instantes.';
-  if (code === 'auth/missing-continue-uri' || code === 'auth/unauthorized-continue-uri') return 'Nao foi possivel enviar o link de redefinicao agora.';
+  if (code === 'auth/network-request-failed') return 'Falha de conexão. Tente novamente em instantes.';
+  if (code === 'auth/missing-continue-uri' || code === 'auth/unauthorized-continue-uri') return 'Não foi possível enviar o link de redefinição agora.';
   if (code === 'auth/too-many-requests') return 'Muitas tentativas de acesso. Aguarde alguns minutos ou troque de rede e tente novamente. Se preferir, use "Esqueci minha senha".';
-  return 'Nao foi possivel concluir a autenticacao agora.';
+  return 'Não foi possível concluir a autenticação agora.';
 }
 
 function getBrazilDateParts(timestamp = Date.now()){
@@ -4219,8 +4541,8 @@ function getProfileNameChangeState(profile = localPlayerProfile){
 function getProfileSettingsMessage(){
   const state = getProfileNameChangeState();
   return state.canChange
-    ? 'Voce pode alterar seu nome 1 vez por dia. A mudanca atualiza o ranking automaticamente.'
-    : `Voce ja alterou seu nome hoje. Nova alteracao disponivel em ${state.nextLabel}.`;
+    ? 'Você pode alterar seu nome 1 vez por dia. A mudança atualiza o ranking automaticamente.'
+    : `Você já alterou seu nome hoje. Nova alteração disponível em ${state.nextLabel}.`;
 }
 
 function setProfileSettingsFeedback(message=''){
@@ -4270,10 +4592,10 @@ async function saveProfileDisplayName(){
   const nextName = typeof input?.value === 'string' ? input.value.trim().replace(/\s+/g, ' ') : '';
   const state = getProfileNameChangeState();
   setProfileSettingsFeedback('');
-  if(!nextName) return setProfileSettingsFeedback('Informe o nome que deseja exibir no bolao.');
+  if(!nextName) return setProfileSettingsFeedback('Informe o nome que deseja exibir no bolão.');
   if(nextName.length < 3) return setProfileSettingsFeedback('Use pelo menos 3 caracteres no nome.');
-  if(nextName === localPlayerName) return setProfileSettingsFeedback('Esse nome ja esta em uso na sua conta.');
-  if(!state.canChange) return setProfileSettingsFeedback(`Voce ja alterou seu nome hoje. Nova alteracao disponivel em ${state.nextLabel}.`);
+  if(nextName === localPlayerName) return setProfileSettingsFeedback('Esse nome já está em uso na sua conta.');
+  if(!state.canChange) return setProfileSettingsFeedback(`Você já alterou seu nome hoje. Nova alteração disponível em ${state.nextLabel}.`);
   try{
     setProfileSettingsBusy(true);
     await window.fsUpdateParticipantName(localPlayerId, nextName, state.todayKey);
@@ -4299,11 +4621,11 @@ async function saveProfileDisplayName(){
     showToast('Nome atualizado com sucesso.');
   } catch(error){
     if(error?.code === 'profile/name-change-limit'){
-      setProfileSettingsFeedback(`Voce ja alterou seu nome hoje. Nova alteracao disponivel em ${getProfileNameChangeState().nextLabel}.`);
+      setProfileSettingsFeedback(`Você já alterou seu nome hoje. Nova alteração disponível em ${getProfileNameChangeState().nextLabel}.`);
     } else if(error?.code === 'profile/not-found'){
-      setProfileSettingsFeedback('Nao foi possivel localizar seu perfil agora. Tente entrar novamente.');
+      setProfileSettingsFeedback('Não foi possível localizar seu perfil agora. Tente entrar novamente.');
     } else {
-      setProfileSettingsFeedback('Nao foi possivel atualizar seu nome agora. Tente novamente em instantes.');
+      setProfileSettingsFeedback('Não foi possível atualizar seu nome agora. Tente novamente em instantes.');
     }
   } finally {
     setProfileSettingsBusy(false);
@@ -4320,10 +4642,6 @@ function updateVisitorProfileUI() {
   const loginEmailInput = document.getElementById('auth-login-email');
   const loginPasswordInput = document.getElementById('auth-login-password');
   const resetEmailInput = document.getElementById('auth-reset-email');
-  const registerNameInput = document.getElementById('auth-register-name');
-  const registerSurnameInput = document.getElementById('auth-register-surname');
-  const registerEmailInput = document.getElementById('auth-register-email');
-  const registerPasswordInput = document.getElementById('auth-register-password');
 
   if (localPlayerId && localPlayerName) {
     if (headerLogin) headerLogin.style.display = 'none';
@@ -4337,10 +4655,6 @@ function updateVisitorProfileUI() {
     if (loginEmailInput) loginEmailInput.value = '';
     if (loginPasswordInput) loginPasswordInput.value = '';
     if (resetEmailInput) resetEmailInput.value = '';
-    if (registerNameInput) registerNameInput.value = '';
-    if (registerSurnameInput) registerSurnameInput.value = '';
-    if (registerEmailInput) registerEmailInput.value = '';
-    if (registerPasswordInput) registerPasswordInput.value = '';
     closeProfileSettingsModal(true);
   }
 
@@ -4371,8 +4685,8 @@ function updateFloatingBanner() {
   }
   configureFloatingBanner({
     mode:'reminder',
-    title:'Voce ainda nao fez seu palpite.',
-    text:`${normalizeTeamName(reminder.match.home)} x ${normalizeTeamName(reminder.match.away)} fecha 1h antes da partida.`,
+    title:'Você ainda não fez seu palpite.',
+    text:`${getDisplayTeamName(reminder.match.home)} x ${getDisplayTeamName(reminder.match.away)} fecha no inicio da partida.`,
     actionLabel:'Fazer palpite',
     action:()=>focusReminderMatch(reminder.match.id),
     reminderMatchId:reminder.match.id,
@@ -4381,7 +4695,7 @@ function updateFloatingBanner() {
 }
 
 function sendGuessesToOrganizer() {
-  showToast('Seus palpites ja ficam salvos automaticamente na sua conta. ðŸŽ¯');
+  showToast('Seus palpites ja ficam salvos automaticamente na sua conta. 🎯');
   hideFloatingBanner();
 }
 
@@ -4401,12 +4715,12 @@ function closeImportModal() {
 }
 
 function importParticipantData() {
-  showToast('Com Firestore, participantes se cadastram direto no site! ðŸŒ');
+  showToast('Com Firestore, participantes se cadastram direto no site! 🌐');
   closeImportModal();
 }
 
 function exportHTML() {
-  showToast('Com Firestore, todos veem o bolÃ£o em tempo real! Compartilhe o link. ðŸŒ');
+  showToast('Com Firestore, todos veem o bolão em tempo real! Compartilhe o link. 🌐');
 }
 
 // ===== INITIALIZATION =====
@@ -4443,7 +4757,7 @@ updateUpcomingMatchesBubble();
 renderWinnerPoll();
 startCountdown();
 handleAuthLandingState();
-['auth-login-email','auth-login-password','auth-reset-email','auth-register-name','auth-register-surname','auth-register-email','auth-register-password','profile-display-name'].forEach(id => {
+['auth-login-email','auth-login-password','auth-reset-email','profile-display-name'].forEach(id => {
   const input = document.getElementById(id);
   if (!input) return;
   if (id === 'profile-display-name') {
@@ -4466,7 +4780,7 @@ window.setInterval(() => {
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    const currentCacheName = 'bolao-do-ti-v3-pwa-20260616';
+    const currentCacheName = 'bolao-do-ti-v4-pwa-20260618-lock-at-kickoff';
     if ('caches' in window) {
       caches.keys()
         .then(keys => Promise.all(
@@ -4477,7 +4791,7 @@ if ('serviceWorker' in navigator) {
         .catch(() => {});
     }
 
-    navigator.serviceWorker.register('/sw.js?v=20260616-pwa-fix')
+    navigator.serviceWorker.register('/sw.js?v=20260618-lock-at-kickoff')
       .then(registration => {
         registration.update().catch(() => {});
         const worker = registration.waiting || registration.active;
