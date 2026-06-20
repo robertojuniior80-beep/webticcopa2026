@@ -1923,6 +1923,7 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
   window._pollVotes = {};
   window._fsReady = false;
   window._authReady = false;
+  window._lastAuthUser = null;
   let unsubscribePlayers = null;
   let unsubscribePalpites = null;
   let unsubscribePollVotes = null;
@@ -1931,6 +1932,14 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
     window._players = [];
     window._palpites = {};
     window._pollVotes = {};
+  }
+
+  async function waitForAuthReady(timeoutMs = 12000) {
+    if (window._authReady) return;
+    const startedAt = Date.now();
+    while (!window._authReady && Date.now() - startedAt < timeoutMs) {
+      await new Promise(resolve => setTimeout(resolve, 120));
+    }
   }
 
   function stopProtectedSubscriptions() {
@@ -2089,6 +2098,7 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
 
   onAuthStateChanged(auth, async (user) => {
     window._authReady = true;
+    window._lastAuthUser = user || null;
     if (user) {
       startProtectedSubscriptions();
     } else {
@@ -4305,6 +4315,7 @@ async function loginVisitorProfile() {
   try {
     setAuthModalBusy(true, 'Entrando...');
     showToast('Entrando...');
+    await waitForAuthReady();
     await window.authLoginParticipant(email, password);
     setAuthModalBusy(false);
     closeAuthModal();
@@ -4324,6 +4335,7 @@ async function resetVisitorPassword() {
   if (!email) return showToast('Informe o email da conta para redefinir a senha.');
   try {
     setAuthModalBusy(true, 'Enviando link...');
+    await waitForAuthReady();
     const actionCodeSettings = {
       url: `${window.location.origin}/?auth=login`,
       handleCodeInApp: false
@@ -4460,9 +4472,8 @@ async function applyAuthState(user) {
   if (user) {
     localPlayerId = user.uid;
     localPlayerEmail = normalizeAuthEmail(user.email || '');
-    const rawProfile = await window.fsGetPlayerProfile(user.uid).catch(() => null);
-    localPlayerProfile = sanitizePlayerEntry(user.uid, rawProfile);
-    localPlayerName = localPlayerProfile?.name || (user.email ? user.email.split('@')[0] : '') || 'Participante';
+    localPlayerName = (user.email ? user.email.split('@')[0] : '') || 'Participante';
+    localPlayerProfile = null;
     resetIdleLogoutTimer();
   } else {
     clearIdleLogoutTimer();
@@ -4479,9 +4490,25 @@ async function applyAuthState(user) {
   renderPlayers();
   renderWinnerPoll();
   if (user) closeAuthModal(true);
+
+  if (user) {
+    const rawProfile = await window.fsGetPlayerProfile(user.uid).catch(() => null);
+    if (!window.authCurrentUser?.() || window.authCurrentUser().uid !== user.uid) return;
+    localPlayerProfile = sanitizePlayerEntry(user.uid, rawProfile);
+    localPlayerName = localPlayerProfile?.name || localPlayerName;
+    updateVisitorProfileUI();
+    updateFloatingBanner();
+    updateLiveLeadersBubble();
+    renderMatchesIfActive();
+    renderPlayers();
+    renderWinnerPoll();
+  }
 }
 
 window.applyAuthState = applyAuthState;
+if (window._authReady) {
+  applyAuthState(window._lastAuthUser || window.authCurrentUser?.() || null);
+}
 
 function handleHeroSecondaryAction() {
   if (!localPlayerId) {
